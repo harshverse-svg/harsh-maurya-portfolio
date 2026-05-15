@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Harsh Maurya | Digital Architect</title>
+
+  <!-- Fonts: Inter (Body) & Fira Code (Technical) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap"
+    rel="stylesheet" />
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+</head>
+
+<body>
+  <!-- Scroll Progress -->
+  <div class="scroll-progress-container">
+    <div class="scroll-progress-bar" id="scrollProgress"></div>
+  </div>
+
+  <!-- Custom Cursor -->
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-follower" id="cursorFollower"></div>
+
+  <!-- Navbar -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-logo">
+      <span class="logo-text">HM</span><span class="accent-dot">.</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#stack">Stack</a></li>
+      <li><a href="#lab">Skills</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#certs">Certs</a></li>
+      <li><a href="#creative">Media</a></li>
+      <li><a href="#approach">How I Work</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero" id="home">
+    <div class="hero-content">
+      <img src="assets/images/profile.png" alt="Harsh Maurya" class="hero-profile-img"
+        onerror="this.style.display='none'">
+      <div class="mono-label" id="type-sys-init">> sys.init("harsh_maurya")</div>
+      <h1 class="hero-title" id="type-title" style="font-family: var(--font-mono); font-size: 3.5rem; letter-spacing: -1px; min-height: 120px;">Study.
+        Code. Architect. <br><span class="accent-text">Deploy.</span></h1>
+      <p class="hero-subtitle" id="type-subtitle" style="max-width: 700px; margin-left: auto; margin-right: auto; min-height: 80px;">
+        Computer Science Engineer focused on building hyper-local solutions and exploring the bleeding edge of AI
+        research.
+      </p>
+      <div class="hero-actions">
+        <a href="#lab" class="btn-primary">Explore My Lab</a>
+        <a href="#creative" class="btn-secondary">Watch Content</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- About Me Section -->
+  <section class="section" id="about">
+    <div class="container">
+      <h2 class="section-title">My<span class="accent-text">Profile</span></h2>
+      <p class="section-mono">// About Me</p>
+
+      <div class="about-card">
+        <p class="about-bio">
+          1st-year Computer Science Engineering student bridging software development, AI research, and system
+          architecture. Experienced in deploying local Large Language Models (LLMs), building full-stack web prototypes.
+          Focused on building scalable, hyper-local solutions for underserved markets.
+        </p>
+        <div class="contact-grid">
+          <a href="https://maps.google.com/?q=Meerut,Uttar+Pradesh,India" target="_blank" class="contact-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>Meerut, Uttar Pradesh, India</span>
+          </a>
+          <a href="mailto:harshmauryamau@gmail.com" class="contact-item">
+            <i class="fas fa-envelope"></i>
+            <span>harshmauryamau@gmail.com</span>
+          </a>
+          <a href="tel:+919569759599" class="contact-item">
+            <i class="fas fa-phone-alt"></i>
+            <span>+91 95697 59599</span>
+          </a>
+          <a href="https://github.com/harshverse-svg" target="_blank" class="contact-item">
+            <i class="fab fa-github"></i>
+            <span>harshverse-svg</span>
+          </a>
+          <a href="https://www.linkedin.com/in/harsh-maurya-baa534400" target="_blank" class="contact-item">
+            <i class="fab fa-linkedin"></i>
+            <span>LinkedIn Profile</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Core Technical Stack (Bento Box) -->
+  <section class="section" id="stack">
+    <div class="container">
+      <h2 class="section-title">Core Technical <span class="accent-text">Stack</span></h2>
+      <p class="section-mono">// Architecture & Infrastructure</p>
+
+      <div class="bento-grid">
+        <!-- Languages -->
+        <div class="bento-item">
+          <i class="fab fa-python bento-icon"></i>
+          <h3 class="mono-label">Python</h3>
+        </div>
+        <div class="bento-item">
+          <i class="fas fa-c bento-icon"></i>
+          <h3 class="mono-label">C / C++</h3>
+        </div>
+        <div class="bento-item">
+          <i class="fab fa-html5 bento-icon"></i>
+          <h3 class="mono-label">HTML</h3>
+        </div>
+
+        <!-- Infrastructure -->
+        <div class="bento-item bento-wide">
+          <div style="display: flex; gap: 1.5rem; justify-content: center; align-items: center; margin-bottom: 0.5rem;">
+            <i class="fab fa-github bento-icon" style="margin-bottom: 0; font-size: 2.5rem;"></i>
+            <i class="fas fa-terminal bento-icon" style="margin-bottom: 0; font-size: 2.5rem;"></i>
+          </div>
+          <h3 class="mono-label" style="margin-top: 0.5rem;">Git / GitHub CLI / PowerShell</h3>
+        </div>
+
+        <!-- Tools & Deployment -->
+        <div class="bento-item">
+          <i class="fas fa-code bento-icon"></i>
+          <h3 class="mono-label">VS Code</h3>
+        </div>
+        <div class="bento-item bento-tall">
+          <i class="fas fa-rocket bento-icon"></i>
+          <h3 class="mono-label">Streamlit</h3>
+          <p class="bento-desc">Full-stack AI Prototyping</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI & Deep-Tech Lab -->
+  <section class="section lab-section" id="lab">
+    <div class="container">
+      <h2 class="section-title">Advanced <span class="accent-text">Skills</span></h2>
+      <p class="section-mono">// Research & Explorations</p>
+
+      <div class="glass-grid">
+        <div class="glass-card">
+          <div class="card-header">
+            <i class="fas fa-brain"></i>
+            <span class="mono-tag">Learning</span>
+          </div>
+          <h3>Intelligence Basics</h3>
+          <p>Core mechanics of LLMs, Neural Networks, and AI Security.</p>
+        </div>
+
+        <div class="glass-card">
+          <div class="card-header">
+            <i class="fas fa-network-wired"></i>
+            <span class="mono-tag">Architecture</span>
+          </div>
+          <h3>Intelligence Systems</h3>
+          <p>Local LLM Optimization, Agentic Workflows, and GraphRAG architectures.</p>
+        </div>
+
+        <div class="glass-card">
+          <div class="card-header">
+            <i class="fas fa-robot"></i>
+            <span class="mono-tag">Implementation</span>
+          </div>
+          <h3>Model Experience</h3>
+          <p>Deploying and experimenting with Kimi-k2.5, Qwen2.5-coder, and Gemma.</p>
+        </div>
+
+        <div class="glass-card highlight-card">
+          <div class="card-header">
+            <i class="fas fa-microchip"></i>
+            <span class="mono-tag research-tag">Current Research</span>
+          </div>
+          <h3>Emerging Tech</h3>
+          <p>Neuromorphic Computing, Floquet Engineering, and Muon Tomography.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Flagship Projects -->
+  <section class="section" id="projects">
+    <div class="container">
+      <h2 class="section-title">Flagship <span class="accent-text">Projects</span></h2>
+      <p class="section-mono">// Engineering & Architecture</p>
+
+      <div class="projects-grid">
+
+        <!-- Project 1: Swast-.link- -->
+        <div class="project-card">
+          <div class="project-header">
+            <h3>Swast-.link- <span class="accent-text">| Virtual Queue</span></h3>
+            <span class="mono-tag role-tag">Lead Developer & Architect</span>
+          </div>
+
+          <img src="assets/images/swasthlink.png" alt="SwasthLink Interface" class="project-screenshot"
+            onerror="this.style.display='none'">
+
+          <div class="architecture-diagram">
+            <div class="arch-box">User Digital ID</div>
+            <i class="fas fa-arrow-right arch-arrow"></i>
+            <div class="arch-box highlight-box">ABDM Protocol</div>
+            <i class="fas fa-arrow-right arch-arrow"></i>
+            <div class="arch-box">Service Provider</div>
+          </div>
+
+          <div class="project-content">
+            <p class="pitch"><strong>The Pitch:</strong> A "Scan & Share" prototype designed to eliminate physical wait
+              times in healthcare and retail environments through integrated digital profiles.</p>
+            <p>Developed a full-stack Virtual Queue Management system to streamline patient and customer check-ins. The
+              system utilizes a 'Scan and Share' architecture, enabling users to instantly transmit profiles for faster
+              processing. I integrated simulated ABDM (Ayushman Bharat Digital Mission) profile fetching and UPI payment
+              simulations to demonstrate a secure, end-to-end user journey from registration to transaction.</p>
+
+            <ul class="project-highlights">
+              <li><i class="fas fa-exclamation-circle"></i> <strong>The Problem:</strong> Traditional queueing leads to
+                congestion and data entry errors.</li>
+              <li><i class="fas fa-check-circle"></i> <strong>The Solution:</strong> A mobile-first web interface
+                connecting digital IDs to providers.</li>
+              <li><i class="fas fa-star"></i> <strong>Key Feature:</strong> Integration of government-standard profile
+                protocols (ABDM) to ensure real-world viability.</li>
+            </ul>
+
+            <div class="tech-tags">
+              <span class="mono-tag">Python</span>
+              <span class="mono-tag">Streamlit</span>
+              <span class="mono-tag">API Integration</span>
+              <span class="mono-tag">Digital Identity</span>
+              <span class="mono-tag">UX/UI Design</span>
+            </div>
+          </div>
+
+          <div class="project-links">
+            <a href="https://harshverse-svg.github.io/Swast-.link-/" target="_blank" class="btn-outline">[ View Live
+              Demo ]</a>
+            <a href="queuekhatam-research.html" target="_blank" class="btn-outline">[ Read Case Study ]</a>
+            <a href="https://github.com/harshverse-svg/Swast-.link-" target="_blank" class="btn-primary">[ Source Code
+              ]</a>
+          </div>
+        </div>
+
+        <!-- Project 2: GraphRAG -->
+        <div class="project-card">
+          <div class="project-header">
+            <h3>GraphRAG <span class="accent-text">| Local Intelligence</span></h3>
+            <span class="mono-tag role-tag">Lead Developer & Architect</span>
+          </div>
+
+          <div class="architecture-diagram">
+            <div class="arch-box">Documents</div>
+            <i class="fas fa-arrow-right arch-arrow"></i>
+            <div class="arch-box highlight-box">Local LLM (Ollama)</div>
+            <i class="fas fa-arrow-right arch-arrow"></i>
+            <div class="arch-box">Knowledge Graph</div>
+          </div>
+
+          <div class="project-content">
+            <p class="pitch"><strong>The Pitch:</strong> An advanced Knowledge Retrieval application leveraging
+              Graph-based Retrieval-Augmented Generation and local Large Language Models.</p>
+            <p>Built and optimized a GraphRAG application to solve the context-window limitations of standard LLMs. By
+              utilizing Ollama to host local models (like Qwen2.5 and Gemma) and Streamlit for the interface, I created
+              a system that maps complex relationships between data points before generating responses. This project
+              involved deep performance analysis of local inference speeds versus retrieval accuracy.</p>
+
+            <ul class="project-highlights">
+              <li><i class="fas fa-lightbulb"></i> <strong>The Innovation:</strong> Moving beyond standard RAG by
+                implementing a knowledge graph to preserve data relationships.</li>
+              <li><i class="fas fa-shield-alt"></i> <strong>Privacy-First:</strong> Designed to run entirely locally,
+                ensuring data security for sensitive research or private documentation.</li>
+              <li><i class="fas fa-chart-line"></i> <strong>The Result:</strong> Significant reduction in
+                "hallucinations" and higher accuracy in multi-document synthesis.</li>
+            </ul>
+
+            <div class="tech-tags">
+              <span class="mono-tag">Ollama</span>
+              <span class="mono-tag">GraphRAG</span>
+              <span class="mono-tag">Local LLMs</span>
+              <span class="mono-tag">RAG Architecture</span>
+              <span class="mono-tag">Knowledge Graphs</span>
+            </div>
+          </div>
+
+          <div class="project-links">
+            <button class="btn-outline btn-disabled" disabled>[ View Live Demo ] <br><small>Not Available (Local
+                Hardware)</small></button>
+            <a href="graphrag-readme.html" target="_blank" class="btn-outline">[ Read Case Study ]</a>
+            <a href="https://github.com/harshverse-svg/graphrag-ollama" target="_blank" class="btn-primary">[ Source
+              Code ]</a>
+          </div>
+        </div>
+
+        <!-- Project 3: Stone Paper Scissor -->
+        <div class="project-card">
+          <div class="project-header">
+            <h3>Stone Paper Scissor <span class="accent-text">| Web Game</span></h3>
+            <span class="mono-tag role-tag">Solo Developer</span>
+          </div>
+
+          <img src="assets/images/sps.png" alt="Stone Paper Scissor Game" class="project-screenshot"
+            onerror="this.style.display='none'">
+
+          <div class="architecture-diagram">
+            <div class="arch-box">User Input</div>
+            <i class="fas fa-arrow-right arch-arrow"></i>
+            <div class="arch-box highlight-box">Game Engine / AI Logic</div>
+            <i class="fas fa-arrow-right arch-arrow"></i>
+            <div class="arch-box">Audio & UI Update</div>
+          </div>
+
+          <div class="project-content">
+            <p class="pitch"><strong>The Pitch:</strong> A fully playable, polished browser game demonstrating advanced
+              DOM manipulation, state management, and asset handling.</p>
+            <p>Developed "Snake Water Gun 3.0" (a variant of Stone Paper Scissor) as a highly interactive web
+              application. The game features an integrated audio engine, an AI difficulty system, and a robust
+              achievements tracker, providing a high-quality native-app feel directly within the browser.</p>
+
+            <ul class="project-highlights">
+              <li><i class="fas fa-gamepad"></i> <strong>The Innovation:</strong> Implementing an AI difficulty curve
+                and achievement system entirely via client-side JavaScript.</li>
+              <li><i class="fas fa-mobile-alt"></i> <strong>Mobile-First Design:</strong> Utilized dynamic viewport
+                units (100dvh) and a slide-out sidebar for optimal mobile playability.</li>
+              <li><i class="fas fa-volume-up"></i> <strong>Immersive Experience:</strong> Integrated an audio engine to
+                provide instant visceral feedback for gameplay actions.</li>
+            </ul>
+
+            <div class="tech-tags">
+              <span class="mono-tag">JavaScript</span>
+              <span class="mono-tag">HTML/CSS</span>
+              <span class="mono-tag">State Management</span>
+              <span class="mono-tag">Game Logic</span>
+              <span class="mono-tag">GitHub Pages</span>
+            </div>
+          </div>
+
+          <div class="project-links">
+            <a href="https://harshverse-svg.github.io/stone-paper-scissor/" target="_blank" class="btn-outline">[ View
+              Live Demo ]</a>
+            <a href="https://github.com/harshverse-svg/stone-paper-scissor" target="_blank" class="btn-primary">[ Source
+              Code ]</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    </div>
+  </section>
+
+  <!-- Certificates Section -->
+  <section class="section" id="certs">
+    <div class="container">
+      <h2 class="section-title">Professional <span class="accent-text">Certifications</span></h2>
+      <p class="section-mono">// Verified Skills & Training</p>
+
+      <div class="cert-grid">
+        <div class="cert-card">
+          <img src="assets/images/cert1.png" alt="Google Cloud - Intro to LLMs" class="cert-img"
+            onerror="this.style.display='none'">
+          <div class="cert-info">
+            <h4 class="mono-label">Intro to Large Language Models</h4>
+            <p>Google Cloud</p>
+          </div>
+        </div>
+        <div class="cert-card">
+          <img src="assets/images/cert2.png" alt="Google Cloud - Intro to Gen AI" class="cert-img"
+            onerror="this.style.display='none'">
+          <div class="cert-info">
+            <h4 class="mono-label">Intro to Generative AI</h4>
+            <p>Google Cloud</p>
+          </div>
+        </div>
+        <div class="cert-card">
+          <img src="assets/images/cert3.png" alt="IBM - Intro to AI" class="cert-img"
+            onerror="this.style.display='none'">
+          <div class="cert-info">
+            <h4 class="mono-label">Intro to Artificial Intelligence (AI)</h4>
+            <p>IBM</p>
+          </div>
+        </div>
+        <div class="cert-card">
+          <img src="assets/images/cert4.png" alt="Google - Crash Course on Python" class="cert-img"
+            onerror="this.style.display='none'">
+          <div class="cert-info">
+            <h4 class="mono-label">Crash Course on Python</h4>
+            <p>Google</p>
+          </div>
+        </div>
+        <div class="cert-card">
+          <img src="assets/images/cert5.png" alt="Google Cloud - Intro to Responsible AI" class="cert-img"
+            onerror="this.style.display='none'">
+          <div class="cert-info">
+            <h4 class="mono-label">Introduction to Responsible AI</h4>
+            <p>Google Cloud</p>
+          </div>
+        </div>
+        <div class="cert-card">
+          <img src="assets/images/cert6.png" alt="Google - Foundations of Cybersecurity" class="cert-img"
+            onerror="this.style.display='none'">
+          <div class="cert-info">
+            <h4 class="mono-label">Foundations of Cybersecurity</h4>
+            <p>Google</p>
+          </div>
+        </div>
+        <div class="cert-card">
+          <img src="assets/images/cert7.png" alt="Google - Foundations: Data, Data, Everywhere" class="cert-img"
+            onerror="this.style.display='none'">
+          <div class="cert-info">
+            <h4 class="mono-label">Foundations: Data, Data, Everywhere</h4>
+            <p>Google</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Creative Ecosystem -->
+  <section class="section" id="creative">
+    <div class="container">
+      <h2 class="section-title">Creative <span class="accent-text">Ecosystem</span></h2>
+      <p class="section-mono">// Media & Branding</p>
+
+      <div class="media-gallery">
+        <div class="media-card">
+          <div class="media-video" style="height: 300px;">
+            <iframe width="100%" height="100%" src="https://www.youtube.com/embed/o81KExZbok0"
+              title="YouTube video player" frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen style="border-bottom: 1px solid var(--glass-border);"></iframe>
+          </div>
+          <div class="media-info">
+            <h4>Technical Video Editing</h4>
+            <p>Educational Content Strategy & Channel Management</p>
+          </div>
+        </div>
+
+        <div class="media-sidebar">
+          <div class="media-item">
+            <i class="fas fa-palette"></i>
+            <div>
+              <h4 class="mono-label">Digital Identity Design</h4>
+              <p>Intros, Outros & Thumbnails</p>
+            </div>
+          </div>
+          <div class="media-item">
+            <i class="fas fa-film"></i>
+            <div>
+              <h4 class="mono-label">Motion Graphics</h4>
+              <p>Visual storytelling for technical concepts</p>
+            </div>
+          </div>
+          <a href="https://www.youtube.com/@Thinktogether-z8g" target="_blank" class="btn-outline"><i
+              class="fab fa-youtube"></i> Visit Channel</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Strategic Architecture -->
+  <section class="section approach-section" id="approach">
+    <div class="container">
+      <h2 class="section-title">How I <span class="accent-text">Work</span></h2>
+      <p class="section-mono">// Strategic Architecture</p>
+
+      <div class="approach-grid">
+        <div class="approach-item">
+          <div class="approach-number">01</div>
+          <div class="approach-content">
+            <h3 class="mono-label">Cognitive Tools</h3>
+            <p>I combine Advanced Prompt Engineering with rigorous problem solving to unlock optimal solutions.</p>
+          </div>
+        </div>
+
+        <div class="approach-item">
+          <div class="approach-number">02</div>
+          <div class="approach-content">
+            <h3 class="mono-label">Execution</h3>
+            <p>End-to-End Project Management — transforming abstract architecture into deployed reality.</p>
+          </div>
+        </div>
+
+        <div class="approach-item">
+          <div class="approach-number">03</div>
+          <div class="approach-content">
+            <h3 class="mono-label">Communication</h3>
+            <p>Technical Content Writing and structured debating for logical defense of technical choices.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Resume Section -->
+  <section class="section" id="resume">
+    <div class="container">
+      <div class="resume-banner">
+        <div class="resume-content">
+          <h2 class="section-title">Get the <span class="accent-text">Full Picture</span></h2>
+          <p class="section-mono">// Download Official Resume [PDF]</p>
+          <p style="color: var(--text-muted); margin-bottom: 2rem;">
+            Ready to collaborate? Download my comprehensive resume to review my full academic background, technical
+            skills, and detailed project experience.
+          </p>
+          <a href="assets/Harsh_Maurya_Resume.pdf" download="Harsh_Maurya_Resume.pdf" class="btn-primary"
+            style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; font-size: 1rem;">
+            <i class="fas fa-file-pdf"></i> Download Resume.pdf
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container footer-content">
+      <div class="footer-logo">HM<span class="accent-text">.</span></div>
+      <div class="social-links">
+        <a href="#"><i class="fab fa-github"></i></a>
+        <a href="https://www.youtube.com/@Thinktogether-z8g" target="_blank"><i class="fab fa-youtube"></i></a>
+        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+      </div>
+      <p class="footer-mono">© 2026 Harsh Maurya. Engineered with precision.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/animations.js"></script>
+</body>
+
+</html>
