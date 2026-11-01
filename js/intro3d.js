@@ -1,22 +1,28 @@
 /**
  * ==========================================================================
  * Harsh Maurya | Digital Architect Portfolio
- * Cinematic Procedural 3D GPU Unfolding Intro Experience
+ * Cinematic Procedural 3D GPU Unfolding Intro Experience (v2.4)
  * 100% Procedural Three.js Model • Mechanical Staged Choreography • GSAP
+ * 
+ * Architecture:
+ * - Bug 1 Fixed: Explicit createIntro() & destroyIntro() lifecycle, WebGL
+ *   context recovery & fallback, solid #02060a canvas backplate, body scroll lock.
+ * - Bug 2 Redesigned: No boxed card! GPU settles at 38% viewport height, text
+ *   rises into lower third with bottom-up dark gradient scrim. Zero overlap.
  * ==========================================================================
  */
 
 import * as THREE from 'three';
 
-// ===== CENTRAL CONFIG OBJECT =====
+// ===== CENTRAL CONFIGURATION OBJECT =====
 export const CONFIG = {
-  // Theme & Colors (Change accentColor to #ff2a2a for Red, etc.)
+  // Theme & Accent Palette
   accentColor: '#00e5ff',
   accentHex: 0x00e5ff,
   amberHex: 0xf59e0b,
-  darkGroundHex: 0x030508,
+  darkGroundHex: 0x02060a,
 
-  // Text & Copy (STRICT: Zero hardware, VRAM, or cert counts)
+  // Text & Copy (STRICT: Zero personal hardware, VRAM, or repo counts)
   badgeText: 'NEURAL ARCHITECTURE v2.4',
   nameText: 'HARSH MAURYA',
   roleText: 'Digital Architect • Local AI • Privacy Systems',
@@ -24,13 +30,18 @@ export const CONFIG = {
   hintText: 'Press ENTER or click to explore',
   skipText: 'Skip [ESC] ×',
 
-  // Technical Labels (GENERIC words only - no specs, no numbers, no VRAM)
-  labels: [
-    { id: 'cooling', text: 'COOLING', target: 'shroud', offset: { x: 210, y: -120 } },
-    { id: 'compute', text: 'COMPUTE', target: 'dieMemory', offset: { x: -260, y: -40 } },
-    { id: 'memory', text: 'MEMORY', target: 'dieMemory', offset: { x: 260, y: -20 } },
-    { id: 'power', text: 'POWER', target: 'pcb', offset: { x: -240, y: 110 } },
-    { id: 'interface', text: 'INTERFACE', target: 'connector', offset: { x: 0, y: 140 } }
+  // Technical Labels (Generic architecture domains only)
+  labelsDesktop: [
+    { id: 'cooling', text: 'COOLING', target: 'shroud', offset: { x: 200, y: -90 } },
+    { id: 'compute', text: 'COMPUTE', target: 'dieMemory', offset: { x: -240, y: -30 } },
+    { id: 'memory', text: 'MEMORY', target: 'dieMemory', offset: { x: 240, y: 30 } },
+    { id: 'power', text: 'POWER', target: 'pcb', offset: { x: -220, y: 90 } },
+    { id: 'interface', text: 'INTERFACE', target: 'connector', offset: { x: 0, y: 130 } }
+  ],
+  labelsMobile: [
+    { id: 'cooling', text: 'COOLING', target: 'shroud', offset: { x: 120, y: -70 } },
+    { id: 'compute', text: 'COMPUTE', target: 'dieMemory', offset: { x: -130, y: -20 } },
+    { id: 'interface', text: 'INTERFACE', target: 'connector', offset: { x: 0, y: 100 } }
   ],
 
   // GPU Primitives Dimensions
@@ -55,59 +66,59 @@ export const CONFIG = {
     bracketWidth: 1.14
   },
 
-  // Staged Unfold Choreography Tuning
-  // Order: backplate -> bracket -> shroud -> fans -> heatsink -> pcb -> dieMemory -> connector
+  // Staged Mechanical Unfold Tuning (Staggered by 60-90ms)
   unfold: {
     backplate: {
       x: 0, y: -0.65, z: -0.85,
       rotX: -0.22, rotY: 0, rotZ: 0,
-      delay: 1.2, duration: 1.6
+      delay: 1.20, duration: 1.6
     },
     bracket: {
       x: -0.85, y: 0, z: 0,
       rotX: 0, rotY: 0.35, rotZ: 0,
-      delay: 1.4, duration: 1.5
+      delay: 1.28, duration: 1.5
     },
     shroud: {
-      x: 0, y: 0.85, z: 0.95,
-      rotX: 0.45, rotY: 0, rotZ: 0,
-      delay: 1.6, duration: 1.8
+      x: 0, y: 0.85, z: 0.55,
+      rotX: 0.75, rotY: 0, rotZ: 0.08, // Mechanical hinge-open rotation
+      delay: 1.36, duration: 1.7
     },
     fans: {
-      x: 0, y: 1.15, z: 1.45,
-      rotX: 0.25, rotY: 0, rotZ: 0,
-      delay: 1.9, duration: 1.8
+      x: 0, y: 0.95, z: 0.95,
+      rotX: 0.35, rotY: 0, rotZ: 0,
+      delay: 1.44, duration: 1.6
     },
     heatsink: {
-      x: 0, y: 0.35, z: 0.5,
-      rotX: 0.12, rotY: 0, rotZ: 0,
-      delay: 2.2, duration: 1.6
+      x: 0, y: 0.32, z: 0,
+      rotX: 0, rotY: 0, rotZ: 0.04,
+      delay: 1.52, duration: 1.5
     },
     pcb: {
-      x: 0, y: -0.22, z: -0.2,
-      rotX: -0.1, rotY: 0, rotZ: 0,
-      delay: 2.5, duration: 1.5
+      x: 0, y: -0.25, z: 0,
+      rotX: 0, rotY: 0, rotZ: 0,
+      delay: 1.60, duration: 1.4
     },
     dieMemory: {
-      x: 0, y: 0.18, z: 0.22,
-      rotX: 0.05, rotY: 0, rotZ: 0,
-      delay: 2.7, duration: 1.4
+      x: 0, y: 0.18, z: 0.12,
+      rotX: 0, rotY: 0, rotZ: 0,
+      delay: 1.68, duration: 1.3
     },
     connector: {
-      x: 0, y: -0.55, z: 0.15,
+      x: 0, y: -0.75, z: 0.45,
       rotX: 0.25, rotY: 0, rotZ: 0,
-      delay: 2.9, duration: 1.4
+      delay: 1.76, duration: 1.3
     }
   },
 
-  // Animation Timings (seconds)
+  // Act Timings (Standard speed)
   timings: {
-    introFade: 1.2,
-    unfoldStart: 1.2,
-    labelsFade: 2.8,
-    hudGlitchStart: 4.0,
-    hudVisible: 4.4,
-    foldBackDuration: 1.0
+    act1Duration: 1.2,    // 0.0s - 1.2s: GPU alone, slow rotation, rim light
+    act2Duration: 2.8,    // 1.2s - 4.0s: Mechanical staged unfold + dynamic labels
+    settleStart: 4.0,     // 4.0s - 5.2s: GPU scales to 60%, moves to upper-middle (38% height)
+    settleDuration: 1.2,
+    titleStart: 5.0,      // 5.0s - 6.5s: Lower third hero reveals, glitch decode
+    titleDuration: 1.5,
+    foldBackDuration: 1.0 // ENTER reverse fold-back
   }
 };
 
@@ -115,63 +126,63 @@ export class Intro3D {
   constructor() {
     this.overlay = document.getElementById('welcomePortal');
     this.canvas = document.getElementById('portalCanvas');
-    this.enterBtn = document.getElementById('enterPortfolioBtn');
-    this.skipBtn = document.getElementById('skipPortalBtn');
-    this.hud = this.overlay ? this.overlay.querySelector('.portal-hud') : null;
-    this.labelsContainer = document.getElementById('gpuLabelsContainer');
+    this.isAudit = /Lighthouse|Chrome-Lighthouse|Google-InspectionTool/i.test(navigator.userAgent) ||
+                   window.location.search.includes('lighthouse') ||
+                   window.location.search.includes('no-portal');
 
-    if (!this.overlay || !this.canvas) return;
-
-    this.isMobile = window.innerWidth < 768;
-    this.prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    this.isAudit = /Lighthouse|Chrome-Lighthouse|Google-InspectionTool/i.test(navigator.userAgent) || window.location.search.includes('lighthouse') || window.location.search.includes('no-portal');
-
-    // Check if already seen in session or running audit
+    // Auto-dismiss for automated audits if already seen
     const seen = sessionStorage.getItem('hm_portal_seen');
     if (seen === 'true' || this.isAudit) {
       this.dismiss(true);
       return;
     }
 
-    window.hmPortalActive = true;
-    this.isActive = true;
-    this.isUnfolded = false;
-    this.isExiting = false;
-
-    // Animation & Three.js State
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
-    this.dpr = Math.min(window.devicePixelRatio || 1, 2);
-    this.rafId = null;
-    this.clock = new THREE.Clock();
-    this.mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
-
-    // Parts & Groups
-    this.parts = new Map();
-    this.fanSpinners = [];
-    this.labelElements = [];
-    this.svgLines = [];
-
-    this.setupThree();
-    if (this.overlay) {
-      this.overlay.querySelectorAll('.portal-flash-overlay').forEach(el => el.remove());
-    }
-    this.bindEvents();
-
-    if (this.prefersReducedMotion) {
-      this.showStaticState();
-    } else {
-      this.startChoreography();
-    }
-
-    this.animate();
+    this.createIntro(false);
   }
 
-  setupThree() {
-    if (this.scene) return;
+  // ===== LIFECYCLE METHOD 1: createIntro =====
+  createIntro(isReplay = false) {
+    // 1. Destroy any existing instance or listeners first
+    this.destroyIntro();
 
+    this.isReplay = isReplay;
+    this.isActive = true;
+    this.isExiting = false;
+    this.isUnfolded = false;
+    this.eventsBound = false;
+    window.hmPortalActive = true;
+
+    // 2. Lock body scroll
+    document.body.style.overflow = 'hidden';
+
+    // 3. Ensure overlay container is pristine
+    this.overlay = document.getElementById('welcomePortal');
+    if (this.overlay) {
+      this.overlay.style.background = '#02060a';
+      this.overlay.removeAttribute('aria-hidden');
+      this.overlay.classList.remove('portal-closing');
+      this.overlay.style.display = 'flex';
+      this.overlay.style.opacity = '1';
+      this.overlay.style.transform = 'scale(1)';
+      // Remove any lingering flash overlays
+      this.overlay.querySelectorAll('.portal-flash-overlay').forEach(el => el.remove());
+    }
+
+    // 4. Reset lower-third DOM states
+    const lowerThird = document.getElementById('portalLowerThird') || this.overlay?.querySelector('.portal-lower-third') || this.overlay?.querySelector('.portal-hud');
+    if (lowerThird) {
+      lowerThird.classList.remove('hud-visible', 'lower-third-visible');
+    }
+    const scrim = this.overlay?.querySelector('.portal-scrim');
+    if (scrim) {
+      scrim.classList.remove('scrim-visible');
+    }
+
+    // 5. Reset viewport measurements & properties
     this.width = window.innerWidth;
     this.height = window.innerHeight;
+    this.isMobile = window.innerWidth < 768;
+    this.prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.dpr = Math.min(window.devicePixelRatio || 1, 2);
     this.clock = new THREE.Clock();
     this.mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
@@ -181,10 +192,102 @@ export class Intro3D {
     this.labelElements = [];
     this.svgLines = [];
 
+    // 6. Test WebGL context availability; fallback cleanly if unavailable
+    this.canvas = document.getElementById('portalCanvas');
+    if (!this.canvas) {
+      this.showStaticFallback();
+      return;
+    }
+
+    try {
+      const gl = this.canvas.getContext('webgl2') || this.canvas.getContext('webgl');
+      if (!gl) {
+        throw new Error('WebGL context unavailable');
+      }
+    } catch (err) {
+      console.warn('Intro3D: WebGL unavailable, falling back to static presentation:', err);
+      this.showStaticFallback();
+      return;
+    }
+
+    // 7. Initialize Three.js scene, camera, lights, and procedural parts
     this.initScene();
     this.initBackgroundEffects();
     this.buildProceduralGPU();
     this.initLabelsDOM();
+
+    // 8. Bind interactive events
+    this.bindEvents();
+
+    // 9. Start Choreography Timeline
+    if (this.prefersReducedMotion) {
+      this.showStaticState();
+    } else {
+      this.startChoreography(isReplay);
+    }
+
+    // 10. Start Render Loop
+    this.animate();
+  }
+
+  // ===== LIFECYCLE METHOD 2: destroyIntro =====
+  destroyIntro() {
+    this.isActive = false;
+
+    // 1. Kill GSAP timeline
+    if (this.tl) {
+      this.tl.kill();
+      this.tl = null;
+    }
+
+    // 2. Cancel animation frame
+    if (this.rafId) {
+      cancelAnimationFrame(this.rafId);
+      this.rafId = null;
+    }
+
+    // 3. Remove event listeners
+    this.unbindEvents();
+
+    // 4. Dispose Three.js geometries, materials, textures
+    if (this.scene) {
+      this.scene.traverse((obj) => {
+        if (obj.geometry) {
+          obj.geometry.dispose();
+        }
+        if (obj.material) {
+          if (Array.isArray(obj.material)) {
+            obj.material.forEach((m) => m.dispose());
+          } else {
+            obj.material.dispose();
+          }
+        }
+      });
+      this.scene.clear();
+      this.scene = null;
+    }
+
+    // 5. Dispose WebGL renderer
+    if (this.renderer) {
+      this.renderer.dispose();
+      this.renderer = null;
+    }
+
+    // 6. Replace canvas with fresh clone to guarantee context release & zero leak
+    if (this.canvas && this.canvas.parentNode) {
+      const newCanvas = this.canvas.cloneNode(false);
+      this.canvas.parentNode.replaceChild(newCanvas, this.canvas);
+      this.canvas = newCanvas;
+    }
+
+    // 7. Clear DOM labels and SVG lines
+    const labelsContainer = document.getElementById('gpuLabelsContainer');
+    if (labelsContainer) {
+      labelsContainer.innerHTML = '';
+    }
+
+    // 8. Restore body scroll
+    document.body.style.overflow = '';
   }
 
   // ===== 1. Scene, Camera, Lights & Renderer Setup =====
@@ -192,7 +295,7 @@ export class Intro3D {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(CONFIG.darkGroundHex);
 
-    // Camera
+    // Camera: positioned for cinematic framing
     const cameraZ = this.isMobile ? 5.4 : 4.4;
     this.camera = new THREE.PerspectiveCamera(45, this.width / this.height, 0.1, 100);
     this.camera.position.set(0, 0.35, cameraZ);
@@ -210,7 +313,15 @@ export class Intro3D {
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.15;
 
-    // Lighting (Cyan key + Amber rim + Ambient)
+    // Listen to WebGL context loss
+    this.onContextLost = (e) => {
+      e.preventDefault();
+      console.warn('Intro3D: WebGL context lost.');
+      this.showStaticFallback();
+    };
+    this.canvas.addEventListener('webglcontextlost', this.onContextLost, false);
+
+    // Lighting (Cyan key + Amber rim + Ambient + Soft Fill)
     const ambientLight = new THREE.AmbientLight(0x0a101d, 1.2);
     this.scene.add(ambientLight);
 
@@ -219,7 +330,7 @@ export class Intro3D {
     this.keyLight.position.set(2.5, 3.5, 3.0);
     this.scene.add(this.keyLight);
 
-    // Amber Rim Light (Warm contrast)
+    // Amber Rim Light (Cyber Warmth)
     this.rimLight = new THREE.DirectionalLight(CONFIG.amberHex, 2.0);
     this.rimLight.position.set(-3.0, -2.5, -2.5);
     this.scene.add(this.rimLight);
@@ -229,7 +340,7 @@ export class Intro3D {
     fillLight.position.set(0, -3.0, 2.0);
     this.scene.add(fillLight);
 
-    // Center Singularity Point Light (Intensifies on assemble/flash)
+    // Center Singularity Point Light
     this.centerGlow = new THREE.PointLight(CONFIG.accentHex, 1.5, 6.0);
     this.centerGlow.position.set(0, 0, 0.5);
     this.scene.add(this.centerGlow);
@@ -240,12 +351,11 @@ export class Intro3D {
     this.bgGroup = new THREE.Group();
     this.scene.add(this.bgGroup);
 
-    // 1. Concentric Holographic Glowing Rings
+    // 1. Holographic Glowing Rings
     const ringMat1 = new THREE.MeshBasicMaterial({
       color: CONFIG.accentHex,
       transparent: true,
-      opacity: 0.5,
-      wireframe: false
+      opacity: 0.45
     });
     const ringGeom1 = new THREE.TorusGeometry(2.3, 0.012, 16, 96);
     this.ring1 = new THREE.Mesh(ringGeom1, ringMat1);
@@ -256,8 +366,7 @@ export class Intro3D {
     const ringMat2 = new THREE.MeshBasicMaterial({
       color: CONFIG.amberHex,
       transparent: true,
-      opacity: 0.4,
-      wireframe: false
+      opacity: 0.35
     });
     const ringGeom2 = new THREE.TorusGeometry(2.9, 0.009, 16, 96);
     this.ring2 = new THREE.Mesh(ringGeom2, ringMat2);
@@ -266,7 +375,7 @@ export class Intro3D {
     this.bgGroup.add(this.ring2);
 
     // 2. Floating Warp Particle Field
-    const particleCount = this.isMobile ? 120 : 260;
+    const particleCount = this.isMobile ? 120 : 240;
     const posArray = new Float32Array(particleCount * 3);
     const colorArray = new Float32Array(particleCount * 3);
 
@@ -301,12 +410,16 @@ export class Intro3D {
     this.bgGroup.add(this.particles);
   }
 
-  // ===== 3. Procedural GPU Construction from Primitives =====
+  // ===== 3. Procedural Three.js GPU Construction =====
   buildProceduralGPU() {
     this.gpuRoot = new THREE.Group();
+    this.gpuRoot.name = 'gpuRoot';
+    this.gpuRoot.rotation.set(0.18, -0.45, 0.08);
+    this.gpuRoot.position.set(0, 0, 0);
+    this.gpuRoot.scale.set(1, 1, 1);
     this.scene.add(this.gpuRoot);
 
-    // Shared Palette Materials
+    // Premium Materials Palette
     this.materials = {
       gunmetal: new THREE.MeshStandardMaterial({
         color: 0x151821,
@@ -373,11 +486,11 @@ export class Intro3D {
     );
     backplateGroup.add(backplateMesh);
 
-    // Flow-through ventilation cutouts (6 dark inset slots)
+    // Flow-through ventilation cutouts
     for (let i = 0; i < 6; i++) {
       const slot = new THREE.Mesh(
         new THREE.BoxGeometry(0.065, 0.055, 0.65),
-        new THREE.MeshBasicMaterial({ color: 0x030508 })
+        new THREE.MeshBasicMaterial({ color: 0x02060a })
       );
       slot.position.set(0.65 + i * 0.12, 0.005, 0);
       backplateGroup.add(slot);
@@ -400,364 +513,310 @@ export class Intro3D {
     const bracketGroup = new THREE.Group();
     bracketGroup.name = 'bracket';
 
-    const bracketMesh = new THREE.Mesh(
+    const bracketFace = new THREE.Mesh(
       new THREE.BoxGeometry(0.04, d.bracketHeight, d.bracketWidth),
       this.materials.silver
     );
-    bracketGroup.add(bracketMesh);
+    bracketGroup.add(bracketFace);
 
-    // Port Cutouts (3 DisplayPort + 1 HDMI)
-    const portMat = new THREE.MeshBasicMaterial({ color: 0x020306 });
+    // 4 Display Port Cutouts (3 DP style, 1 HDMI style)
+    const portMat = new THREE.MeshBasicMaterial({ color: 0x05070a });
     for (let i = 0; i < 3; i++) {
-      const dp = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.07, 0.15), portMat);
-      dp.position.set(-0.01, -0.15 + i * 0.14, -0.25);
-      bracketGroup.add(dp);
+      const dpPort = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.08, 0.16), portMat);
+      dpPort.position.set(-0.01, -0.18 + i * 0.16, -0.2);
+      bracketGroup.add(dpPort);
     }
-    const hdmi = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.06, 0.14), portMat);
-    hdmi.position.set(-0.01, -0.15, 0.22);
-    bracketGroup.add(hdmi);
+    const hdmiPort = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.07, 0.18), portMat);
+    hdmiPort.position.set(-0.01, 0.20, 0.18);
+    bracketGroup.add(hdmiPort);
 
-    // Honeycomb / Slotted Vent Strip
-    for (let i = 0; i < 7; i++) {
-      const vent = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.035, 0.07), portMat);
-      vent.position.set(-0.01, 0.18, -0.38 + i * 0.12);
-      bracketGroup.add(vent);
+    // Perforated exhaust honeycomb vent strip
+    for (let r = 0; r < 5; r++) {
+      for (let c = 0; c < 2; c++) {
+        const ventHole = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.04, 0.04), portMat);
+        ventHole.position.set(-0.01, -0.15 + r * 0.08, 0.12 + c * 0.12);
+        bracketGroup.add(ventHole);
+      }
     }
 
-    bracketGroup.position.set(-d.cardLength / 2 - 0.02, 0.02, 0);
+    bracketGroup.position.set(-d.cardLength / 2 - 0.02, 0.08, 0);
     this.gpuRoot.add(bracketGroup);
     this.parts.set('bracket', bracketGroup);
 
-    // --- C. PCB (Printed Circuit Board) ---
+    // --- C. PCB (PRINTED CIRCUIT BOARD) ---
     const pcbGroup = new THREE.Group();
     pcbGroup.name = 'pcb';
 
-    const pcbMesh = new THREE.Mesh(
+    const pcbSubstrate = new THREE.Mesh(
       new THREE.BoxGeometry(d.pcbLength, d.pcbThickness, d.pcbDepth),
       this.materials.pcbSubstrate
     );
-    pcbGroup.add(pcbMesh);
+    pcbGroup.add(pcbSubstrate);
 
-    // VRM Inductor cubes (Power delivery phases)
-    const vrmGeom = new THREE.BoxGeometry(0.075, 0.06, 0.075);
-    for (let i = 0; i < 10; i++) {
-      const vrm = new THREE.Mesh(vrmGeom, this.materials.darkMetal);
-      vrm.position.set(-0.85 + (i % 5) * 0.11, 0.04, (i < 5 ? 0.35 : -0.35));
-      pcbGroup.add(vrm);
+    // VRM Inductors & Power Phase Capacitors
+    const inductorGeom = new THREE.BoxGeometry(0.07, 0.06, 0.07);
+    for (let i = 0; i < 12; i++) {
+      const inductor = new THREE.Mesh(inductorGeom, this.materials.darkMetal);
+      inductor.position.set(-0.65 - (i % 6) * 0.11, 0.035, (i < 6 ? -0.32 : 0.32));
+      pcbGroup.add(inductor);
     }
 
-    // Power Connector Block (Dual 8-Pin Socket at Top Rear)
+    // Dual 8-Pin Power Connector Sockets (Top Right)
     const powerBlock = new THREE.Mesh(
-      new THREE.BoxGeometry(0.38, 0.14, 0.16),
-      this.materials.gunmetal
+      new THREE.BoxGeometry(0.32, 0.14, 0.22),
+      this.materials.blackCeramic
     );
-    powerBlock.position.set(1.15, 0.08, -d.pcbDepth / 2 + 0.08);
+    powerBlock.position.set(d.pcbLength / 2 - 0.28, 0.08, -d.pcbDepth / 2 + 0.12);
     pcbGroup.add(powerBlock);
 
-    pcbGroup.position.set(0, -0.18, 0);
+    pcbGroup.position.set(0, -0.16, 0);
     this.gpuRoot.add(pcbGroup);
     this.parts.set('pcb', pcbGroup);
 
-    // --- D. COMPUTE DIE & MEMORY CHIPS ---
+    // --- D. COMPUTE DIE & MEMORY SUBSYSTEM ---
     const dieMemoryGroup = new THREE.Group();
     dieMemoryGroup.name = 'dieMemory';
 
-    // Metal Retention IHS Ring
-    const ihsFrame = new THREE.Mesh(
-      new THREE.BoxGeometry(0.58, 0.025, 0.58),
-      this.materials.silver
+    // Central Neural Compute Die
+    const dieSubstrate = new THREE.Mesh(
+      new THREE.BoxGeometry(0.48, 0.035, 0.48),
+      this.materials.darkMetal
     );
-    dieMemoryGroup.add(ihsFrame);
+    dieSubstrate.position.set(0, 0.015, 0);
+    dieMemoryGroup.add(dieSubstrate);
 
-    // Silicon Mirror Compute Die
-    const dieMesh = new THREE.Mesh(
-      new THREE.BoxGeometry(0.44, 0.038, 0.44),
+    const dieMirror = new THREE.Mesh(
+      new THREE.BoxGeometry(0.38, 0.02, 0.38),
       this.materials.siliconMirror
     );
-    dieMesh.position.y = 0.01;
-    dieMemoryGroup.add(dieMesh);
+    dieMirror.position.set(0, 0.038, 0);
+    dieMemoryGroup.add(dieMirror);
 
-    // 6 VRAM Memory Chips (Symmetrically surrounding compute die)
-    const vramGeom = new THREE.BoxGeometry(0.12, 0.025, 0.16);
+    // 6 Ultra-Dense Memory Packages Surrounding Core
+    const vramGeom = new THREE.BoxGeometry(0.16, 0.025, 0.16);
     const vramOffsets = [
-      [-0.42, 0.12], [-0.42, -0.12],
-      [0.42, 0.12], [0.42, -0.12],
-      [-0.14, 0.42], [0.14, 0.42]
+      [-0.34, 0], [0.34, 0],
+      [-0.24, -0.34], [0.24, -0.34],
+      [-0.24, 0.34], [0.24, 0.34]
     ];
     vramOffsets.forEach(([vx, vz]) => {
       const vram = new THREE.Mesh(vramGeom, this.materials.blackCeramic);
-      vram.position.set(vx, 0.005, vz);
+      vram.position.set(vx, 0.02, vz);
       dieMemoryGroup.add(vram);
     });
 
-    dieMemoryGroup.position.set(-0.15, -0.14, 0);
+    dieMemoryGroup.position.set(0, -0.12, 0);
     this.gpuRoot.add(dieMemoryGroup);
     this.parts.set('dieMemory', dieMemoryGroup);
 
-    // --- E. HEATSINK (Fin Stack InstancedMesh + 4 Copper Heatpipes) ---
+    // --- E. HEATSINK & COPPER HEATPIPES ---
     const heatsinkGroup = new THREE.Group();
     heatsinkGroup.name = 'heatsink';
 
-    // Fin Stack as one InstancedMesh
+    // Dense Fin Stack (InstancedMesh)
     const finCount = this.isMobile ? d.finCountMobile : d.finCountDesktop;
-    const finGeom = new THREE.BoxGeometry(0.014, 0.32, 0.98);
-    const finMesh = new THREE.InstancedMesh(finGeom, this.materials.aluminum, finCount);
+    const finWidth = 0.012;
+    const finHeight = 0.28;
+    const finDepth = 0.98;
+    const finSpacing = (d.cardLength - 0.35) / finCount;
 
+    const finGeom = new THREE.BoxGeometry(finWidth, finHeight, finDepth);
+    const instancedFins = new THREE.InstancedMesh(finGeom, this.materials.aluminum, finCount);
     const dummy = new THREE.Object3D();
-    const spanX = 2.65;
+
     for (let i = 0; i < finCount; i++) {
-      dummy.position.set(-spanX / 2 + (i / (finCount - 1)) * spanX, 0, 0);
+      const fx = -d.cardLength / 2 + 0.18 + i * finSpacing;
+      dummy.position.set(fx, 0, 0);
       dummy.updateMatrix();
-      finMesh.setMatrixAt(i, dummy.matrix);
+      instancedFins.setMatrixAt(i, dummy.matrix);
     }
-    finMesh.instanceMatrix.needsUpdate = true;
-    heatsinkGroup.add(finMesh);
+    instancedFins.instanceMatrix.needsUpdate = true;
+    heatsinkGroup.add(instancedFins);
 
-    // 4 Copper Heat Pipes running longitudinally through fins
-    const pipeGeom = new THREE.CylinderGeometry(d.heatPipeRadius, d.heatPipeRadius, 2.85, 16);
-    const pipeRot = new THREE.Euler(0, 0, Math.PI / 2);
-    [
-      [0.08, -0.22], [0.08, 0.22],
-      [-0.06, -0.22], [-0.06, 0.22]
-    ].forEach(([py, pz]) => {
-      const pipe = new THREE.Mesh(pipeGeom, this.materials.copper);
-      pipe.rotation.copy(pipeRot);
-      pipe.position.set(0, py, pz);
+    // 4 Sintered Copper Heatpipes
+    for (let p = 0; p < 4; p++) {
+      const pipe = new THREE.Mesh(
+        new THREE.CylinderGeometry(d.heatPipeRadius, d.heatPipeRadius, d.cardLength - 0.2, 16),
+        this.materials.copper
+      );
+      pipe.rotation.z = Math.PI / 2;
+      pipe.position.set(0, -0.06 + (p % 2) * 0.12, -0.28 + Math.floor(p / 2) * 0.56);
       heatsinkGroup.add(pipe);
-    });
+    }
 
-    heatsinkGroup.position.set(0, 0.04, 0);
+    heatsinkGroup.position.set(0, 0.06, 0);
     this.gpuRoot.add(heatsinkGroup);
     this.parts.set('heatsink', heatsinkGroup);
 
-    // --- F. SHROUD (Custom Shape Extrude with 3 Fan Holes & Emissive Trim) ---
+    // --- F. ANGULAR AERODYNAMIC SHROUD ---
     const shroudGroup = new THREE.Group();
     shroudGroup.name = 'shroud';
 
-    // Build custom Shape with chamfered corners and 3 fan circular holes
-    const sx = d.shroudLength / 2;
-    const sz = d.shroudDepth / 2;
-    const ch = 0.16; // Chamfer depth
+    // Angular shell body
+    const shroudShell = new THREE.Mesh(
+      new THREE.BoxGeometry(d.shroudLength, d.shroudThickness, d.shroudDepth),
+      this.materials.gunmetal
+    );
+    shroudGroup.add(shroudShell);
 
-    const shape = new THREE.Shape();
-    shape.moveTo(-sx + ch, -sz);
-    shape.lineTo(sx - ch, -sz);
-    shape.lineTo(sx, -sz + ch);
-    shape.lineTo(sx, sz - ch);
-    shape.lineTo(sx - ch, sz);
-    shape.lineTo(-sx + ch, sz);
-    shape.lineTo(-sx, sz - ch);
-    shape.lineTo(-sx, -sz + ch);
-    shape.closePath();
+    // 3 Fan Intake Bezels with Emissive Accent Edge Rings
+    const fanBezelGeom = new THREE.TorusGeometry(d.fanRadius + 0.015, 0.018, 16, 48);
+    for (let f = 0; f < d.fanCount; f++) {
+      const fx = -1.0 + f * 1.0;
+      const bezel = new THREE.Mesh(fanBezelGeom, this.materials.emissiveTrim);
+      bezel.rotation.x = Math.PI / 2;
+      bezel.position.set(fx, d.shroudThickness / 2 + 0.01, 0);
+      shroudGroup.add(bezel);
+    }
 
-    // 3 Fan cutout holes
-    [-0.95, 0.0, 0.95].forEach((fx) => {
-      const hole = new THREE.Path();
-      hole.absarc(fx, 0, d.fanRadius + 0.015, 0, Math.PI * 2, true);
-      shape.holes.push(hole);
-    });
+    // Emissive Accent Trim Lines along Long Edges
+    const trimGeom = new THREE.BoxGeometry(d.shroudLength - 0.1, 0.02, 0.02);
+    const topTrim = new THREE.Mesh(trimGeom, this.materials.emissiveTrim);
+    topTrim.position.set(0, d.shroudThickness / 2 + 0.005, d.shroudDepth / 2 - 0.02);
+    shroudGroup.add(topTrim);
 
-    const extrudeSettings = {
-      depth: 0.16,
-      bevelEnabled: true,
-      bevelSegments: 3,
-      steps: 1,
-      bevelSize: 0.02,
-      bevelThickness: 0.02
-    };
+    const bottomTrim = new THREE.Mesh(trimGeom, this.materials.emissiveTrim);
+    bottomTrim.position.set(0, d.shroudThickness / 2 + 0.005, -d.shroudDepth / 2 + 0.02);
+    shroudGroup.add(bottomTrim);
 
-    const shroudGeom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-    // Orient correctly: Extrusion happens along Z; rotate so it caps over the fins
-    shroudGeom.rotateX(Math.PI / 2);
-    shroudGeom.center();
-
-    const shroudMesh = new THREE.Mesh(shroudGeom, this.materials.gunmetal);
-    shroudGroup.add(shroudMesh);
-
-    // Emissive Accent Trim Lines (Tracing the shroud facets)
-    const trimGeom = new THREE.BoxGeometry(d.shroudLength * 0.98, 0.02, 0.02);
-    const trimTop = new THREE.Mesh(trimGeom, this.materials.emissiveTrim);
-    trimTop.position.set(0, 0.1, -sz + 0.02);
-    shroudGroup.add(trimTop);
-
-    const trimBottom = new THREE.Mesh(trimGeom, this.materials.emissiveTrim);
-    trimBottom.position.set(0, 0.1, sz - 0.02);
-    shroudGroup.add(trimBottom);
-
-    shroudGroup.position.set(0, 0.22, 0);
+    shroudGroup.position.set(0, 0.28, 0);
     this.gpuRoot.add(shroudGroup);
     this.parts.set('shroud', shroudGroup);
 
-    // --- G. FANS (fan_1, fan_2, fan_3) ---
+    // --- G. TRIPLE FAN COOLING ARRAY ---
     const fansGroup = new THREE.Group();
     fansGroup.name = 'fans';
 
-    [-0.95, 0.0, 0.95].forEach((fx, idx) => {
+    for (let f = 0; f < d.fanCount; f++) {
+      const fx = -1.0 + f * 1.0;
       const singleFan = new THREE.Group();
-      singleFan.name = `fan_${idx + 1}`;
       singleFan.position.set(fx, 0, 0);
 
-      // Torus Frame Ring (with Emissive Accent Edge)
-      const ringGeom = new THREE.TorusGeometry(d.fanRadius, 0.016, 12, 48);
-      ringGeom.rotateX(Math.PI / 2);
-      const ringMesh = new THREE.Mesh(ringGeom, this.materials.emissiveTrim);
-      singleFan.add(ringMesh);
+      // Outer Torus Ring Frame
+      const fanRing = new THREE.Mesh(
+        new THREE.TorusGeometry(d.fanRadius, 0.014, 16, 48),
+        this.materials.darkMetal
+      );
+      fanRing.rotation.x = Math.PI / 2;
+      singleFan.add(fanRing);
 
-      // Spinning Blade Rotor Group
-      const bladeGroup = new THREE.Group();
-      bladeGroup.name = `bladeGroup_${idx + 1}`;
+      // Rotating Blade Assembly (Hub + 9 Curved Aerofoil Blades)
+      const spinnerGroup = new THREE.Group();
+      spinnerGroup.name = `fanSpinner_${f}`;
 
-      // Central Hub
-      const hubGeom = new THREE.CylinderGeometry(d.fanHubRadius, d.fanHubRadius, 0.06, 24);
-      const hubMesh = new THREE.Mesh(hubGeom, this.materials.silver);
-      bladeGroup.add(hubMesh);
+      // Center Hub
+      const hub = new THREE.Mesh(
+        new THREE.CylinderGeometry(d.fanHubRadius, d.fanHubRadius, 0.06, 24),
+        this.materials.silver
+      );
+      spinnerGroup.add(hub);
 
-      // 9 Aerodynamic Curved Blades
-      const bladeGeom = new THREE.BoxGeometry(0.26, 0.012, 0.08);
+      // 9 Curved Blades
+      const bladeGeom = new THREE.BoxGeometry(0.08, 0.012, d.fanRadius - d.fanHubRadius - 0.02);
       for (let b = 0; b < 9; b++) {
-        const angle = b * ((Math.PI * 2) / 9);
+        const bladeAngle = (b / 9) * Math.PI * 2;
         const blade = new THREE.Mesh(bladeGeom, this.materials.gunmetal);
         blade.position.set(
-          Math.cos(angle) * 0.25,
+          Math.cos(bladeAngle) * (d.fanRadius * 0.55),
           0,
-          Math.sin(angle) * 0.25
+          Math.sin(bladeAngle) * (d.fanRadius * 0.55)
         );
-        blade.rotation.y = -angle;
-        blade.rotation.z = 0.45; // Aerodynamic pitch angle
-        bladeGroup.add(blade);
+        blade.rotation.y = -bladeAngle + 0.35;
+        blade.rotation.x = 0.38; // Pitch angle
+        spinnerGroup.add(blade);
       }
 
-      singleFan.add(bladeGroup);
-      this.fanSpinners.push(bladeGroup);
+      singleFan.add(spinnerGroup);
+      this.fanSpinners.push(spinnerGroup);
       fansGroup.add(singleFan);
-    });
+    }
 
-    fansGroup.position.set(0, 0.26, 0);
+    fansGroup.position.set(0, 0.34, 0);
     this.gpuRoot.add(fansGroup);
     this.parts.set('fans', fansGroup);
 
-    // --- H. PCIe CONNECTOR (Gold Edge Finger) ---
+    // --- H. PCIe GOLD EDGE CONNECTOR ---
     const connectorGroup = new THREE.Group();
     connectorGroup.name = 'connector';
 
-    // Dark Substrate Tongue
-    const tongueMesh = new THREE.Mesh(
-      new THREE.BoxGeometry(2.1, 0.035, 0.14),
-      this.materials.pcbSubstrate
+    const pcieTongue = new THREE.Mesh(
+      new THREE.BoxGeometry(1.7, 0.025, 0.16),
+      this.materials.darkMetal
     );
-    connectorGroup.add(tongueMesh);
+    connectorGroup.add(pcieTongue);
 
-    // 36 Gold Contact Fingers
-    const contactCount = 36;
-    const contactGeom = new THREE.BoxGeometry(0.032, 0.042, 0.08);
-    const contactMesh = new THREE.InstancedMesh(contactGeom, this.materials.gold, contactCount);
-
-    const spanConn = 1.95;
-    for (let c = 0; c < contactCount; c++) {
-      dummy.position.set(-spanConn / 2 + (c / (contactCount - 1)) * spanConn, 0, 0.02);
-      dummy.updateMatrix();
-      contactMesh.setMatrixAt(c, dummy.matrix);
+    // 36 Gold Finger Contacts (High-detail PCIe bus)
+    const pinContactGeom = new THREE.BoxGeometry(0.024, 0.03, 0.09);
+    for (let c = 0; c < 36; c++) {
+      const pin = new THREE.Mesh(pinContactGeom, this.materials.gold);
+      pin.position.set(-0.8 + c * 0.045, 0, 0.02);
+      connectorGroup.add(pin);
     }
-    contactMesh.instanceMatrix.needsUpdate = true;
-    connectorGroup.add(contactMesh);
 
-    connectorGroup.position.set(0, -0.32, d.pcbDepth / 2 + 0.05);
+    connectorGroup.position.set(-0.4, -0.22, d.pcbDepth / 2 + 0.06);
     this.gpuRoot.add(connectorGroup);
     this.parts.set('connector', connectorGroup);
-
-    // Initial Assembled State
-    this.gpuRoot.rotation.set(0.18, -0.45, 0.08);
-    this.gpuRoot.scale.set(0.85, 0.85, 0.85);
   }
 
-  // ===== 4. 2D/3D Annotation Labels & SVG Leader Lines =====
+  // ===== 4. Dynamic 3D Annotation Labels & Leader Lines =====
   initLabelsDOM() {
+    this.labelsContainer = document.getElementById('gpuLabelsContainer');
     if (!this.labelsContainer) return;
-    this.labelsContainer.innerHTML = '';
 
-    // Create SVG Canvas for Dynamic Leader Lines
-    this.svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    this.labelsContainer.innerHTML = '';
+    this.labelElements = [];
+    this.svgLines = [];
+
+    // SVG Canvas for Leader Lines
+    const svgNS = 'http://www.w3.org/2000/svg';
+    this.svg = document.createElementNS(svgNS, 'svg');
     this.svg.setAttribute('class', 'gpu-svg-canvas');
+    this.svg.setAttribute('width', '100%');
+    this.svg.setAttribute('height', '100%');
     this.labelsContainer.appendChild(this.svg);
 
-    CONFIG.labels.forEach((item) => {
-      // DOM Pill Label
-      const pill = document.createElement('div');
-      pill.className = 'gpu-label';
-      pill.id = `label-${item.id}`;
-      pill.innerHTML = `<span class="label-dot"></span><span>${item.text}</span>`;
-      this.labelsContainer.appendChild(pill);
+    const labelsList = this.isMobile ? CONFIG.labelsMobile : CONFIG.labelsDesktop;
 
-      // SVG Line & Dot
-      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    labelsList.forEach((lbl) => {
+      // Leader Line
+      const line = document.createElementNS(svgNS, 'line');
       line.setAttribute('class', 'gpu-leader-line');
       this.svg.appendChild(line);
 
-      const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      // Target Attachment Dot
+      const dot = document.createElementNS(svgNS, 'circle');
       dot.setAttribute('class', 'gpu-leader-dot');
-      dot.setAttribute('r', '3');
+      dot.setAttribute('r', '2.5');
       this.svg.appendChild(dot);
 
+      // HTML Monospace Label Tag
+      const el = document.createElement('div');
+      el.className = 'gpu-label';
+      el.id = `label-${lbl.id}`;
+      el.innerHTML = `<span class="label-dot"></span><span>${lbl.text}</span>`;
+      this.labelsContainer.appendChild(el);
+
       this.labelElements.push({
-        config: item,
-        el: pill,
-        lineEl: line,
-        dotEl: dot,
-        targetGroup: this.parts.get(item.target)
+        id: lbl.id,
+        targetName: lbl.target,
+        offset: lbl.offset,
+        el,
+        line,
+        dot
       });
     });
   }
 
-  updateLabels() {
-    if (!this.isUnfolded || !this.camera || !this.renderer) return;
-
-    const width = this.width;
-    const height = this.height;
-    const tempVec = new THREE.Vector3();
-
-    this.labelElements.forEach((item) => {
-      if (!item.targetGroup) return;
-
-      item.targetGroup.getWorldPosition(tempVec);
-      tempVec.project(this.camera);
-
-      // Check if behind camera
-      if (tempVec.z > 1) {
-        item.el.style.opacity = '0';
-        item.lineEl.setAttribute('stroke', 'transparent');
-        return;
-      }
-
-      const screenX = (tempVec.x * 0.5 + 0.5) * width;
-      const screenY = (-tempVec.y * 0.5 + 0.5) * height;
-
-      // Position Label Pill with offset
-      const labelX = screenX + (this.isMobile ? item.config.offset.x * 0.6 : item.config.offset.x);
-      const labelY = screenY + (this.isMobile ? item.config.offset.y * 0.6 : item.config.offset.y);
-
-      item.el.style.left = `${labelX}px`;
-      item.el.style.top = `${labelY}px`;
-
-      // Update SVG Leader Line
-      item.lineEl.setAttribute('x1', screenX);
-      item.lineEl.setAttribute('y1', screenY);
-      item.lineEl.setAttribute('x2', labelX);
-      item.lineEl.setAttribute('y2', labelY);
-
-      item.dotEl.setAttribute('cx', screenX);
-      item.dotEl.setAttribute('cy', screenY);
-    });
-  }
-
-  // ===== 5. Choreographed Unfold Timeline (GSAP) =====
-  startChoreography() {
+  // ===== 5. Choreographed GSAP Timeline (4 Acts) =====
+  startChoreography(isReplay = false) {
     if (typeof gsap === 'undefined') {
       this.showStaticState();
       return;
     }
 
     const t = CONFIG.timings;
-    const scaleFactor = this.isMobile ? 0.65 : 1.0;
+    const timeScale = isReplay ? 1.25 : 1.0; // Replay runs at 80% duration (~1.25x speed)
+    const scaleFactor = this.isMobile ? 0.55 : 1.0;
 
     this.tl = gsap.timeline({
       paused: true,
@@ -765,22 +824,27 @@ export class Intro3D {
         this.isUnfolded = true;
       }
     });
+    this.tl.timeScale(timeScale);
 
-    // 1. 0.0 - 1.2s: Assembled Card Reveal & Rotation
+    // ----------------------------------------------------
+    // ACT 1: 0.0s - 1.2s: GPU Alone, Assembled, Slow Rotation, Rim Light (NO TEXT)
+    // ----------------------------------------------------
     this.tl.to(this.gpuRoot.rotation, {
       y: 0.15,
       x: 0.22,
-      duration: t.introFade,
+      duration: t.act1Duration,
       ease: 'power2.out'
     }, 0);
 
     this.tl.to(this.keyLight, {
       intensity: 3.2,
-      duration: t.introFade,
+      duration: t.act1Duration,
       ease: 'power2.out'
     }, 0);
 
-    // 2. 1.2 - 4.0s: Mechanical Staged Unfold
+    // ----------------------------------------------------
+    // ACT 2: 1.2s - 4.0s: Mechanical Staged Unfold (Full Screen)
+    // ----------------------------------------------------
     const u = CONFIG.unfold;
     const partsMap = this.parts;
 
@@ -803,38 +867,84 @@ export class Intro3D {
         y: partObj.rotation.y + spec.rotY,
         z: partObj.rotation.z + spec.rotZ,
         duration: spec.duration,
-        ease: 'power3.out'
+        ease: 'expo.out'
       }, spec.delay);
     });
 
-    // 3. 2.5 - 5.0s: Small Monospace Technical Labels Fade In
+    // Technical Labels Fade In during unfold
     this.tl.call(() => {
       this.isUnfolded = true;
       this.labelElements.forEach((l) => l.el.classList.add('label-visible'));
-    }, null, t.labelsFade);
+    }, null, 2.4);
 
-    // Optional: play whoosh audio if user sound is unmuted
+    // Audio whoosh trigger on unfold
     this.tl.call(() => {
       if (window.sfx && typeof window.sfx.playWhoosh === 'function') {
         window.sfx.playWhoosh();
       }
-    }, null, t.unfoldStart);
+    }, null, 1.25);
 
-    // 4. 4.0 - 6.0s: Name & Role Reveal with Cyber Glitch Decode Effect
+    // ----------------------------------------------------
+    // ACT 3: 4.0s - 5.2s: SETTLE (GPU moves to upper-middle, scales to 60%)
+    // ----------------------------------------------------
+    // Vertical center at ~38% of viewport height:
+    // Move GPU up in world coordinates and ease camera back
+    const targetGPU_Y = this.isMobile ? 0.95 : (this.height < 850 ? 0.78 : 0.66);
+    const targetCameraZ = this.isMobile ? 6.2 : 5.2;
+
+    this.tl.to(this.gpuRoot.position, {
+      y: targetGPU_Y,
+      duration: t.settleDuration,
+      ease: 'power2.inOut'
+    }, t.settleStart);
+
+    this.tl.to(this.gpuRoot.scale, {
+      x: 0.60,
+      y: 0.60,
+      z: 0.60,
+      duration: t.settleDuration,
+      ease: 'power2.inOut'
+    }, t.settleStart);
+
+    this.tl.to(this.camera.position, {
+      z: targetCameraZ,
+      duration: t.settleDuration,
+      ease: 'power2.inOut'
+    }, t.settleStart);
+
+    // Labels fade out during settle
     this.tl.call(() => {
-      if (this.hud) {
-        this.hud.classList.add('hud-visible');
-        this.runGlitchDecode();
+      this.labelElements.forEach((l) => l.el.classList.remove('label-visible'));
+      if (this.svg) {
+        gsap.to(this.svg, { opacity: 0, duration: 0.5 });
       }
-    }, null, t.hudGlitchStart);
+    }, null, t.settleStart + 0.1);
 
-    // Play timeline
+    // ----------------------------------------------------
+    // ACT 4: 5.0s - 6.5s: TITLE (Badge, Name, Role, Button rise into Lower Third)
+    // ----------------------------------------------------
+    this.tl.call(() => {
+      // 1. Soft bottom-up dark gradient scrim fades in
+      const scrim = this.overlay?.querySelector('.portal-scrim');
+      if (scrim) scrim.classList.add('scrim-visible');
+
+      // 2. Lower third content rises into view
+      const lowerThird = document.getElementById('portalLowerThird') || this.overlay?.querySelector('.portal-lower-third') || this.overlay?.querySelector('.portal-hud');
+      if (lowerThird) {
+        lowerThird.classList.add('lower-third-visible', 'hud-visible');
+      }
+
+      // 3. Staggered Cyber Glitch Decode for "HARSH MAURYA"
+      this.runGlitchDecode();
+    }, null, t.titleStart);
+
+    // Kick off timeline
     this.tl.play();
   }
 
   // ===== 6. Cyber Glitch Letter-by-Letter Text Decode =====
   runGlitchDecode() {
-    const titleEl = this.overlay.querySelector('.portal-title');
+    const titleEl = this.overlay?.querySelector('.portal-title');
     if (!titleEl) return;
 
     const targetText = CONFIG.nameText;
@@ -842,7 +952,9 @@ export class Intro3D {
     let iteration = 0;
     const maxIterations = targetText.length * 4;
 
-    const interval = setInterval(() => {
+    if (this.glitchInterval) clearInterval(this.glitchInterval);
+
+    this.glitchInterval = setInterval(() => {
       titleEl.innerText = targetText
         .split('')
         .map((letter, index) => {
@@ -855,18 +967,46 @@ export class Intro3D {
 
       if (iteration >= maxIterations) {
         titleEl.innerText = targetText;
-        clearInterval(interval);
+        clearInterval(this.glitchInterval);
+        this.glitchInterval = null;
       }
       iteration++;
     }, 28);
   }
 
+  // ===== Static State for Reduced Motion =====
   showStaticState() {
     this.isUnfolded = true;
-    if (this.hud) this.hud.classList.add('hud-visible');
-    const titleEl = this.overlay.querySelector('.portal-title');
+    const targetGPU_Y = this.isMobile ? 0.95 : (this.height < 850 ? 0.78 : 0.66);
+    this.gpuRoot.position.set(0, targetGPU_Y, 0);
+    this.gpuRoot.scale.set(0.60, 0.60, 0.60);
+
+    const scrim = this.overlay?.querySelector('.portal-scrim');
+    if (scrim) scrim.classList.add('scrim-visible');
+
+    const lowerThird = document.getElementById('portalLowerThird') || this.overlay?.querySelector('.portal-lower-third') || this.overlay?.querySelector('.portal-hud');
+    if (lowerThird) lowerThird.classList.add('lower-third-visible', 'hud-visible');
+
+    const titleEl = this.overlay?.querySelector('.portal-title');
     if (titleEl) titleEl.innerText = CONFIG.nameText;
-    this.labelElements.forEach((l) => l.el.classList.add('label-visible'));
+  }
+
+  // ===== WebGL Failure Static Fallback =====
+  showStaticFallback() {
+    this.isActive = true;
+    if (this.overlay) {
+      this.overlay.style.background = '#02060a';
+      this.overlay.removeAttribute('aria-hidden');
+      this.overlay.style.display = 'flex';
+      this.overlay.style.opacity = '1';
+    }
+    const lowerThird = document.getElementById('portalLowerThird') || this.overlay?.querySelector('.portal-lower-third') || this.overlay?.querySelector('.portal-hud');
+    if (lowerThird) lowerThird.classList.add('lower-third-visible', 'hud-visible');
+
+    const titleEl = this.overlay?.querySelector('.portal-title');
+    if (titleEl) titleEl.innerText = CONFIG.nameText;
+
+    this.bindEvents();
   }
 
   // ===== 7. Enter / Exit: Reverse Fold & Zoom-Through =====
@@ -874,8 +1014,13 @@ export class Intro3D {
     if (this.isExiting) return;
     this.isExiting = true;
 
-    // 1. Hide HUD & Labels
-    if (this.hud) this.hud.classList.remove('hud-visible');
+    // 1. Hide lower third and labels
+    const lowerThird = document.getElementById('portalLowerThird') || this.overlay?.querySelector('.portal-lower-third') || this.overlay?.querySelector('.portal-hud');
+    if (lowerThird) lowerThird.classList.remove('lower-third-visible', 'hud-visible');
+
+    const scrim = this.overlay?.querySelector('.portal-scrim');
+    if (scrim) scrim.classList.remove('scrim-visible');
+
     this.labelElements.forEach((l) => l.el.classList.remove('label-visible'));
     if (this.svg) this.svg.style.opacity = '0';
 
@@ -889,12 +1034,14 @@ export class Intro3D {
       window.sfx.playBoot();
     }
 
-    const flashOverlay = document.createElement('div');
-    flashOverlay.className = 'portal-flash-overlay flash-active';
-    this.overlay.appendChild(flashOverlay);
+    if (this.overlay) {
+      const flashOverlay = document.createElement('div');
+      flashOverlay.className = 'portal-flash-overlay flash-active';
+      this.overlay.appendChild(flashOverlay);
+    }
 
     // 4. Camera Zoom-through & Dissolution
-    if (typeof gsap !== 'undefined') {
+    if (typeof gsap !== 'undefined' && this.camera) {
       gsap.to(this.camera.position, {
         z: 1.2,
         duration: CONFIG.timings.foldBackDuration,
@@ -916,81 +1063,57 @@ export class Intro3D {
 
   dismiss(immediate = false) {
     this.isActive = false;
-    if (this.overlay) {
-      this.overlay.querySelectorAll('.portal-flash-overlay').forEach(el => el.remove());
-    }
     window.hmPortalActive = false;
     sessionStorage.setItem('hm_portal_seen', 'true');
 
     if (this.overlay) {
+      this.overlay.querySelectorAll('.portal-flash-overlay').forEach(el => el.remove());
       this.overlay.setAttribute('aria-hidden', 'true');
       this.overlay.classList.add('portal-closing');
+
       if (immediate) {
         this.overlay.style.display = 'none';
+        this.destroyIntro();
       } else {
         setTimeout(() => {
           if (this.overlay) this.overlay.style.display = 'none';
+          this.destroyIntro();
         }, 750);
       }
-    }
-
-    // Wake background systems
-    window.dispatchEvent(new CustomEvent('hm:portal-dismissed'));
-
-    // Memory Cleanup
-    if (immediate) {
-      this.dispose();
     } else {
-      setTimeout(() => this.dispose(), 800);
+      this.destroyIntro();
     }
+
+    // Wake background canvas & companion systems
+    window.dispatchEvent(new CustomEvent('hm:portal-dismissed'));
   }
 
   reopen() {
-    this.setupThree();
-    if (!this.eventsBound) { this.bindEvents(); this.eventsBound = true; }
-    this.isExiting = false;
-    this.isActive = true;
-    window.hmPortalActive = true;
-
-    if (this.overlay) {
-      this.overlay.removeAttribute('aria-hidden');
-      this.overlay.classList.remove('portal-closing');
-      this.overlay.style.display = 'flex';
-      this.overlay.style.opacity = '1';
-      this.overlay.style.transform = 'scale(1)';
-    }
-
-    // Reset camera & GPU position
-    this.camera.position.set(0, 0.35, this.isMobile ? 5.4 : 4.4);
-    this.gpuRoot.rotation.set(0.18, -0.45, 0.08);
-
-    // Rebuild or restart timeline
-    if (this.tl) {
-      this.tl.timeScale(1.0).restart();
-    } else {
-      this.startChoreography();
-    }
-
-    if (!this.rafId) this.animate();
+    this.createIntro(true); // true = replay mode (80% duration)
   }
 
   // ===== 8. Interaction & Event Listeners =====
   bindEvents() {
+    if (this.eventsBound) return;
+    this.eventsBound = true;
+
     // Mouse Parallax
-    window.addEventListener('mousemove', (e) => {
+    this.onMouseMove = (e) => {
       this.mouse.targetX = (e.clientX - this.width / 2) / (this.width / 2);
       this.mouse.targetY = (e.clientY - this.height / 2) / (this.height / 2);
-    });
+    };
+    window.addEventListener('mousemove', this.onMouseMove);
 
     // Touch Parallax
-    window.addEventListener('touchmove', (e) => {
+    this.onTouchMove = (e) => {
       if (e.touches[0]) {
         this.mouse.targetX = (e.touches[0].clientX - this.width / 2) / (this.width / 2);
         this.mouse.targetY = (e.touches[0].clientY - this.height / 2) / (this.height / 2);
       }
-    }, { passive: true });
+    };
+    window.addEventListener('touchmove', this.onTouchMove, { passive: true });
 
-    // Window Resize
+    // Window Resize Handler
     this.onResize = () => {
       this.width = window.innerWidth;
       this.height = window.innerHeight;
@@ -998,16 +1121,21 @@ export class Intro3D {
 
       if (this.camera && this.renderer) {
         this.camera.aspect = this.width / this.height;
-        this.camera.position.z = this.isMobile ? 5.4 : 4.4;
         this.camera.updateProjectionMatrix();
         this.renderer.setSize(this.width, this.height);
       }
     };
     window.addEventListener('resize', this.onResize);
 
-    // Enter & Skip Buttons
-    this.enterBtn?.addEventListener('click', () => this.enterPortfolio());
-    this.skipBtn?.addEventListener('click', () => this.dismiss(false));
+    // Enter & Skip Button Handlers
+    this.enterBtn = document.getElementById('enterPortfolioBtn');
+    this.skipBtn = document.getElementById('skipPortalBtn');
+
+    this.onEnterClick = () => this.enterPortfolio();
+    this.onSkipClick = () => this.dismiss(false);
+
+    this.enterBtn?.addEventListener('click', this.onEnterClick);
+    this.skipBtn?.addEventListener('click', this.onSkipClick);
 
     // Keyboard Shortcuts (Enter / Space to Enter, Esc to Skip)
     this.onKeyDown = (e) => {
@@ -1023,30 +1151,89 @@ export class Intro3D {
     window.addEventListener('keydown', this.onKeyDown);
   }
 
-  // ===== 9. Render Loop (60 FPS, Spinners, Sine Float) =====
+  unbindEvents() {
+    if (!this.eventsBound) return;
+    this.eventsBound = false;
+
+    if (this.onMouseMove) window.removeEventListener('mousemove', this.onMouseMove);
+    if (this.onTouchMove) window.removeEventListener('touchmove', this.onTouchMove);
+    if (this.onResize) window.removeEventListener('resize', this.onResize);
+    if (this.onKeyDown) window.removeEventListener('keydown', this.onKeyDown);
+
+    if (this.enterBtn && this.onEnterClick) this.enterBtn.removeEventListener('click', this.onEnterClick);
+    if (this.skipBtn && this.onSkipClick) this.skipBtn.removeEventListener('click', this.onSkipClick);
+
+    if (this.canvas && this.onContextLost) {
+      this.canvas.removeEventListener('webglcontextlost', this.onContextLost);
+    }
+  }
+
+  // ===== 9. Update Projected 2D Screen Coordinates for Labels =====
+  updateLabels() {
+    if (!this.isUnfolded || this.isExiting || !this.camera) return;
+
+    const width = this.width;
+    const height = this.height;
+    const worldPos = new THREE.Vector3();
+
+    this.labelElements.forEach((item) => {
+      const partObj = this.parts.get(item.targetName);
+      if (!partObj) return;
+
+      partObj.getWorldPosition(worldPos);
+      const screenPos = worldPos.clone().project(this.camera);
+
+      // Convert normalized device coords to viewport pixels
+      const screenX = ((screenPos.x + 1) * width) / 2;
+      const screenY = ((-screenPos.y + 1) * height) / 2;
+
+      // Desired label position with offset
+      const labelX = screenX + item.offset.x;
+      const labelY = screenY + item.offset.y;
+
+      // Viewport safety clamping
+      const clampedX = Math.max(65, Math.min(width - 65, labelX));
+      const clampedY = Math.max(55, Math.min(height - 180, labelY));
+
+      item.el.style.left = `${clampedX}px`;
+      item.el.style.top = `${clampedY}px`;
+
+      // Draw Leader Line in SVG
+      item.line.setAttribute('x1', screenX);
+      item.line.setAttribute('y1', screenY);
+      item.line.setAttribute('x2', clampedX);
+      item.line.setAttribute('y2', clampedY);
+
+      item.dot.setAttribute('cx', screenX);
+      item.dot.setAttribute('cy', screenY);
+    });
+  }
+
+  // ===== 10. Main Animation Loop (60 FPS, Fan Spin, Float, Parallax) =====
   animate() {
-    if (!this.isActive) {
+    if (!this.isActive || !this.renderer || !this.scene || !this.camera) {
       this.rafId = null;
       return;
     }
 
-    const delta = this.clock.getDelta();
     const elapsedTime = this.clock.getElapsedTime();
 
-    // 1. Continuous Triple Fan Spinning
+    // 1. Continuous Triple Fan Spinning around local Y axis
     this.fanSpinners.forEach((bladeGroup) => {
       bladeGroup.rotation.y += 0.08;
     });
 
-    // 2. Slow Counter-Rotating Concentric Holographic Rings
-    if (this.ring1) this.ring1.rotation.z += 0.005;
-    if (this.ring2) this.ring2.rotation.z -= 0.0035;
+    // 2. Holographic Ring Idle Floating
+    if (this.ring1 && this.ring2) {
+      this.ring1.rotation.z += 0.003;
+      this.ring2.rotation.z -= 0.0025;
+    }
 
-    // 3. Floating Particle Field Drift
+    // 3. Subtle Particle Drift
     if (this.particles) {
       const positions = this.particles.geometry.attributes.position.array;
       for (let i = 0; i < positions.length; i += 3) {
-        positions[i + 2] += 0.025; // Drift forward
+        positions[i + 2] += 0.015;
         if (positions[i + 2] > 6) {
           positions[i + 2] = -8;
         }
@@ -1059,16 +1246,16 @@ export class Intro3D {
     this.mouse.y += (this.mouse.targetY - this.mouse.y) * 0.05;
 
     if (!this.isExiting) {
-      this.camera.position.x = this.mouse.x * 0.45;
-      this.camera.position.y = 0.35 - this.mouse.y * 0.35;
-      this.camera.lookAt(0, 0, 0);
+      this.camera.position.x = this.mouse.x * 0.35;
+      this.camera.position.y = 0.35 - this.mouse.y * 0.25;
+      this.camera.lookAt(0, this.gpuRoot ? this.gpuRoot.position.y * 0.4 : 0, 0);
     }
 
     // 5. Idle Sine-Wave Floating for Unfolded Parts
     if (this.isUnfolded && !this.isExiting && !this.prefersReducedMotion) {
       let idx = 0;
       this.parts.forEach((part) => {
-        part.position.y += Math.sin(elapsedTime * 2.2 + idx * 0.8) * 0.0006;
+        part.position.y += Math.sin(elapsedTime * 2.2 + idx * 0.8) * 0.0005;
         idx++;
       });
     }
@@ -1080,43 +1267,28 @@ export class Intro3D {
     this.renderer.render(this.scene, this.camera);
     this.rafId = requestAnimationFrame(() => this.animate());
   }
-
-  // ===== 10. Memory Disposal & Cleanup =====
-  dispose() {
-    if (this.rafId) cancelAnimationFrame(this.rafId);
-    window.removeEventListener('resize', this.onResize);
-    window.removeEventListener('keydown', this.onKeyDown);
-
-    if (this.scene) {
-      this.scene.traverse((obj) => {
-        if (obj.isMesh || obj.isPoints || obj.isLine) {
-          if (obj.geometry) obj.geometry.dispose();
-          if (obj.material) {
-            if (Array.isArray(obj.material)) {
-              obj.material.forEach((m) => m.dispose());
-            } else {
-              obj.material.dispose();
-            }
-          }
-        }
-      });
-    }
-
-    if (this.renderer) {
-      this.renderer.dispose();
-      this.renderer.forceContextLoss();
-    }
-  }
 }
 
 // Global initialization & bridge for backward compatibility with main.js
 if (typeof window !== 'undefined') {
   window.Intro3D = Intro3D;
-  window.WelcomePortal = Intro3D; // Seamless drop-in alias for main.js
+  window.WelcomePortal = Intro3D;
+  window.createIntro = (isReplay = false) => {
+    if (!window.intro3DInstance) {
+      window.intro3DInstance = new Intro3D();
+    } else {
+      window.intro3DInstance.createIntro(isReplay);
+    }
+    return window.intro3DInstance;
+  };
+  window.destroyIntro = () => {
+    if (window.intro3DInstance) {
+      window.intro3DInstance.destroyIntro();
+    }
+  };
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Auto-instantiate
   if (!window.intro3DInstance && document.getElementById('welcomePortal')) {
     window.intro3DInstance = new Intro3D();
   }

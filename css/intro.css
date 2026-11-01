@@ -1,16 +1,17 @@
 /* ==========================================================================
    Harsh Maurya | Cinematic Procedural 3D GPU Unfolding Intro Overlay
-   Styling for Three.js Canvas, Glass HUD, Monospace Labels & Cyber Accents
+   Styling for Three.js Canvas, Lower-Third Hero Typography & Cyber Accents
+   Zero Slop • High-Density Craft • Pure GPU Architecture
    ========================================================================== */
 
-/* ===== Overlay Container ===== */
+/* ===== Overlay Container (Enforced Solid Near-Black Background) ===== */
 .welcome-portal {
   position: fixed;
   inset: 0;
   width: 100vw;
   height: 100vh;
   z-index: 10000;
-  background: #030508;
+  background: #02060a !important; /* Solid near-black, never white under any condition */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -24,7 +25,7 @@
 
 .welcome-portal.portal-closing {
   opacity: 0;
-  transform: scale(1.15);
+  transform: scale(1.12);
   pointer-events: none;
 }
 
@@ -44,9 +45,10 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  z-index: 2;
+  z-index: 5;
   pointer-events: none;
   overflow: hidden;
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .gpu-svg-canvas {
@@ -81,15 +83,15 @@
   font-weight: 600;
   letter-spacing: 0.14em;
   color: #00e5ff;
-  background: rgba(3, 6, 12, 0.85);
-  border: 1px solid rgba(0, 229, 255, 0.4);
+  background: rgba(2, 6, 10, 0.88);
+  border: 1px solid rgba(0, 229, 255, 0.45);
   border-radius: 4px;
   padding: 0.28rem 0.65rem;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 0 20px rgba(0, 229, 255, 0.25), inset 0 0 10px rgba(0, 229, 255, 0.08);
   opacity: 0;
-  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s ease, border-color 0.3s;
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s ease, border-color 0.3s;
   pointer-events: auto;
   cursor: default;
   white-space: nowrap;
@@ -114,47 +116,77 @@
   transform: translate(-50%, -50%) scale(1.05);
 }
 
-/* ===== Glass HUD Card (Reveals over Unfolded GPU) ===== */
-.portal-hud {
-  position: relative;
-  z-index: 3;
+/* ===== Soft Bottom-Up Dark Gradient Scrim (No Hard Box) ===== */
+.portal-scrim {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 48%;
+  max-height: 380px;
+  z-index: 8;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    #02060a 0%,
+    rgba(2, 6, 10, 0.95) 30%,
+    rgba(2, 6, 10, 0.60) 65%,
+    rgba(2, 6, 10, 0.0) 100%
+  );
+  opacity: 0;
+  transition: opacity 1.0s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.portal-scrim.scrim-visible {
+  opacity: 1;
+}
+
+/* ===== Redesigned Lower Third Hero Content (No Boxed Card) ===== */
+.portal-lower-third {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-end;
   text-align: center;
-  max-width: 640px;
-  padding: 2.2rem 2.5rem;
-  background: rgba(4, 7, 13, 0.62);
-  border: 1px solid rgba(0, 229, 255, 0.22);
-  border-radius: 16px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 10px 50px rgba(0, 0, 0, 0.75), 0 0 70px rgba(0, 229, 255, 0.12), inset 0 0 30px rgba(0, 229, 255, 0.05);
+  padding: 0 1.5rem 1.8rem 1.5rem;
+  pointer-events: none;
   opacity: 0;
-  transform: scale(0.94) translateY(16px);
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-  margin-top: 2rem;
+  transform: translateY(24px);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.portal-hud.hud-visible {
+.portal-lower-third.hud-visible,
+.portal-lower-third.lower-third-visible {
   opacity: 1;
-  transform: scale(1) translateY(0);
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
-/* Badge */
+/* Compatibility with .portal-hud class if referenced */
+.portal-hud {
+  display: contents;
+}
+
+/* Badge: Architecture Pill */
 .portal-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   font-family: 'Fira Code', monospace;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: #00e5ff;
   background: rgba(0, 229, 255, 0.08);
-  border: 1px solid rgba(0, 229, 255, 0.3);
-  padding: 0.3rem 0.85rem;
+  border: 1px solid rgba(0, 229, 255, 0.32);
+  padding: 0.28rem 0.82rem;
   border-radius: 999px;
-  letter-spacing: 0.08em;
-  margin-bottom: 1.15rem;
+  letter-spacing: 0.09em;
+  margin-bottom: 0.55rem;
+  box-shadow: 0 0 18px rgba(0, 229, 255, 0.15);
 }
 
 .portal-badge .status-dot {
@@ -166,27 +198,33 @@
   animation: pulse-dot 2s infinite ease-in-out;
 }
 
-/* Title (Name) with Cyber Decode Styling */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 0.45; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+/* Title (Name) with Cyber Glitch & Crisp Shadow */
 .portal-title {
   font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: clamp(2.4rem, 5.5vw, 3.6rem);
+  font-size: clamp(2.1rem, 4.6vw, 3.4rem);
   font-weight: 700;
   color: #ffffff;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
   line-height: 1.1;
-  margin: 0 0 0.65rem 0;
-  text-shadow: 0 0 35px rgba(0, 229, 255, 0.45);
-  min-height: 1.2em;
+  margin: 0 0 0.35rem 0;
+  text-shadow: 0 2px 20px rgba(0, 0, 0, 0.9), 0 0 40px rgba(0, 229, 255, 0.4);
+  min-height: 1.15em;
 }
 
 /* Subtitle (Role) */
 .portal-sub {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: clamp(0.92rem, 2.2vw, 1.08rem);
+  font-size: clamp(0.88rem, 1.7vw, 1.05rem);
   color: #94a3b8;
-  max-width: 500px;
-  line-height: 1.5;
-  margin: 0 0 1.5rem 0;
+  max-width: 540px;
+  line-height: 1.45;
+  margin: 0 0 1.05rem 0;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.9);
 }
 
 /* Action Button */
@@ -203,16 +241,16 @@
   justify-content: center;
   gap: 0.75rem;
   background: #00e5ff;
-  color: #030508;
+  color: #02060a;
   font-family: 'Fira Code', monospace;
-  font-size: 0.92rem;
+  font-size: 0.90rem;
   font-weight: 700;
-  padding: 0.85rem 2.2rem;
+  padding: 0.78rem 2.2rem;
   border-radius: 8px;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
   cursor: pointer;
   letter-spacing: 0.05em;
-  box-shadow: 0 0 30px rgba(0, 229, 255, 0.5);
+  box-shadow: 0 0 35px rgba(0, 229, 255, 0.55);
   animation: pulseGpuGlow 2.4s infinite ease-in-out;
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, background-color 0.2s;
 }
@@ -228,7 +266,7 @@
 
 .portal-enter-btn:hover {
   transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 0 55px rgba(0, 229, 255, 0.95);
+  box-shadow: 0 0 60px rgba(0, 229, 255, 0.95);
   background: #33ecff;
 }
 
@@ -239,10 +277,11 @@
 
 /* Hint */
 .portal-hint {
-  margin-top: 1.15rem;
+  margin-top: 0.65rem;
   font-family: 'Fira Code', monospace;
-  font-size: 0.74rem;
+  font-size: 0.72rem;
   color: #64748b;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
 }
 
 .portal-hint kbd {
@@ -258,23 +297,25 @@
   position: absolute;
   top: 1.5rem;
   right: 1.5rem;
-  z-index: 10;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  z-index: 20;
+  background: rgba(2, 6, 10, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   color: #94a3b8;
   font-family: 'Fira Code', monospace;
   font-size: 0.75rem;
-  padding: 0.4rem 0.85rem;
+  padding: 0.45rem 0.9rem;
   border-radius: 6px;
   cursor: pointer;
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   transition: all 0.2s ease;
 }
 
 .portal-skip-btn:hover {
   background: rgba(0, 229, 255, 0.15);
-  border-color: rgba(0, 229, 255, 0.4);
+  border-color: rgba(0, 229, 255, 0.45);
   color: #00e5ff;
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
 }
 
 .portal-skip-btn:focus-visible {
@@ -288,11 +329,11 @@
   inset: 0;
   width: 100%;
   height: 100%;
-  background: radial-gradient(circle at center, rgba(0, 229, 255, 0.8) 0%, rgba(3, 5, 8, 0.95) 75%);
+  background: radial-gradient(circle at center, rgba(0, 229, 255, 0.85) 0%, rgba(2, 6, 10, 0.98) 75%);
   z-index: 999;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.5s ease-out;
+  transition: opacity 0.45s ease-out;
 }
 
 .portal-flash-overlay.flash-active {
@@ -300,53 +341,82 @@
 }
 
 /* ===== Responsive Breakpoints ===== */
+@media (max-width: 1024px) {
+  .portal-lower-third {
+    padding: 0 1.25rem 1.6rem 1.25rem;
+  }
+  .portal-title {
+    font-size: clamp(2.0rem, 4.4vw, 3.0rem);
+  }
+}
+
 @media (max-width: 768px) {
-  .portal-hud {
-    padding: 1.5rem 1.25rem;
-    max-width: calc(100vw - 32px);
-    margin-top: 10rem;
-    border-radius: 12px;
+  .portal-scrim {
+    height: 52%;
+    max-height: 340px;
+  }
+
+  .portal-lower-third {
+    padding: 0 1.25rem 1.5rem 1.25rem;
   }
 
   .portal-title {
-    font-size: 2.1rem;
+    font-size: clamp(1.85rem, 5.8vw, 2.4rem);
+    margin-bottom: 0.35rem;
   }
 
   .portal-sub {
-    font-size: 0.88rem;
-    margin-bottom: 1.2rem;
+    font-size: 0.86rem;
+    margin-bottom: 0.95rem;
   }
 
   .portal-enter-btn {
     width: 100%;
-    padding: 0.8rem 1.5rem;
+    max-width: 320px;
+    padding: 0.75rem 1.5rem;
     font-size: 0.86rem;
   }
 
   .portal-skip-btn {
     top: 1rem;
     right: 1rem;
-    padding: 0.35rem 0.65rem;
+    padding: 0.35rem 0.75rem;
   }
 
   .gpu-label {
     font-size: 0.65rem;
-    padding: 0.2rem 0.5rem;
+    padding: 0.22rem 0.52rem;
   }
 }
 
 @media (max-width: 480px) {
-  .portal-hud {
-    margin-top: 12rem;
+  .portal-scrim {
+    height: 54%;
+    max-height: 320px;
+  }
+
+  .portal-lower-third {
+    padding: 0 1rem 1.25rem 1rem;
   }
 
   .portal-title {
-    font-size: 1.85rem;
+    font-size: 1.65rem;
   }
 
   .portal-badge {
+    font-size: 0.66rem;
+    padding: 0.22rem 0.65rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .portal-sub {
+    font-size: 0.80rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .portal-hint {
+    margin-top: 0.55rem;
     font-size: 0.68rem;
-    padding: 0.25rem 0.65rem;
   }
 }
 
@@ -358,10 +428,14 @@
   .portal-enter-btn {
     animation: none;
   }
-  .portal-hud {
+  .portal-lower-third {
     transition: opacity 0.3s ease;
+    transform: none !important;
   }
   .gpu-label {
+    transition: opacity 0.3s ease;
+  }
+  .portal-scrim {
     transition: opacity 0.3s ease;
   }
 }

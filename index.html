@@ -120,15 +120,17 @@
     <!-- 3D Dynamic Annotation Labels & Leader Lines -->
     <div id="gpuLabelsContainer" class="gpu-labels-container" aria-hidden="true"></div>
     
-    <div class="portal-hud">
+    <!-- Soft Bottom-Up Gradient Scrim for Lower Third Legibility -->
+    <div class="portal-scrim" aria-hidden="true"></div>
+
+    <!-- Redesigned Lower Third Hero Content (No Boxed Card) -->
+    <div class="portal-lower-third" id="portalLowerThird">
       <div class="portal-badge">
         <span class="status-dot"></span> NEURAL ARCHITECTURE v2.4
       </div>
 
       <h1 class="portal-title">HARSH MAURYA</h1>
       <div class="portal-sub">Digital Architect &bull; Local AI &bull; Privacy Systems</div>
-
-      
 
       <div class="portal-actions">
         <button id="enterPortfolioBtn" class="portal-enter-btn" aria-label="Enter Harsh Maurya Portfolio">
@@ -1168,7 +1170,7 @@
       <button class="modal-close-btn" id="modalCloseBtn" aria-label="Close dialog">&times;</button>
       <h3 id="modalTitle" style="font-family: var(--font-display); color: var(--ink);">Credential Preview</h3>
       <div id="modalBody">
-        <img src="" alt="Preview" id="modalImg" class="modal-img-preview" />
+        <img id="modalImg" class="modal-img-preview" alt="Credential Preview" style="display: none;" />
       </div>
     </div>
   </div>

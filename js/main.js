@@ -657,7 +657,7 @@ const setupModal = () => {
   const closeModal = () => {
     modal.classList.remove('active');
     modal.setAttribute('aria-hidden', 'true');
-    modalBody.innerHTML = '<img src="" alt="Preview" id="modalImg" class="modal-img-preview" />';
+    modalBody.innerHTML = '<img id="modalImg" class="modal-img-preview" alt="Credential Preview" style="display: none;" />';
   };
 
   closeBtn?.addEventListener('click', closeModal);
@@ -861,10 +861,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Reopen 3D Intro Button
   const reopenBtn = document.getElementById('reopenIntroBtn');
-  if (reopenBtn && portalInstance) {
+  if (reopenBtn) {
     reopenBtn.addEventListener('click', () => {
-      sfx.playClick();
-      portalInstance.reopen();
+      if (typeof sfx !== 'undefined' && sfx.playClick) sfx.playClick();
+      if (window.intro3DInstance && typeof window.intro3DInstance.reopen === 'function') {
+        window.intro3DInstance.reopen();
+      } else if (typeof window.createIntro === 'function') {
+        window.createIntro(true);
+      } else if (portalInstance && typeof portalInstance.reopen === 'function') {
+        portalInstance.reopen();
+      }
     });
   }
 
