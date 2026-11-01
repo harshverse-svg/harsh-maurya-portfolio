@@ -1,0 +1,385 @@
+#!/usr/bin/env python3
+"""workflow — Multi-agent orchestration with pipeline, parallel, and phases.
+
+Usage:
+    workflow run <script.py> [--args '<json>'] [--resume <run_id>]
+    workflow resume <run_id> <script.py> [--args '<json>']
+
+The script must define:
+    meta = {"name": "...", "description": "...", "phases": [...]}
+    def run(agent, parallel, pipeline, phase, log, args, workflow): ...
+"""
+
+import json
+import sys
+from pathlib import Path
+
+_script_dir = Path(__file__).resolve().parent
+_lib_dir = _script_dir / "lib"
+sys.path.insert(0, str(_lib_dir))
+
+# Also add subagents lib for registry/lock access
+_subagents_lib = _script_dir.parent.parent / "subagents" / "scripts" / "lib"
+sys.path.insert(0, str(_subagents_lib / "backends"))
+sys.path.insert(0, str(_subagents_lib / "transports"))
+sys.path.insert(0, str(_subagents_lib))
+
+from runtime import (  # noqa: E402
+    agent, parallel, pipeline, phase, log, workflow,
+    set_context, set_display, _ctx, _outputs_dir,
+)
+from display import Display  # noqa: E402
+
+
+def _load_script(script_path: Path):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("workflow_script", script_path)
+    if spec is None or spec.loader is None:
+        print(f"Error: cannot load {script_path}", file=sys.stderr)
+        sys.exit(1)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    if not hasattr(mod, "run"):
+        print(f"Error: {script_path} must define a run() function", file=sys.stderr)
+        sys.exit(1)
+    return mod
+
+
+def _parse_flags(args: list[str]) -> tuple[dict, str | None, bool]:
+    """Parse --args and --resume from args, returning (wf_args, resume_id, is_resume)."""
+    wf_args: dict = {}
+    resume_id: str | None = None
+    is_resume = False
+
+    i = 0
+    while i < len(args):
+        if args[i] == "--args":
+            i += 1
+            if i < len(args):
+                try:
+                    wf_args = json.loads(args[i])
+                except json.JSONDecodeError as e:
+                    print(f"Error: invalid --args JSON: {e}", file=sys.stderr)
+                    sys.exit(1)
+        elif args[i] == "--resume":
+            i += 1
+            if i < len(args):
+                resume_id = args[i]
+                is_resume = True
+        i += 1
+    return wf_args, resume_id, is_resume
+
+
+def _discover_topology(mod, wf_args: dict) -> list[dict]:
+    """Run the workflow with stub functions to discover phases and estimate agent counts."""
+    phases: list[str] = []
+    current_phase: str | None = None
+    phase_agents: dict[str, int] = {}  # track agent count per phase
+
+    def _stub_phase(title: str) -> None:
+        nonlocal current_phase
+        phases.append(title)
+        current_phase = title
+        if title not in phase_agents:
+            phase_agents[title] = 0
+
+    def _stub_agent(prompt: str, *, schema=None, label=None, model=None, backend=None) -> str:
+        if current_phase and current_phase in phase_agents:
+            phase_agents[current_phase] += 1
+        return ""
+
+    def _stub_parallel(thunks):
+        results = []
+        for t in thunks:
+            try:
+                results.append(t())
+            except Exception:
+                results.append("")
+        return results
+
+    def _stub_pipeline(items, *stages):
+        results = []
+        for item in items[:1]:
+            result = item
+            for stage in stages:
+                try:
+                    if stage is stages[0]:
+                        result = stage(item, 0) or ""
+                    else:
+                        result = stage(result, item, 0) or ""
+                except Exception:
+                    result = ""
+            results.append(result)
+        return results
+
+    def _stub_log(msg: str) -> None:
+        pass
+
+    def _stub_workflow(path: str, args: dict | None = None) -> None:
+        pass
+
+    try:
+        mod.run(
+            agent=_stub_agent, parallel=_stub_parallel, pipeline=_stub_pipeline,
+            phase=_stub_phase, log=_stub_log, args=wf_args, workflow=_stub_workflow,
+        )
+    except Exception:
+        pass
+
+    return [{"title": t, "estimated_agents": phase_agents.get(t, 0)} for t in phases]
+
+
+def cmd_run(args: list[str]) -> None:
+    if not args:
+        print("Error: workflow run <script.py> [--args '<json>'] [--resume <run_id>]", file=sys.stderr)
+        sys.exit(1)
+
+    script_path = Path(args[0])
+    if not script_path.is_file():
+        print(f"Error: script not found: {script_path}", file=sys.stderr)
+        sys.exit(1)
+
+    wf_args, resume_id, is_resume = _parse_flags(args[1:])
+    set_context(run_id=resume_id, resume=is_resume)
+
+    mod = _load_script(script_path)
+    meta = getattr(mod, "meta", {})
+
+    # Dry-run: discover topology by running with stub functions
+    topology = _discover_topology(mod, wf_args)
+
+    # Set up display with full tree
+    run_id = resume_id or _ctx.run_id
+    display = Display(
+        name=meta.get("name", script_path.stem),
+        run_id=run_id,
+    )
+    display.set_phases(topology)
+    set_display(display)
+    display.start_auto_refresh()
+
+    try:
+        result = mod.run(
+            agent=agent, parallel=parallel, pipeline=pipeline,
+            phase=phase, log=log, args=wf_args, workflow=workflow,
+        )
+    finally:
+        display.stop()
+
+    if result is not None:
+        if isinstance(result, str):
+            print(result)
+        elif isinstance(result, dict) and "summary" in result:
+            print(result["summary"])
+        else:
+            print(json.dumps(result, indent=2, ensure_ascii=False))
+
+
+def cmd_resume(args: list[str]) -> None:
+    """Resume a failed workflow run."""
+    if len(args) < 2:
+        print("Error: workflow resume <run_id> <script.py> [--args '<json>']", file=sys.stderr)
+        sys.exit(1)
+
+    run_id = args[0]
+    script_path = Path(args[1])
+    if not script_path.is_file():
+        print(f"Error: script not found: {script_path}", file=sys.stderr)
+        sys.exit(1)
+
+    wf_args, _, _ = _parse_flags(args[2:])
+    set_context(run_id=run_id, resume=True)
+
+    mod = _load_script(script_path)
+    meta = getattr(mod, "meta", {})
+
+    # Dry-run: discover topology
+    topology = _discover_topology(mod, wf_args)
+
+    # Set up display
+    display = Display(
+        name=meta.get("name", script_path.stem),
+        run_id=run_id,
+    )
+    display.set_phases(topology)
+    set_display(display)
+    display.start_auto_refresh()
+
+    try:
+        result = mod.run(
+            agent=agent, parallel=parallel, pipeline=pipeline,
+            phase=phase, log=log, args=wf_args, workflow=workflow,
+        )
+    finally:
+        display.stop()
+
+    if result is not None:
+        if isinstance(result, str):
+            print(result)
+        elif isinstance(result, dict) and "summary" in result:
+            print(result["summary"])
+        else:
+            print(json.dumps(result, indent=2, ensure_ascii=False))
+
+
+def cmd_list(args: list[str]) -> None:
+    """List all workflow runs with their sessions."""
+    import registry as reg
+    output_json = False
+    if "--output" in args:
+        idx = args.index("--output")
+        if idx + 1 < len(args) and args[idx + 1] == "json":
+            output_json = True
+
+    runs = _collect_workflow_runs(reg)
+    if not runs:
+        if output_json:
+            print(json.dumps({"runs": []}))
+        else:
+            print("No workflow runs found.", file=sys.stderr)
+        return
+
+    if output_json:
+        print(json.dumps({"runs": runs}, indent=2))
+        return
+
+    for run in runs:
+        print(f"Run: {run['run_id']}", file=sys.stderr)
+        for s in run["sessions"]:
+            status = s["status"]
+            prompt = s.get("prompt", "")[:60]
+            mark = "✓" if status == "done" else "✗" if status in ("failed", "crashed") else "…"
+            print(f"  {mark} {s['name']}  [{status}]  {prompt}", file=sys.stderr)
+
+
+def cmd_status(args: list[str]) -> None:
+    """Show status of a specific workflow run."""
+    if not args:
+        print("Error: workflow status <run_id>", file=sys.stderr)
+        sys.exit(1)
+
+    run_id = args[0]
+    import registry as reg
+    runs = _collect_workflow_runs(reg)
+    run = next((r for r in runs if r["run_id"] == run_id), None)
+
+    if not run:
+        print(f"Run '{run_id}' not found.", file=sys.stderr)
+        sys.exit(1)
+
+    sessions = run["sessions"]
+    done = sum(1 for s in sessions if s["status"] == "done")
+    running = sum(1 for s in sessions if s["status"] == "running")
+    failed = sum(1 for s in sessions if s["status"] in ("failed", "crashed"))
+
+    print(f"Run: {run_id}", file=sys.stderr)
+    print(f"Sessions: {done} done, {running} running, {failed} failed (total {len(sessions)})", file=sys.stderr)
+    print(file=sys.stderr)
+
+    for s in sessions:
+        status = s["status"]
+        mark = "✓" if status == "done" else "✗" if status in ("failed", "crashed") else "…"
+        print(f"  {mark} {s['name']}  [{status}]  {s.get('prompt', '')[:80]}", file=sys.stderr)
+
+
+def cmd_stop(args: list[str]) -> None:
+    """Stop all running sessions in a workflow run."""
+    if not args:
+        print("Error: workflow stop <run_id>", file=sys.stderr)
+        sys.exit(1)
+
+    run_id = args[0]
+    import registry as reg
+    import lock as lock_mod
+
+    runs = _collect_workflow_runs(reg)
+    run = next((r for r in runs if r["run_id"] == run_id), None)
+
+    if not run:
+        print(f"Run '{run_id}' not found.", file=sys.stderr)
+        sys.exit(1)
+
+    stopped = 0
+    for s in run["sessions"]:
+        if s["status"] != "running":
+            continue
+        # Kill the background process via pid file
+        pid_file = Path(_outputs_dir()).parent / f"{s['name']}.pid"
+        if pid_file.is_file():
+            try:
+                pid = int(pid_file.read_text().strip())
+                os.kill(pid, 9)  # SIGKILL
+                stopped += 1
+                print(f"  Stopped {s['name']} (pid {pid})", file=sys.stderr)
+            except (OSError, ValueError):
+                pass
+        # Release lock
+        lock_path = Path(_outputs_dir()).parent / "locks" / f"{s['name']}.lock"
+        if lock_path.exists():
+            lock_mod.release(lock_path)
+
+    if stopped == 0:
+        print(f"No running sessions in run '{run_id}'.", file=sys.stderr)
+    else:
+        print(f"Stopped {stopped} session(s) in run '{run_id}'.", file=sys.stderr)
+
+
+def _collect_workflow_runs(reg) -> list[dict]:
+    """Collect all workflow runs from the registry, grouped by run_id."""
+    data = reg.get_all_data()
+    sessions_by_run: dict[str, list[dict]] = {}
+
+    for agent_name, agent_data in data.items():
+        for session_name, session_data in agent_data.get("sessions", {}).items():
+            if not session_name.startswith("wf_"):
+                continue
+            # Extract run_id: wf_<run_id>_<seq>
+            parts = session_name.rsplit("_", 1)
+            if len(parts) != 2:
+                continue
+            run_id = parts[0][3:]  # strip "wf_" prefix
+            status = reg.get_session_status(agent_name, session_name)
+            tasks = session_data.get("tasks", [])
+            prompt = tasks[-1]["prompt"] if tasks else ""
+            sessions_by_run.setdefault(run_id, []).append({
+                "name": session_name,
+                "status": status,
+                "prompt": prompt,
+            })
+
+    runs: list[dict] = []
+    for run_id, sessions in sorted(sessions_by_run.items()):
+        sessions.sort(key=lambda s: s["name"])
+        runs.append({"run_id": run_id, "sessions": sessions})
+    return runs
+
+
+def main() -> None:
+    args = sys.argv[1:]
+    if not args:
+        print("Usage: workflow <command> [args...]", file=sys.stderr)
+        print("  workflow run <script.py> [--args '<json>'] [--resume <run_id>]", file=sys.stderr)
+        print("  workflow resume <run_id> <script.py> [--args '<json>']", file=sys.stderr)
+        print("  workflow list [--output json]", file=sys.stderr)
+        print("  workflow status <run_id>", file=sys.stderr)
+        print("  workflow stop <run_id>", file=sys.stderr)
+        sys.exit(1)
+
+    cmd = args.pop(0)
+    if cmd == "run":
+        cmd_run(args)
+    elif cmd == "resume":
+        cmd_resume(args)
+    elif cmd == "list":
+        cmd_list(args)
+    elif cmd == "status":
+        cmd_status(args)
+    elif cmd == "stop":
+        cmd_stop(args)
+    else:
+        print(f"Unknown command: {cmd}", file=sys.stderr)
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
