@@ -4,23 +4,68 @@
  * Cinematic Procedural 3D GPU Unfolding Intro Experience (v2.4)
  * 100% Procedural Three.js Model • Mechanical Staged Choreography • GSAP
  * 
- * Architecture:
- * - Bug 1 Fixed: Explicit createIntro() & destroyIntro() lifecycle, WebGL
- *   context recovery & fallback, solid #02060a canvas backplate, body scroll lock.
- * - Bug 2 Redesigned: No boxed card! GPU settles at 38% viewport height, text
- *   rises into lower third with bottom-up dark gradient scrim. Zero overlap.
+ * Lighting & Materials Architecture:
+ * - RoomEnvironment + PMREMGenerator with ACESFilmic Tone Mapping & SRGBColorSpace.
+ * - Three-point lighting rig: Cyan Key (3.2), Amber Rim (3.0), Overhead Fill (1.2),
+ *   and Soft Back/Rim Light (2.4) outlining every part silhouette.
+ * - Materials engineered with high metallic reflectance and faint emissive (0.06 - 0.1)
+ *   so parts never get lost against dark space.
+ * - Dynamic backdrop glow (CSS radial at z-index: 0) tracking the GPU's position.
+ * - UnrealBloomPass (strength 0.6, radius 0.5, threshold 0.6) for crisp glowing edges.
  * ==========================================================================
  */
 
 import * as THREE from 'three';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 
 // ===== CENTRAL CONFIGURATION OBJECT =====
 export const CONFIG = {
   // Theme & Accent Palette
   accentColor: '#00e5ff',
   accentHex: 0x00e5ff,
-  amberHex: 0xf59e0b,
+  amberHex: 0xffb347,
   darkGroundHex: 0x02060a,
+
+  // 1. Lighting Rig Configuration (Raise these if parts still look dark)
+  lighting: {
+    toneMappingExposure: 1.35,      // Raise (1.4 - 1.6) for higher overall scene brightness
+    environmentIntensity: 1.25,     // Raise (1.3 - 1.6) to boost PBR metallic reflections
+    cyanKeyIntensity: 3.2,          // Front-left cyan directional light
+    amberRimIntensity: 3.0,         // Behind-right amber rim light
+    coolWhiteFillIntensity: 1.2,    // Overhead cool white fill light
+    softBackRimIntensity: 2.4,      // Back edge light outlining silhouettes
+    ambientIntensity: 0.9           // Global ambient shadow lift
+  },
+
+  // 2. Materials Palette & Base Albedos (Non-black, visible components)
+  materials: {
+    shroud: { color: 0x2b323b, metalness: 0.70, roughness: 0.35, emissive: 0x12161c, emissiveIntensity: 0.08 },
+    backplate: { color: 0x3a424d, metalness: 0.80, roughness: 0.40, emissive: 0x14181f, emissiveIntensity: 0.08 },
+    pcb: { color: 0x12301f, metalness: 0.25, roughness: 0.55, emissive: 0x091b12, emissiveIntensity: 0.09 },
+    heatsinkFins: { color: 0x9aa7b4, metalness: 0.90, roughness: 0.30, emissive: 0x161a20, emissiveIntensity: 0.06 },
+    copperPipes: { color: 0xc77b3c, metalness: 0.95, roughness: 0.22, emissive: 0x251208, emissiveIntensity: 0.08 },
+    connectorGold: { color: 0xd4a63a, metalness: 1.00, roughness: 0.28, emissive: 0x261d08, emissiveIntensity: 0.10 },
+    bracketSilver: { color: 0xc9d1d9, metalness: 0.95, roughness: 0.22, emissive: 0x1a1e24, emissiveIntensity: 0.06 },
+    fanBlades: { color: 0x313944, metalness: 0.65, roughness: 0.35, emissive: 0x141820, emissiveIntensity: 0.08 },
+    computeDieMirror: { color: 0x3b4654, metalness: 1.00, roughness: 0.05, emissive: 0x10141a, emissiveIntensity: 0.08 },
+    vramChips: { color: 0x242a33, metalness: 0.30, roughness: 0.45, emissive: 0x10141a, emissiveIntensity: 0.08 }
+  },
+
+  // 3. Bloom Post-Processing
+  bloom: {
+    strength: 0.60,                 // Raise (0.7 - 0.9) to make glowing edges stronger
+    radius: 0.50,                   // Bloom spread radius
+    threshold: 0.60                 // Luminance cutoff for bloom trigger
+  },
+
+  // 4. Backdrop Glow (CSS Radial Behind Canvas)
+  backdropGlow: {
+    opacity: 0.22,                  // Raise to 0.28 for brighter halo behind GPU
+    color: '#00e5ff'
+  },
 
   // Text & Copy (STRICT: Zero personal hardware, VRAM, or repo counts)
   badgeText: 'NEURAL ARCHITECTURE v2.4',
@@ -126,6 +171,7 @@ export class Intro3D {
   constructor() {
     this.overlay = document.getElementById('welcomePortal');
     this.canvas = document.getElementById('portalCanvas');
+    this.backdropGlow = document.getElementById('portalBackdropGlow');
     this.isAudit = /Lighthouse|Chrome-Lighthouse|Google-InspectionTool/i.test(navigator.userAgent) ||
                    window.location.search.includes('lighthouse') ||
                    window.location.search.includes('no-portal');
@@ -168,7 +214,13 @@ export class Intro3D {
       this.overlay.querySelectorAll('.portal-flash-overlay').forEach(el => el.remove());
     }
 
-    // 4. Reset lower-third DOM states
+    // 4. Reset backdrop glow position to center (50%)
+    this.backdropGlow = document.getElementById('portalBackdropGlow');
+    if (this.backdropGlow) {
+      this.backdropGlow.style.top = '50%';
+    }
+
+    // 5. Reset lower-third DOM states
     const lowerThird = document.getElementById('portalLowerThird') || this.overlay?.querySelector('.portal-lower-third') || this.overlay?.querySelector('.portal-hud');
     if (lowerThird) {
       lowerThird.classList.remove('hud-visible', 'lower-third-visible');
@@ -178,7 +230,7 @@ export class Intro3D {
       scrim.classList.remove('scrim-visible');
     }
 
-    // 5. Reset viewport measurements & properties
+    // 6. Reset viewport measurements & properties
     this.width = window.innerWidth;
     this.height = window.innerHeight;
     this.isMobile = window.innerWidth < 768;
@@ -192,7 +244,7 @@ export class Intro3D {
     this.labelElements = [];
     this.svgLines = [];
 
-    // 6. Test WebGL context availability; fallback cleanly if unavailable
+    // 7. Test WebGL context availability; fallback cleanly if unavailable
     this.canvas = document.getElementById('portalCanvas');
     if (!this.canvas) {
       this.showStaticFallback();
@@ -210,23 +262,23 @@ export class Intro3D {
       return;
     }
 
-    // 7. Initialize Three.js scene, camera, lights, and procedural parts
+    // 8. Initialize Three.js scene, camera, lights, materials and postprocessing
     this.initScene();
     this.initBackgroundEffects();
     this.buildProceduralGPU();
     this.initLabelsDOM();
 
-    // 8. Bind interactive events
+    // 9. Bind interactive events
     this.bindEvents();
 
-    // 9. Start Choreography Timeline
+    // 10. Start Choreography Timeline
     if (this.prefersReducedMotion) {
       this.showStaticState();
     } else {
       this.startChoreography(isReplay);
     }
 
-    // 10. Start Render Loop
+    // 11. Start Render Loop
     this.animate();
   }
 
@@ -249,7 +301,13 @@ export class Intro3D {
     // 3. Remove event listeners
     this.unbindEvents();
 
-    // 4. Dispose Three.js geometries, materials, textures
+    // 4. Dispose Environment texture
+    if (this.envTexture) {
+      this.envTexture.dispose();
+      this.envTexture = null;
+    }
+
+    // 5. Dispose Three.js geometries, materials, textures
     if (this.scene) {
       this.scene.traverse((obj) => {
         if (obj.geometry) {
@@ -267,33 +325,43 @@ export class Intro3D {
       this.scene = null;
     }
 
-    // 5. Dispose WebGL renderer
+    // 6. Dispose Post-Processing Composer
+    if (this.composer) {
+      this.composer.dispose?.();
+      this.composer = null;
+    }
+    if (this.bloomPass) {
+      this.bloomPass.dispose?.();
+      this.bloomPass = null;
+    }
+
+    // 7. Dispose WebGL renderer
     if (this.renderer) {
       this.renderer.dispose();
       this.renderer = null;
     }
 
-    // 6. Replace canvas with fresh clone to guarantee context release & zero leak
+    // 8. Replace canvas with fresh clone to guarantee context release & zero leak
     if (this.canvas && this.canvas.parentNode) {
       const newCanvas = this.canvas.cloneNode(false);
       this.canvas.parentNode.replaceChild(newCanvas, this.canvas);
       this.canvas = newCanvas;
     }
 
-    // 7. Clear DOM labels and SVG lines
+    // 9. Clear DOM labels and SVG lines
     const labelsContainer = document.getElementById('gpuLabelsContainer');
     if (labelsContainer) {
       labelsContainer.innerHTML = '';
     }
 
-    // 8. Restore body scroll
+    // 10. Restore body scroll
     document.body.style.overflow = '';
   }
 
-  // ===== 1. Scene, Camera, Lights & Renderer Setup =====
+  // ===== 1. Scene, Camera, Lighting, Tone Mapping & Post-Processing Setup =====
   initScene() {
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(CONFIG.darkGroundHex);
+    this.scene.background = null; // Canvas is transparent so CSS backdrop glow sits cleanly behind
 
     // Camera: positioned for cinematic framing
     const cameraZ = this.isMobile ? 5.4 : 4.4;
@@ -301,7 +369,7 @@ export class Intro3D {
     this.camera.position.set(0, 0.35, cameraZ);
     this.camera.lookAt(0, 0, 0);
 
-    // Renderer
+    // Renderer with ACESFilmic Tone Mapping and SRGB Color Space
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvas,
       antialias: true,
@@ -311,7 +379,8 @@ export class Intro3D {
     this.renderer.setSize(this.width, this.height);
     this.renderer.setPixelRatio(this.dpr);
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.15;
+    this.renderer.toneMappingExposure = CONFIG.lighting.toneMappingExposure;
+    this.renderer.outputColorSpace = THREE.SRGBColorSpace;
 
     // Listen to WebGL context loss
     this.onContextLost = (e) => {
@@ -321,34 +390,76 @@ export class Intro3D {
     };
     this.canvas.addEventListener('webglcontextlost', this.onContextLost, false);
 
-    // Lighting (Cyan key + Amber rim + Ambient + Soft Fill)
-    const ambientLight = new THREE.AmbientLight(0x0a101d, 1.2);
+    // 1. Image-Based Lighting: PMREMGenerator + RoomEnvironment
+    try {
+      const pmrem = new THREE.PMREMGenerator(this.renderer);
+      pmrem.compileEquirectangularShader();
+      const roomEnv = new RoomEnvironment();
+      this.envTexture = pmrem.fromScene(roomEnv).texture;
+      this.scene.environment = this.envTexture;
+      if ('environmentIntensity' in this.scene) {
+        this.scene.environmentIntensity = CONFIG.lighting.environmentIntensity;
+      }
+      roomEnv.dispose();
+      pmrem.dispose();
+    } catch (e) {
+      console.warn('Intro3D: RoomEnvironment fallback:', e);
+    }
+
+    // 2. Three-Point Lighting Rig + Edge Rim Lights
+    const l = CONFIG.lighting;
+
+    // Global Soft Ambient (Lifts deep shadows so parts never look black)
+    const ambientLight = new THREE.AmbientLight(0x243044, l.ambientIntensity);
     this.scene.add(ambientLight);
 
-    // Cyan Key Light
-    this.keyLight = new THREE.DirectionalLight(CONFIG.accentHex, 2.8);
-    this.keyLight.position.set(2.5, 3.5, 3.0);
+    // Light 1: Cyan Key Light from Front-Left (Elevated)
+    this.keyLight = new THREE.DirectionalLight(CONFIG.accentHex, l.cyanKeyIntensity);
+    this.keyLight.position.set(-2.8, 2.8, 3.2);
     this.scene.add(this.keyLight);
 
-    // Amber Rim Light (Cyber Warmth)
-    this.rimLight = new THREE.DirectionalLight(CONFIG.amberHex, 2.0);
-    this.rimLight.position.set(-3.0, -2.5, -2.5);
+    // Light 2: Amber Rim Light from Behind-Right
+    this.rimLight = new THREE.DirectionalLight(CONFIG.amberHex, l.amberRimIntensity);
+    this.rimLight.position.set(3.2, -1.8, -2.8);
     this.scene.add(this.rimLight);
 
-    // Fill Light (Deep Indigo)
-    const fillLight = new THREE.DirectionalLight(0x192742, 1.4);
-    fillLight.position.set(0, -3.0, 2.0);
-    this.scene.add(fillLight);
+    // Light 3: Cool White Overhead Fill
+    const overheadFill = new THREE.DirectionalLight(0xe2e8f0, l.coolWhiteFillIntensity);
+    overheadFill.position.set(0, 4.0, 1.5);
+    this.scene.add(overheadFill);
 
-    // Center Singularity Point Light
-    this.centerGlow = new THREE.PointLight(CONFIG.accentHex, 1.5, 6.0);
-    this.centerGlow.position.set(0, 0, 0.5);
+    // Light 4: Soft Rim/Back Light pointing forward behind GPU (Edge highlight on every part)
+    const backRimLight = new THREE.DirectionalLight(0x7dd3fc, l.softBackRimIntensity);
+    backRimLight.position.set(0, 0, -3.5);
+    this.scene.add(backRimLight);
+
+    // Light 5: Center Core Singularity Point Light (Intensifies die reflections)
+    this.centerGlow = new THREE.PointLight(CONFIG.accentHex, 1.8, 6.5);
+    this.centerGlow.position.set(0, 0, 0.45);
     this.scene.add(this.centerGlow);
+
+    // 3. Post-Processing: UnrealBloomPass
+    try {
+      const renderPass = new RenderPass(this.scene, this.camera);
+      this.bloomPass = new UnrealBloomPass(
+        new THREE.Vector2(this.width, this.height),
+        CONFIG.bloom.strength,
+        CONFIG.bloom.radius,
+        CONFIG.bloom.threshold
+      );
+      this.composer = new EffectComposer(this.renderer);
+      this.composer.addPass(renderPass);
+      this.composer.addPass(this.bloomPass);
+    } catch (e) {
+      console.warn('Intro3D: UnrealBloomPass fallback to standard renderer:', e);
+      this.composer = null;
+    }
   }
 
-  // ===== 2. Background Warp Streaks & Glowing Rings =====
+  // ===== 2. Background Warp Streaks & Glowing Rings (Placed Behind GPU at z = -1.5) =====
   initBackgroundEffects() {
     this.bgGroup = new THREE.Group();
+    this.bgGroup.position.set(0, 0, -1.5); // Sits behind GPU meshes in 3D depth
     this.scene.add(this.bgGroup);
 
     // 1. Holographic Glowing Rings
@@ -386,7 +497,7 @@ export class Intro3D {
     for (let i = 0; i < particleCount; i++) {
       posArray[i * 3 + 0] = (Math.random() - 0.5) * 14;
       posArray[i * 3 + 1] = (Math.random() - 0.5) * 10;
-      posArray[i * 3 + 2] = (Math.random() - 0.5) * 12 - 2;
+      posArray[i * 3 + 2] = (Math.random() - 0.5) * 10 - 1.5;
 
       const c = (i % 3 === 0) ? colorCyan : (i % 3 === 1 ? colorEmerald : colorAmber);
       colorArray[i * 3 + 0] = c.r;
@@ -410,7 +521,7 @@ export class Intro3D {
     this.bgGroup.add(this.particles);
   }
 
-  // ===== 3. Procedural Three.js GPU Construction =====
+  // ===== 3. Procedural Three.js GPU Construction with Visible High-Reflectance Materials =====
   buildProceduralGPU() {
     this.gpuRoot = new THREE.Group();
     this.gpuRoot.name = 'gpuRoot';
@@ -419,58 +530,96 @@ export class Intro3D {
     this.gpuRoot.scale.set(1, 1, 1);
     this.scene.add(this.gpuRoot);
 
-    // Premium Materials Palette
+    const m = CONFIG.materials;
+    const envIntensity = CONFIG.lighting.environmentIntensity;
+
+    // Researched Materials Palette (Zero Pure Black, Visible Components, Faint Emissive)
     this.materials = {
-      gunmetal: new THREE.MeshStandardMaterial({
-        color: 0x151821,
-        metalness: 0.85,
-        roughness: 0.35
+      shroud: new THREE.MeshStandardMaterial({
+        color: m.shroud.color,
+        metalness: m.shroud.metalness,
+        roughness: m.shroud.roughness,
+        emissive: m.shroud.emissive,
+        emissiveIntensity: m.shroud.emissiveIntensity,
+        envMapIntensity: envIntensity
       }),
-      darkMetal: new THREE.MeshStandardMaterial({
-        color: 0x10131b,
-        metalness: 0.9,
-        roughness: 0.3
+      backplate: new THREE.MeshStandardMaterial({
+        color: m.backplate.color,
+        metalness: m.backplate.metalness,
+        roughness: m.backplate.roughness,
+        emissive: m.backplate.emissive,
+        emissiveIntensity: m.backplate.emissiveIntensity,
+        envMapIntensity: envIntensity
       }),
       silver: new THREE.MeshStandardMaterial({
-        color: 0xb4bcc8,
-        metalness: 0.95,
-        roughness: 0.2
+        color: m.bracketSilver.color,
+        metalness: m.bracketSilver.metalness,
+        roughness: m.bracketSilver.roughness,
+        emissive: m.bracketSilver.emissive,
+        emissiveIntensity: m.bracketSilver.emissiveIntensity,
+        envMapIntensity: envIntensity * 1.2
       }),
       aluminum: new THREE.MeshStandardMaterial({
-        color: 0xb5bcc6,
-        metalness: 0.9,
-        roughness: 0.28
+        color: m.heatsinkFins.color,
+        metalness: m.heatsinkFins.metalness,
+        roughness: m.heatsinkFins.roughness,
+        emissive: m.heatsinkFins.emissive,
+        emissiveIntensity: m.heatsinkFins.emissiveIntensity,
+        envMapIntensity: envIntensity * 1.25
       }),
       copper: new THREE.MeshStandardMaterial({
-        color: 0xc86432,
-        metalness: 0.95,
-        roughness: 0.22
+        color: m.copperPipes.color,
+        metalness: m.copperPipes.metalness,
+        roughness: m.copperPipes.roughness,
+        emissive: m.copperPipes.emissive,
+        emissiveIntensity: m.copperPipes.emissiveIntensity,
+        envMapIntensity: envIntensity * 1.3
       }),
       gold: new THREE.MeshStandardMaterial({
-        color: 0xf5b82e,
-        metalness: 1.0,
-        roughness: 0.25
+        color: m.connectorGold.color,
+        metalness: m.connectorGold.metalness,
+        roughness: m.connectorGold.roughness,
+        emissive: m.connectorGold.emissive,
+        emissiveIntensity: m.connectorGold.emissiveIntensity,
+        envMapIntensity: envIntensity * 1.4
       }),
       pcbSubstrate: new THREE.MeshStandardMaterial({
-        color: 0x090c12,
-        roughness: 0.85,
-        metalness: 0.15
+        color: m.pcb.color,
+        metalness: m.pcb.metalness,
+        roughness: m.pcb.roughness,
+        emissive: m.pcb.emissive,
+        emissiveIntensity: m.pcb.emissiveIntensity,
+        envMapIntensity: envIntensity
       }),
       siliconMirror: new THREE.MeshStandardMaterial({
-        color: 0x222a36,
-        roughness: 0.08,
-        metalness: 1.0
+        color: m.computeDieMirror.color,
+        roughness: m.computeDieMirror.roughness,
+        metalness: m.computeDieMirror.metalness,
+        emissive: m.computeDieMirror.emissive,
+        emissiveIntensity: m.computeDieMirror.emissiveIntensity,
+        envMapIntensity: envIntensity * 1.5
       }),
-      blackCeramic: new THREE.MeshStandardMaterial({
-        color: 0x07090e,
-        roughness: 0.7,
-        metalness: 0.2
+      chipPackage: new THREE.MeshStandardMaterial({
+        color: m.vramChips.color,
+        roughness: m.vramChips.roughness,
+        metalness: m.vramChips.metalness,
+        emissive: m.vramChips.emissive,
+        emissiveIntensity: m.vramChips.emissiveIntensity,
+        envMapIntensity: envIntensity
+      }),
+      fanBlades: new THREE.MeshStandardMaterial({
+        color: m.fanBlades.color,
+        roughness: m.fanBlades.roughness,
+        metalness: m.fanBlades.metalness,
+        emissive: m.fanBlades.emissive,
+        emissiveIntensity: m.fanBlades.emissiveIntensity,
+        envMapIntensity: envIntensity
       }),
       emissiveTrim: new THREE.MeshStandardMaterial({
         color: CONFIG.accentHex,
         emissive: CONFIG.accentHex,
-        emissiveIntensity: 1.4,
-        roughness: 0.2
+        emissiveIntensity: 1.5,
+        roughness: 0.15
       })
     };
 
@@ -482,16 +631,14 @@ export class Intro3D {
 
     const backplateMesh = new THREE.Mesh(
       new THREE.BoxGeometry(d.cardLength, d.backplateThickness, d.cardDepth),
-      this.materials.darkMetal
+      this.materials.backplate
     );
     backplateGroup.add(backplateMesh);
 
     // Flow-through ventilation cutouts
+    const slotMat = new THREE.MeshBasicMaterial({ color: 0x181f28 });
     for (let i = 0; i < 6; i++) {
-      const slot = new THREE.Mesh(
-        new THREE.BoxGeometry(0.065, 0.055, 0.65),
-        new THREE.MeshBasicMaterial({ color: 0x02060a })
-      );
+      const slot = new THREE.Mesh(new THREE.BoxGeometry(0.065, 0.055, 0.65), slotMat);
       slot.position.set(0.65 + i * 0.12, 0.005, 0);
       backplateGroup.add(slot);
     }
@@ -520,7 +667,7 @@ export class Intro3D {
     bracketGroup.add(bracketFace);
 
     // 4 Display Port Cutouts (3 DP style, 1 HDMI style)
-    const portMat = new THREE.MeshBasicMaterial({ color: 0x05070a });
+    const portMat = new THREE.MeshBasicMaterial({ color: 0x161b22 });
     for (let i = 0; i < 3; i++) {
       const dpPort = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.08, 0.16), portMat);
       dpPort.position.set(-0.01, -0.18 + i * 0.16, -0.2);
@@ -530,7 +677,7 @@ export class Intro3D {
     hdmiPort.position.set(-0.01, 0.20, 0.18);
     bracketGroup.add(hdmiPort);
 
-    // Perforated exhaust honeycomb vent strip
+    // Honeycomb vent strip
     for (let r = 0; r < 5; r++) {
       for (let c = 0; c < 2; c++) {
         const ventHole = new THREE.Mesh(new THREE.BoxGeometry(0.045, 0.04, 0.04), portMat);
@@ -543,31 +690,54 @@ export class Intro3D {
     this.gpuRoot.add(bracketGroup);
     this.parts.set('bracket', bracketGroup);
 
-    // --- C. PCB (PRINTED CIRCUIT BOARD) ---
+    // --- C. PCB (PRINTED CIRCUIT BOARD) WITH VISIBLE COMPONENT LAYER ---
     const pcbGroup = new THREE.Group();
     pcbGroup.name = 'pcb';
 
+    // Rich Dark Green Substrate
     const pcbSubstrate = new THREE.Mesh(
       new THREE.BoxGeometry(d.pcbLength, d.pcbThickness, d.pcbDepth),
       this.materials.pcbSubstrate
     );
     pcbGroup.add(pcbSubstrate);
 
-    // VRM Inductors & Power Phase Capacitors
+    // 1. VRM Inductors & Power Phase Capacitors
     const inductorGeom = new THREE.BoxGeometry(0.07, 0.06, 0.07);
     for (let i = 0; i < 12; i++) {
-      const inductor = new THREE.Mesh(inductorGeom, this.materials.darkMetal);
+      const inductor = new THREE.Mesh(inductorGeom, this.materials.shroud);
       inductor.position.set(-0.65 - (i % 6) * 0.11, 0.035, (i < 6 ? -0.32 : 0.32));
       pcbGroup.add(inductor);
     }
 
-    // Dual 8-Pin Power Connector Sockets (Top Right)
+    // 2. Visible SMT Component Rows (Silver & Gold Traces/Resistors)
+    const smtCapGeom = new THREE.BoxGeometry(0.025, 0.018, 0.015);
+    for (let s = 0; s < 28; s++) {
+      const mat = (s % 3 === 0) ? this.materials.gold : this.materials.silver;
+      const cap = new THREE.Mesh(smtCapGeom, mat);
+      const rowX = -1.1 + (s % 7) * 0.08;
+      const rowZ = -0.18 + Math.floor(s / 7) * 0.12;
+      cap.position.set(rowX, 0.025, rowZ);
+      pcbGroup.add(cap);
+    }
+
+    // 3. Dual 8-Pin Power Connector Sockets (Top Right)
     const powerBlock = new THREE.Mesh(
       new THREE.BoxGeometry(0.32, 0.14, 0.22),
-      this.materials.blackCeramic
+      this.materials.chipPackage
     );
     powerBlock.position.set(d.pcbLength / 2 - 0.28, 0.08, -d.pcbDepth / 2 + 0.12);
     pcbGroup.add(powerBlock);
+
+    // Gold Terminals inside power block
+    for (let p = 0; p < 8; p++) {
+      const term = new THREE.Mesh(new THREE.BoxGeometry(0.015, 0.06, 0.015), this.materials.gold);
+      term.position.set(
+        d.pcbLength / 2 - 0.38 + (p % 4) * 0.065,
+        0.14,
+        -d.pcbDepth / 2 + 0.08 + Math.floor(p / 4) * 0.08
+      );
+      pcbGroup.add(term);
+    }
 
     pcbGroup.position.set(0, -0.16, 0);
     this.gpuRoot.add(pcbGroup);
@@ -580,17 +750,26 @@ export class Intro3D {
     // Central Neural Compute Die
     const dieSubstrate = new THREE.Mesh(
       new THREE.BoxGeometry(0.48, 0.035, 0.48),
-      this.materials.darkMetal
+      this.materials.shroud
     );
     dieSubstrate.position.set(0, 0.015, 0);
     dieMemoryGroup.add(dieSubstrate);
 
+    // Mirror Silicon Core (Reflects cyan & amber lights)
     const dieMirror = new THREE.Mesh(
       new THREE.BoxGeometry(0.38, 0.02, 0.38),
       this.materials.siliconMirror
     );
     dieMirror.position.set(0, 0.038, 0);
     dieMemoryGroup.add(dieMirror);
+
+    // Silver Heatspreader Border
+    const dieBorder = new THREE.Mesh(
+      new THREE.BoxGeometry(0.42, 0.015, 0.42),
+      this.materials.silver
+    );
+    dieBorder.position.set(0, 0.028, 0);
+    dieMemoryGroup.add(dieBorder);
 
     // 6 Ultra-Dense Memory Packages Surrounding Core
     const vramGeom = new THREE.BoxGeometry(0.16, 0.025, 0.16);
@@ -600,7 +779,7 @@ export class Intro3D {
       [-0.24, 0.34], [0.24, 0.34]
     ];
     vramOffsets.forEach(([vx, vz]) => {
-      const vram = new THREE.Mesh(vramGeom, this.materials.blackCeramic);
+      const vram = new THREE.Mesh(vramGeom, this.materials.chipPackage);
       vram.position.set(vx, 0.02, vz);
       dieMemoryGroup.add(vram);
     });
@@ -652,10 +831,10 @@ export class Intro3D {
     const shroudGroup = new THREE.Group();
     shroudGroup.name = 'shroud';
 
-    // Angular shell body
+    // Angular shell body (#2b323b metal)
     const shroudShell = new THREE.Mesh(
       new THREE.BoxGeometry(d.shroudLength, d.shroudThickness, d.shroudDepth),
-      this.materials.gunmetal
+      this.materials.shroud
     );
     shroudGroup.add(shroudShell);
 
@@ -695,7 +874,7 @@ export class Intro3D {
       // Outer Torus Ring Frame
       const fanRing = new THREE.Mesh(
         new THREE.TorusGeometry(d.fanRadius, 0.014, 16, 48),
-        this.materials.darkMetal
+        this.materials.shroud
       );
       fanRing.rotation.x = Math.PI / 2;
       singleFan.add(fanRing);
@@ -715,7 +894,7 @@ export class Intro3D {
       const bladeGeom = new THREE.BoxGeometry(0.08, 0.012, d.fanRadius - d.fanHubRadius - 0.02);
       for (let b = 0; b < 9; b++) {
         const bladeAngle = (b / 9) * Math.PI * 2;
-        const blade = new THREE.Mesh(bladeGeom, this.materials.gunmetal);
+        const blade = new THREE.Mesh(bladeGeom, this.materials.fanBlades);
         blade.position.set(
           Math.cos(bladeAngle) * (d.fanRadius * 0.55),
           0,
@@ -741,11 +920,11 @@ export class Intro3D {
 
     const pcieTongue = new THREE.Mesh(
       new THREE.BoxGeometry(1.7, 0.025, 0.16),
-      this.materials.darkMetal
+      this.materials.backplate
     );
     connectorGroup.add(pcieTongue);
 
-    // 36 Gold Finger Contacts (High-detail PCIe bus)
+    // 36 Gold Finger Contacts (High-reflectance gold PCIe bus)
     const pinContactGeom = new THREE.BoxGeometry(0.024, 0.03, 0.09);
     for (let c = 0; c < 36; c++) {
       const pin = new THREE.Mesh(pinContactGeom, this.materials.gold);
@@ -837,7 +1016,7 @@ export class Intro3D {
     }, 0);
 
     this.tl.to(this.keyLight, {
-      intensity: 3.2,
+      intensity: CONFIG.lighting.cyanKeyIntensity,
       duration: t.act1Duration,
       ease: 'power2.out'
     }, 0);
@@ -888,7 +1067,6 @@ export class Intro3D {
     // ACT 3: 4.0s - 5.2s: SETTLE (GPU moves to upper-middle, scales to 60%)
     // ----------------------------------------------------
     // Vertical center at ~38% of viewport height:
-    // Move GPU up in world coordinates and ease camera back
     const targetGPU_Y = this.isMobile ? 0.95 : (this.height < 850 ? 0.78 : 0.66);
     const targetCameraZ = this.isMobile ? 6.2 : 5.2;
 
@@ -911,6 +1089,18 @@ export class Intro3D {
       duration: t.settleDuration,
       ease: 'power2.inOut'
     }, t.settleStart);
+
+    // Backdrop Glow follows GPU to upper-middle (38% height)
+    this.tl.call(() => {
+      const backdropGlow = document.getElementById('portalBackdropGlow');
+      if (backdropGlow) {
+        gsap.to(backdropGlow, {
+          top: '38%',
+          duration: t.settleDuration,
+          ease: 'power2.inOut'
+        });
+      }
+    }, null, t.settleStart);
 
     // Labels fade out during settle
     this.tl.call(() => {
@@ -981,6 +1171,9 @@ export class Intro3D {
     this.gpuRoot.position.set(0, targetGPU_Y, 0);
     this.gpuRoot.scale.set(0.60, 0.60, 0.60);
 
+    const backdropGlow = document.getElementById('portalBackdropGlow');
+    if (backdropGlow) backdropGlow.style.top = '38%';
+
     const scrim = this.overlay?.querySelector('.portal-scrim');
     if (scrim) scrim.classList.add('scrim-visible');
 
@@ -1020,6 +1213,11 @@ export class Intro3D {
 
     const scrim = this.overlay?.querySelector('.portal-scrim');
     if (scrim) scrim.classList.remove('scrim-visible');
+
+    const backdropGlow = document.getElementById('portalBackdropGlow');
+    if (backdropGlow) {
+      gsap.to(backdropGlow, { top: '50%', duration: CONFIG.timings.foldBackDuration, ease: 'power2.inOut' });
+    }
 
     this.labelElements.forEach((l) => l.el.classList.remove('label-visible'));
     if (this.svg) this.svg.style.opacity = '0';
@@ -1123,6 +1321,12 @@ export class Intro3D {
         this.camera.aspect = this.width / this.height;
         this.camera.updateProjectionMatrix();
         this.renderer.setSize(this.width, this.height);
+        if (this.composer) {
+          this.composer.setSize(this.width, this.height);
+        }
+        if (this.bloomPass) {
+          this.bloomPass.resolution.set(this.width, this.height);
+        }
       }
     };
     window.addEventListener('resize', this.onResize);
@@ -1209,7 +1413,7 @@ export class Intro3D {
     });
   }
 
-  // ===== 10. Main Animation Loop (60 FPS, Fan Spin, Float, Parallax) =====
+  // ===== 10. Main Animation Loop (60 FPS, Fan Spin, Float, Parallax, Bloom Render) =====
   animate() {
     if (!this.isActive || !this.renderer || !this.scene || !this.camera) {
       this.rafId = null;
@@ -1263,8 +1467,13 @@ export class Intro3D {
     // 6. Update 2D Annotation Labels & SVG Connector Lines
     this.updateLabels();
 
-    // 7. Render Scene
-    this.renderer.render(this.scene, this.camera);
+    // 7. Render Scene with Postprocessing Bloom (or direct fallback)
+    if (this.composer) {
+      this.composer.render();
+    } else {
+      this.renderer.render(this.scene, this.camera);
+    }
+
     this.rafId = requestAnimationFrame(() => this.animate());
   }
 }
