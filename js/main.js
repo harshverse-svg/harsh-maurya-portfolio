@@ -476,11 +476,13 @@ const setupTypewriter = () => {
   tick();
 };
 
-// ===== 8. Scroll Progress & Active Nav Indicator =====
+// ===== 8. Scroll Progress, Smart Auto-Hide Navbar & Active Indicator =====
 const setupScrollProgress = () => {
   const progressBar = document.getElementById('scrollProgress');
+  const navbar = document.getElementById('navbar');
   const sections = document.querySelectorAll('section[id], header[id]');
   const navLinks = document.querySelectorAll('.nav-links a');
+  let lastScrollY = window.scrollY;
 
   window.addEventListener('scroll', () => {
     const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
@@ -488,6 +490,22 @@ const setupScrollProgress = () => {
     if (progressBar && height > 0) {
       progressBar.style.width = (winScroll / height) * 100 + '%';
     }
+
+    // 1. Compact Navbar when scrolling
+    if (winScroll > 30) {
+      navbar?.classList.add('nav-scrolled');
+    } else {
+      navbar?.classList.remove('nav-scrolled');
+    }
+
+    // 2. Smart Auto-Hide Navbar on scroll down, reveal on scroll up
+    const isMobileOpen = document.getElementById('navLinks')?.classList.contains('mobile-open');
+    if (winScroll > 120 && winScroll > lastScrollY && !isMobileOpen) {
+      navbar?.classList.add('nav-hidden');
+    } else {
+      navbar?.classList.remove('nav-hidden');
+    }
+    lastScrollY = winScroll;
 
     // Active Section Spy
     let current = '';
@@ -509,7 +527,7 @@ const setupScrollProgress = () => {
 
 // ===== 9. Mobile Menu Toggle =====
 const setupMobileNav = () => {
-  const toggle = document.getElementById('mobileNavToggle');
+  const toggle = document.getElementById('mobileToggle') || document.getElementById('mobileNavToggle');
   const navLinks = document.getElementById('navLinks');
   if (!toggle || !navLinks) return;
 
@@ -517,17 +535,15 @@ const setupMobileNav = () => {
     sfx.playClick();
     navLinks.classList.toggle('mobile-open');
     const isOpen = navLinks.classList.contains('mobile-open');
-    toggle.innerHTML = isOpen ? '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
+    toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
   });
 
   navLinks.querySelectorAll('a').forEach((link) => {
     link.addEventListener('click', () => {
       navLinks.classList.remove('mobile-open');
-      toggle.innerHTML = '<i class="fas fa-bars"></i>';
     });
   });
 };
-
 
 // ===== 10. YouTube Facade (Zero-Blocking Performance) =====
 const setupYouTubeFacade = () => {
