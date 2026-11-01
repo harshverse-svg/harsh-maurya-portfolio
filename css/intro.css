@@ -1,0 +1,367 @@
+/* ==========================================================================
+   Harsh Maurya | Cinematic Procedural 3D GPU Unfolding Intro Overlay
+   Styling for Three.js Canvas, Glass HUD, Monospace Labels & Cyber Accents
+   ========================================================================== */
+
+/* ===== Overlay Container ===== */
+.welcome-portal {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10000;
+  background: #030508;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.welcome-portal.portal-closing {
+  opacity: 0;
+  transform: scale(1.15);
+  pointer-events: none;
+}
+
+/* ===== Three.js WebGL Canvas ===== */
+.portal-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  display: block;
+}
+
+/* ===== 3D Dynamic Annotation Labels & Leader Lines ===== */
+.gpu-labels-container {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.gpu-svg-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.gpu-leader-line {
+  stroke: rgba(0, 229, 255, 0.55);
+  stroke-width: 1.2;
+  stroke-dasharray: 4, 3;
+  fill: none;
+  transition: stroke 0.3s ease;
+}
+
+.gpu-leader-dot {
+  fill: #00e5ff;
+  filter: drop-shadow(0 0 6px #00e5ff);
+}
+
+.gpu-label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: #00e5ff;
+  background: rgba(3, 6, 12, 0.85);
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  border-radius: 4px;
+  padding: 0.28rem 0.65rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.25), inset 0 0 10px rgba(0, 229, 255, 0.08);
+  opacity: 0;
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s ease, border-color 0.3s;
+  pointer-events: auto;
+  cursor: default;
+  white-space: nowrap;
+}
+
+.gpu-label.label-visible {
+  opacity: 1;
+}
+
+.gpu-label .label-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #00e5ff;
+  box-shadow: 0 0 8px #00e5ff;
+  animation: pulse-dot 2s infinite ease-in-out;
+}
+
+.gpu-label:hover {
+  border-color: #00e5ff;
+  box-shadow: 0 0 30px rgba(0, 229, 255, 0.5);
+  transform: translate(-50%, -50%) scale(1.05);
+}
+
+/* ===== Glass HUD Card (Reveals over Unfolded GPU) ===== */
+.portal-hud {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 640px;
+  padding: 2.2rem 2.5rem;
+  background: rgba(4, 7, 13, 0.62);
+  border: 1px solid rgba(0, 229, 255, 0.22);
+  border-radius: 16px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 10px 50px rgba(0, 0, 0, 0.75), 0 0 70px rgba(0, 229, 255, 0.12), inset 0 0 30px rgba(0, 229, 255, 0.05);
+  opacity: 0;
+  transform: scale(0.94) translateY(16px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  margin-top: 2rem;
+}
+
+.portal-hud.hud-visible {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+/* Badge */
+.portal-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.75rem;
+  color: #00e5ff;
+  background: rgba(0, 229, 255, 0.08);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  padding: 0.3rem 0.85rem;
+  border-radius: 999px;
+  letter-spacing: 0.08em;
+  margin-bottom: 1.15rem;
+}
+
+.portal-badge .status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #00e5ff;
+  box-shadow: 0 0 10px #00e5ff;
+  animation: pulse-dot 2s infinite ease-in-out;
+}
+
+/* Title (Name) with Cyber Decode Styling */
+.portal-title {
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: clamp(2.4rem, 5.5vw, 3.6rem);
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  margin: 0 0 0.65rem 0;
+  text-shadow: 0 0 35px rgba(0, 229, 255, 0.45);
+  min-height: 1.2em;
+}
+
+/* Subtitle (Role) */
+.portal-sub {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: clamp(0.92rem, 2.2vw, 1.08rem);
+  color: #94a3b8;
+  max-width: 500px;
+  line-height: 1.5;
+  margin: 0 0 1.5rem 0;
+}
+
+/* Action Button */
+.portal-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.portal-enter-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background: #00e5ff;
+  color: #030508;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.92rem;
+  font-weight: 700;
+  padding: 0.85rem 2.2rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  letter-spacing: 0.05em;
+  box-shadow: 0 0 30px rgba(0, 229, 255, 0.5);
+  animation: pulseGpuGlow 2.4s infinite ease-in-out;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease, background-color 0.2s;
+}
+
+@keyframes pulseGpuGlow {
+  0%, 100% {
+    box-shadow: 0 0 25px rgba(0, 229, 255, 0.45), 0 0 50px rgba(0, 229, 255, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 45px rgba(0, 229, 255, 0.85), 0 0 80px rgba(0, 229, 255, 0.4);
+  }
+}
+
+.portal-enter-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 55px rgba(0, 229, 255, 0.95);
+  background: #33ecff;
+}
+
+.portal-enter-btn:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 3px;
+}
+
+/* Hint */
+.portal-hint {
+  margin-top: 1.15rem;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.74rem;
+  color: #64748b;
+}
+
+.portal-hint kbd {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #cbd5e1;
+}
+
+/* Skip Button (Top Right) */
+.portal-skip-btn {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #94a3b8;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.75rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 6px;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: all 0.2s ease;
+}
+
+.portal-skip-btn:hover {
+  background: rgba(0, 229, 255, 0.15);
+  border-color: rgba(0, 229, 255, 0.4);
+  color: #00e5ff;
+}
+
+.portal-skip-btn:focus-visible {
+  outline: 2px solid #00e5ff;
+  outline-offset: 2px;
+}
+
+/* Flash Transition Effect on Enter */
+.portal-flash-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(0, 229, 255, 0.8) 0%, rgba(3, 5, 8, 0.95) 75%);
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease-out;
+}
+
+.portal-flash-overlay.flash-active {
+  opacity: 1;
+}
+
+/* ===== Responsive Breakpoints ===== */
+@media (max-width: 768px) {
+  .portal-hud {
+    padding: 1.5rem 1.25rem;
+    max-width: calc(100vw - 32px);
+    margin-top: 10rem;
+    border-radius: 12px;
+  }
+
+  .portal-title {
+    font-size: 2.1rem;
+  }
+
+  .portal-sub {
+    font-size: 0.88rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .portal-enter-btn {
+    width: 100%;
+    padding: 0.8rem 1.5rem;
+    font-size: 0.86rem;
+  }
+
+  .portal-skip-btn {
+    top: 1rem;
+    right: 1rem;
+    padding: 0.35rem 0.65rem;
+  }
+
+  .gpu-label {
+    font-size: 0.65rem;
+    padding: 0.2rem 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .portal-hud {
+    margin-top: 12rem;
+  }
+
+  .portal-title {
+    font-size: 1.85rem;
+  }
+
+  .portal-badge {
+    font-size: 0.68rem;
+    padding: 0.25rem 0.65rem;
+  }
+}
+
+/* ===== Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  .welcome-portal {
+    transition: opacity 0.3s ease;
+  }
+  .portal-enter-btn {
+    animation: none;
+  }
+  .portal-hud {
+    transition: opacity 0.3s ease;
+  }
+  .gpu-label {
+    transition: opacity 0.3s ease;
+  }
+}
