@@ -846,6 +846,26 @@ document.addEventListener('DOMContentLoaded', () => {
   setupYouTubeFacade();
   setupModal();
 
+  // 3D Welcome Opening Experience
+  let portalInstance = null;
+  if (typeof WelcomePortal !== 'undefined') {
+    portalInstance = new WelcomePortal();
+  }
+
+  // Reopen 3D Intro Button
+  const reopenBtn = document.getElementById('reopenIntroBtn');
+  if (reopenBtn && portalInstance) {
+    reopenBtn.addEventListener('click', () => {
+      sfx.playClick();
+      portalInstance.reopen();
+    });
+  }
+
+  // Autonomous 3D Neural Companion "Spark"
+  if (typeof NeuralCompanionPet !== 'undefined') {
+    new NeuralCompanionPet();
+  }
+
   // Audio Toggle Button
   const audioBtn = document.getElementById('audioToggleBtn');
   if (audioBtn) {

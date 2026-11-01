@@ -92,6 +92,42 @@
 </head>
 
 <body>
+  <!-- 3D Welcome Opening Experience & Holographic Warp Portal -->
+  <aside id="welcomePortal" class="welcome-portal" role="dialog" aria-modal="true" aria-label="Welcome Gate">
+    <canvas id="portalCanvas" class="portal-canvas"></canvas>
+    
+    <div class="portal-hud">
+      <div class="portal-badge">
+        <span class="status-dot"></span> NEURAL ARCHITECTURE v2.4
+      </div>
+
+      <h1 class="portal-title">HARSH MAURYA</h1>
+      <div class="portal-sub">Digital Architect &bull; Local AI &bull; Privacy Systems</div>
+
+      <div class="portal-telemetry">
+        <span class="tele-item">10 Repositories</span>
+        <span class="tele-sep">//</span>
+        <span class="tele-item">09 Certifications</span>
+        <span class="tele-sep">//</span>
+        <span class="tele-item">6GB VRAM Bound</span>
+      </div>
+
+      <div class="portal-actions">
+        <button id="enterPortfolioBtn" class="portal-enter-btn" aria-label="Enter Harsh Maurya's Portfolio">
+          <span>ENTER ARCHITECTURE</span>
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+
+      <div class="portal-hint">
+        Press <kbd>ENTER</kbd> or click to explore
+      </div>
+    </div>
+
+    <button id="skipPortalBtn" class="portal-skip-btn" aria-label="Skip introduction">
+      Skip [ESC] &times;
+    </button>
+  </aside>
   <!-- Background Procedural Canvas -->
   <canvas id="bg-canvas"></canvas>
 
@@ -132,6 +168,12 @@
         </ul>
 
         <div class="nav-actions">
+          <!-- Replay 3D Intro Button -->
+          <button class="nav-extra-btn" id="reopenIntroBtn" title="Replay 3D Welcome Opening">
+            <i class="fas fa-play-circle"></i>
+            <span>3D INTRO</span>
+          </button>
+
           <!-- Web Audio Synthesizer Toggle -->
           <button class="audio-toggle-btn" id="audioToggleBtn" title="Toggle Haptic Sound Synthesis">
             <i class="fas fa-volume-mute"></i>
@@ -856,7 +898,7 @@
       <div class="container">
         <div class="section-head">
           <h2 class="section-title">Verified Certifications</h2>
-          <span class="section-meta">Google Cloud, Google &amp; IBM Verified Credentials</span>
+          <span class="section-meta">IIT Bombay, IIT Kharagpur, Google Cloud &amp; IBM Credentials (09 Verified)</span>
         </div>
 
         <div class="certs-ribbon">
@@ -939,6 +981,30 @@
               <div class="cert-strip-content">
                 <h4>Foundations: Data, Data Everywhere</h4>
                 <p>Google</p>
+              </div>
+            </div>
+            <span class="cert-verified-pill"><i class="fas fa-check-circle"></i> Verified</span>
+          </div>
+
+          <!-- Cert 8: IIT Bombay Demystifying Networking (Elite) -->
+          <div class="cert-strip-item animate-on-scroll delay-100 open-modal-btn" data-img="assets/images/cert8.webp" data-title="Demystifying Networking (IIT Bombay | NPTEL Elite)">
+            <div class="cert-strip-meta">
+              <img src="assets/images/cert8.webp" alt="Demystifying Networking" class="cert-thumb-preview" width="48" height="36" loading="lazy" />
+              <div class="cert-strip-content">
+                <h4>Demystifying Networking</h4>
+                <p>IIT Bombay (NPTEL Elite, 61%)</p>
+              </div>
+            </div>
+            <span class="cert-verified-pill"><i class="fas fa-check-circle"></i> Verified Elite</span>
+          </div>
+
+          <!-- Cert 9: IIT Kharagpur Problem Solving Through Programming in C -->
+          <div class="cert-strip-item animate-on-scroll delay-200 open-modal-btn" data-img="assets/images/cert9.webp" data-title="Problem Solving Through Programming in C (IIT Kharagpur | NPTEL)">
+            <div class="cert-strip-meta">
+              <img src="assets/images/cert9.webp" alt="Problem Solving in C" class="cert-thumb-preview" width="48" height="36" loading="lazy" />
+              <div class="cert-strip-content">
+                <h4>Problem Solving in C</h4>
+                <p>IIT Kharagpur (NPTEL, 12-Wk)</p>
               </div>
             </div>
             <span class="cert-verified-pill"><i class="fas fa-check-circle"></i> Verified</span>
@@ -1090,11 +1156,41 @@
     </div>
   </div>
 
+  <!-- Autonomous 3D Neural Companion: Spark -->
+  <aside id="companionPet" class="companion-pet" aria-label="Interactive Companion Spark">
+    <!-- Speech Bubble -->
+    <div id="petBubble" class="pet-bubble" role="status" aria-live="polite">
+      <button id="petCloseBubbleBtn" class="pet-bubble-close" aria-label="Dismiss message">&times;</button>
+      <div class="pet-bubble-header">
+        <span class="pet-name"><span class="pet-pulse-dot"></span> SPARK</span>
+        <span class="pet-tag">Neural Companion</span>
+      </div>
+      <div id="petBubbleText" class="pet-bubble-text">
+        Loading companion intelligence...
+      </div>
+      <div class="pet-bubble-actions">
+        <button id="petActionBtn" class="pet-quick-action" data-target="#projects">
+          Explore Systems (7)
+        </button>
+      </div>
+    </div>
+
+    <!-- 3D Droid Canvas & Mini Control -->
+    <div class="pet-droid-wrap">
+      <canvas id="petCanvas" class="pet-canvas" width="80" height="80" aria-label="Spark 3D Avatar"></canvas>
+      <button id="petMinimizeBtn" class="pet-minimize-btn" title="Minimize Spark" aria-label="Toggle companion size">
+        <i class="fas fa-minus"></i>
+      </button>
+    </div>
+  </aside>
+
   <!-- Motion & Smooth Scroll Libraries (Local, Deferred, Zero Network Latency) -->
   <script src="js/vendor/gsap.min.js" defer></script>
   <script src="js/vendor/ScrollTrigger.min.js" defer></script>
   <script src="js/vendor/lenis.min.js" defer></script>
   <script src="js/neural-core.js" defer></script>
+  <script src="js/welcome-portal.js" defer></script>
+  <script src="js/companion-pet.js" defer></script>
 
   <!-- Application Logic & Motion Choreography -->
   <script src="js/main.js" defer></script>
