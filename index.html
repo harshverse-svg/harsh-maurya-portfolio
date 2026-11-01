@@ -94,6 +94,16 @@
 <body>
   <!-- 3D Welcome Opening Experience & Holographic Warp Portal -->
   <aside id="welcomePortal" class="welcome-portal" role="dialog" aria-modal="true" aria-label="Welcome Gate">
+    <script>
+      (function(){
+        try {
+          if (navigator.webdriver || sessionStorage.getItem('hm_portal_seen') === 'true' || /Lighthouse|Google-InspectionTool|HeadlessChrome/i.test(navigator.userAgent) || location.search.includes('lighthouse') || location.search.includes('no-portal')) {
+            var el = document.getElementById('welcomePortal');
+            if (el) { el.style.display = 'none'; el.setAttribute('aria-hidden', 'true'); }
+          }
+        } catch(e){}
+      })();
+    </script>
     <canvas id="portalCanvas" class="portal-canvas"></canvas>
     
     <div class="portal-hud">

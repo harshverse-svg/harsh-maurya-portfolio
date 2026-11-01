@@ -28,7 +28,14 @@ class ProceduralNeuralCore {
     this.initGeometry();
     this.resize();
     this.bindEvents();
-    this.animate();
+
+    if (window.hmPortalActive) {
+      window.addEventListener('hm:portal-dismissed', () => {
+        if (!this.rafId && this.isVisible) this.animate();
+      }, { once: true });
+    } else {
+      this.animate();
+    }
   }
 
   initGeometry() {

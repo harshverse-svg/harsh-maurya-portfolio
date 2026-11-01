@@ -125,7 +125,14 @@ class NeuralMeshCanvas {
     this.resize();
     this.initNodes();
     this.bindEvents();
-    this.animate();
+
+    if (window.hmPortalActive) {
+      window.addEventListener('hm:portal-dismissed', () => {
+        if (!this.rafId && this.isVisible) this.animate();
+      }, { once: true });
+    } else {
+      this.animate();
+    }
   }
 
   resize() {
@@ -832,6 +839,12 @@ const setupModal = () => {
 
 // ===== Initializer =====
 document.addEventListener('DOMContentLoaded', () => {
+  // 3D Welcome Opening Experience
+  let portalInstance = null;
+  if (typeof WelcomePortal !== 'undefined') {
+    portalInstance = new WelcomePortal();
+  }
+
   new NeuralMeshCanvas('bg-canvas');
   if (typeof ProceduralNeuralCore !== 'undefined') {
     new ProceduralNeuralCore('neuralCoreCanvas');
@@ -845,12 +858,6 @@ document.addEventListener('DOMContentLoaded', () => {
   setupMobileNav();
   setupYouTubeFacade();
   setupModal();
-
-  // 3D Welcome Opening Experience
-  let portalInstance = null;
-  if (typeof WelcomePortal !== 'undefined') {
-    portalInstance = new WelcomePortal();
-  }
 
   // Reopen 3D Intro Button
   const reopenBtn = document.getElementById('reopenIntroBtn');

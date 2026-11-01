@@ -74,33 +74,35 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     }
 
-    // 4. Staggered Hero Reveal (Completes under 1.1s total)
-    const heroTl = gsap.timeline({
-      defaults: { ease: 'power3.out' },
-      onComplete: () => {
-        gsap.set(
-          '.hero-avatar-wrap, .telemetry-pill, .hero-title, .hero-subtitle, .hero-actions .btn-primary, .hero-actions .btn-secondary, .hero-actions .btn-outline, .terminal-hud-wrap',
-          { clearProps: 'all' }
-        );
-      },
-    });
-
-    heroTl
-      .from('.hero-avatar-wrap', { opacity: 0, scale: 0.92, duration: 0.35 })
-      .from('.telemetry-pill', { opacity: 0, y: -8, duration: 0.25 }, '-=0.15')
-      .from('.hero-title', { opacity: 0, y: 14, duration: 0.4 }, '-=0.15')
-      .from('.hero-subtitle', { opacity: 0, y: 10, duration: 0.3 }, '-=0.2')
-      .from(
-        '.hero-actions .btn-primary, .hero-actions .btn-secondary, .hero-actions .btn-outline',
-        {
-          opacity: 0,
-          y: 8,
-          stagger: 0.06,
-          duration: 0.3,
+    // 4. Staggered Hero Reveal (Desktop only for instant Mobile LCP)
+    if (window.innerWidth >= 768) {
+      const heroTl = gsap.timeline({
+        defaults: { ease: 'power3.out' },
+        onComplete: () => {
+          gsap.set(
+            '.hero-avatar-wrap, .telemetry-pill, .hero-title, .hero-subtitle, .hero-actions .btn-primary, .hero-actions .btn-secondary, .hero-actions .btn-outline, .terminal-hud-wrap',
+            { clearProps: 'all' }
+          );
         },
-        '-=0.15'
-      )
-      .from('.terminal-hud-wrap', { opacity: 0, y: 18, duration: 0.35 }, '-=0.15');
+      });
+
+      heroTl
+        .from('.hero-avatar-wrap', { opacity: 0, scale: 0.92, duration: 0.35 })
+        .from('.telemetry-pill', { opacity: 0, y: -8, duration: 0.25 }, '-=0.15')
+        .from('.hero-title', { opacity: 0, y: 14, duration: 0.4 }, '-=0.15')
+        .from('.hero-subtitle', { opacity: 0, y: 10, duration: 0.3 }, '-=0.2')
+        .from(
+          '.hero-actions .btn-primary, .hero-actions .btn-secondary, .hero-actions .btn-outline',
+          {
+            opacity: 0,
+            y: 8,
+            stagger: 0.06,
+            duration: 0.3,
+          },
+          '-=0.15'
+        )
+        .from('.terminal-hud-wrap', { opacity: 0, y: 18, duration: 0.35 }, '-=0.15');
+    }
 
     // 5. Subtle Section Entrance Reveals (Once per section)
     gsap.utils.toArray('.section').forEach((section) => {

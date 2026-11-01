@@ -68,7 +68,14 @@ class NeuralCompanionPet {
     } else {
       this.showNextDialogue();
     }
-    this.animate();
+
+    if (window.hmPortalActive) {
+      window.addEventListener('hm:portal-dismissed', () => {
+        if (!this.rafId) this.animate();
+      }, { once: true });
+    } else {
+      this.animate();
+    }
   }
 
   initCanvas() {
