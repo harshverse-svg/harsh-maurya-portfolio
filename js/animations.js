@@ -52,7 +52,12 @@ document.addEventListener('DOMContentLoaded', () => {
       window.lenis = lenis;
 
       // Synchronize Lenis with ScrollTrigger
-      lenis.on('scroll', ScrollTrigger.update);
+      lenis.on('scroll', (e) => {
+        ScrollTrigger.update();
+        if (typeof window.handleNavScrollUpdate === 'function') {
+          window.handleNavScrollUpdate(e.scroll);
+        }
+      });
 
       // Unified GSAP Ticker
       gsap.ticker.add((time) => {

@@ -567,34 +567,53 @@ const setupScrollProgress = () => {
   const sections = document.querySelectorAll('section[id], header[id]');
   const navLinks = document.querySelectorAll('.nav-links a');
   let lastScrollY = window.scrollY;
+  let isNavHidden = false;
 
-  window.addEventListener('scroll', () => {
-    const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
+  const handleScrollUpdate = (currentY) => {
+    const winScroll = typeof currentY === 'number' ? currentY : (window.scrollY || document.documentElement.scrollTop || 0);
     const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
     if (progressBar && height > 0) {
-      progressBar.style.width = (winScroll / height) * 100 + '%';
+      progressBar.style.width = Math.min(100, Math.max(0, (winScroll / height) * 100)) + '%';
     }
 
-    // 1. Compact Navbar when scrolling
-    if (winScroll > 30) {
+    // 1. Slim Compact state when scrolled past 25px
+    if (winScroll > 25) {
       navbar?.classList.add('nav-scrolled');
     } else {
       navbar?.classList.remove('nav-scrolled');
     }
 
-    // 2. Smart Auto-Hide Navbar on scroll down, reveal on scroll up
+    // 2. Smart Auto-Hide: hide on scroll down (> 6px), reveal on scroll up (< -8px)
     const isMobileOpen = document.getElementById('navLinks')?.classList.contains('mobile-open');
-    if (winScroll > 120 && winScroll > lastScrollY && !isMobileOpen) {
-      navbar?.classList.add('nav-hidden');
-    } else {
-      navbar?.classList.remove('nav-hidden');
+    if (!isMobileOpen) {
+      const delta = winScroll - lastScrollY;
+      if (winScroll <= 30) {
+        // At or near top: always reveal navbar
+        if (isNavHidden) {
+          navbar?.classList.remove('nav-hidden');
+          isNavHidden = false;
+        }
+      } else if (delta > 6 && winScroll > 90) {
+        // Actively scrolling down: hide navbar
+        if (!isNavHidden) {
+          navbar?.classList.add('nav-hidden');
+          isNavHidden = true;
+        }
+      } else if (delta < -8) {
+        // Actively scrolling up: reveal compact navbar
+        if (isNavHidden) {
+          navbar?.classList.remove('nav-hidden');
+          isNavHidden = false;
+        }
+      }
+      // When idle / stopped scrolling: keep current state!
     }
     lastScrollY = winScroll;
 
     // Active Section Spy
     let current = '';
     sections.forEach((sec) => {
-      const top = sec.offsetTop - 120;
+      const top = sec.offsetTop - 140;
       if (winScroll >= top) {
         current = sec.getAttribute('id');
       }
@@ -606,7 +625,10 @@ const setupScrollProgress = () => {
         link.classList.add('active');
       }
     });
-  });
+  };
+
+  window.handleNavScrollUpdate = handleScrollUpdate;
+  window.addEventListener('scroll', () => handleScrollUpdate(window.scrollY), { passive: true });
 };
 
 // ===== 9. Mobile Menu Toggle =====
