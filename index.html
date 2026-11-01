@@ -4,542 +4,1030 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Harsh Maurya | Digital Architect</title>
+  <title>Harsh Maurya | Digital Architect &amp; Systems Engineer</title>
 
-  <!-- Fonts: Inter (Body) & Fira Code (Technical) -->
+  <!-- Security Hardening Headers -->
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self' https: data: 'unsafe-inline' 'unsafe-eval'; img-src 'self' https: data: blob:; media-src 'self' https: data: blob:; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com; connect-src 'self' https:;" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+
+  <!-- Hero Image Preload (Hero Priority: LCP Optimization) -->
+  <link rel="preload" as="image" href="assets/images/profile.webp" type="image/webp" fetchpriority="high" />
+
+  <!-- Fonts: Space Grotesk (Headings), Inter (Body) & Fira Code (Technical) -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500;600&display=swap"
-    rel="stylesheet" />
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Fira+Code:wght@400;500;600&display=swap"
+    rel="stylesheet" media="print" onload="this.media='all'" />
+  <noscript>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Fira+Code:wght@400;500;600&display=swap"
+      rel="stylesheet" />
+  </noscript>
 
   <!-- Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'" />
+  <noscript>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  </noscript>
 
-  <!-- Styles -->
+  <!-- Stylesheets -->
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" href="css/animations.css" />
 </head>
 
 <body>
-  <!-- Scroll Progress -->
+  <!-- Background Procedural Canvas -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- Scroll Progress Indicator -->
   <div class="scroll-progress-container">
     <div class="scroll-progress-bar" id="scrollProgress"></div>
   </div>
 
-  <!-- Custom Cursor -->
+  <!-- Hardware-Accelerated Dynamic Cursor -->
   <div class="cursor" id="cursor"></div>
   <div class="cursor-follower" id="cursorFollower"></div>
 
-  <!-- Navbar -->
-  <nav class="navbar" id="navbar">
-    <div class="nav-logo">
-      <span class="logo-text">HM</span><span class="accent-dot">.</span>
-    </div>
-    <ul class="nav-links">
-      <li><a href="#home">Home</a></li>
-      <li><a href="#about">About</a></li>
-      <li><a href="#stack">Stack</a></li>
-      <li><a href="#lab">Skills</a></li>
-      <li><a href="#projects">Projects</a></li>
-      <li><a href="#certs">Certs</a></li>
-      <li><a href="#creative">Media</a></li>
-      <li><a href="#approach">How I Work</a></li>
-    </ul>
-  </nav>
+  <!-- Sticky Navbar -->
+  <header>
+    <nav class="navbar" id="navbar">
+      <div class="nav-container">
+        <a href="#home" class="nav-logo" aria-label="Harsh Maurya Home">
+          <span class="logo-text">HM</span><span class="accent-dot">.</span>
+        </a>
 
-  <!-- Hero Section -->
-  <header class="hero" id="home">
-    <div class="hero-content">
-      <img src="assets/images/profile.png" alt="Harsh Maurya" class="hero-profile-img"
-        onerror="this.style.display='none'">
-      <div class="mono-label" id="type-sys-init">> sys.init("harsh_maurya")</div>
-      <h1 class="hero-title" id="type-title" style="font-family: var(--font-mono); font-size: 3.5rem; letter-spacing: -1px; min-height: 120px;">Study.
-        Code. Architect. <br><span class="accent-text">Deploy.</span></h1>
-      <p class="hero-subtitle" id="type-subtitle" style="max-width: 700px; margin-left: auto; margin-right: auto; min-height: 80px;">
-        Computer Science Engineer focused on building hyper-local solutions and exploring the bleeding edge of AI
-        research.
-      </p>
-      <div class="hero-actions">
-        <a href="#lab" class="btn-primary">Explore My Lab</a>
-        <a href="#creative" class="btn-secondary">Watch Content</a>
+        <div class="nav-status-badge">
+          <span class="status-dot"></span>
+          <span class="status-text">ACTIVE ARCHITECT</span>
+        </div>
+
+        <ul class="nav-links" id="navLinks">
+          <li><a href="#home">Home</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#stack">Stack</a></li>
+          <li><a href="#lab">Skills</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#certs">Certs</a></li>
+          <li><a href="#creative">Media</a></li>
+          <li><a href="#approach">How I Work</a></li>
+          <li><a href="#resume">Resume</a></li>
+        </ul>
+
+        <div class="nav-actions">
+          <!-- Web Audio Synthesizer Toggle -->
+          <button class="audio-toggle-btn" id="audioToggleBtn" title="Toggle Haptic Sound Synthesis">
+            <i class="fas fa-volume-mute"></i>
+            <span>FX: OFF</span>
+          </button>
+
+          <!-- Mobile Hamburger Toggle -->
+          <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation menu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
       </div>
-    </div>
+    </nav>
   </header>
 
-  <!-- About Me Section -->
-  <section class="section" id="about">
-    <div class="container">
-      <h2 class="section-title">My<span class="accent-text">Profile</span></h2>
-      <p class="section-mono">// About Me</p>
+  <main>
+    <!-- Hero Section -->
+    <section class="hero" id="home">
+      <div class="container hero-container">
+        <div class="hero-header-row">
+          <div class="hero-avatar-wrap">
+            <img src="assets/images/profile.webp" alt="Harsh Maurya" class="hero-profile-img" width="160" height="160"
+              onerror="this.src='assets/images/profile.png'" />
+            <div class="avatar-ring"></div>
+          </div>
+          <div class="hero-meta-group">
+            <div class="mono-label telemetry-pill" id="type-sys-init">&gt; sys.init("harsh_maurya")</div>
+            <div class="location-chip">
+              <i class="fas fa-map-marker-alt"></i> Meerut, UP, India
+            </div>
+          </div>
+        </div>
 
-      <div class="about-card">
-        <p class="about-bio">
-          1st-year Computer Science Engineering student bridging software development, AI research, and system
-          architecture. Experienced in deploying local Large Language Models (LLMs), building full-stack web prototypes.
-          Focused on building scalable, hyper-local solutions for underserved markets.
+        <h1 class="hero-title" id="hero-heading">
+          Study. Code. Architect. <br /><span class="accent-text">Deploy.</span>
+        </h1>
+
+        <p class="hero-subtitle">
+          1st-year Computer Science Engineering student bridging robust software development,
+          AI systems engineering, and offline-first privacy architectures.
         </p>
-        <div class="contact-grid">
-          <a href="https://maps.google.com/?q=Meerut,Uttar+Pradesh,India" target="_blank" class="contact-item">
-            <i class="fas fa-map-marker-alt"></i>
-            <span>Meerut, Uttar Pradesh, India</span>
-          </a>
-          <a href="mailto:harshmauryamau@gmail.com" class="contact-item">
-            <i class="fas fa-envelope"></i>
-            <span>harshmauryamau@gmail.com</span>
-          </a>
-          <a href="tel:+919569759599" class="contact-item">
-            <i class="fas fa-phone-alt"></i>
-            <span>+91 95697 59599</span>
-          </a>
-          <a href="https://github.com/harshverse-svg" target="_blank" class="contact-item">
-            <i class="fab fa-github"></i>
-            <span>harshverse-svg</span>
-          </a>
-          <a href="https://www.linkedin.com/in/harsh-maurya-baa534400" target="_blank" class="contact-item">
-            <i class="fab fa-linkedin"></i>
-            <span>LinkedIn Profile</span>
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- Core Technical Stack (Bento Box) -->
-  <section class="section" id="stack">
-    <div class="container">
-      <h2 class="section-title">Core Technical <span class="accent-text">Stack</span></h2>
-      <p class="section-mono">// Architecture & Infrastructure</p>
-
-      <div class="bento-grid">
-        <!-- Languages -->
-        <div class="bento-item">
-          <i class="fab fa-python bento-icon"></i>
-          <h3 class="mono-label">Python</h3>
-        </div>
-        <div class="bento-item">
-          <i class="fas fa-c bento-icon"></i>
-          <h3 class="mono-label">C / C++</h3>
-        </div>
-        <div class="bento-item">
-          <i class="fab fa-html5 bento-icon"></i>
-          <h3 class="mono-label">HTML</h3>
+        <div class="hero-actions">
+          <a href="#projects" class="btn-primary"><i class="fas fa-cube"></i> Explore Systems (7)</a>
+          <a href="#lab" class="btn-secondary"><i class="fas fa-microchip"></i> Technical Lab</a>
+          <a href="#resume" class="btn-outline"><i class="fas fa-file-pdf"></i> Resume.pdf</a>
         </div>
 
-        <!-- Infrastructure -->
-        <div class="bento-item bento-wide">
-          <div style="display: flex; gap: 1.5rem; justify-content: center; align-items: center; margin-bottom: 0.5rem;">
-            <i class="fab fa-github bento-icon" style="margin-bottom: 0; font-size: 2.5rem;"></i>
-            <i class="fas fa-terminal bento-icon" style="margin-bottom: 0; font-size: 2.5rem;"></i>
-          </div>
-          <h3 class="mono-label" style="margin-top: 0.5rem;">Git / GitHub CLI / PowerShell</h3>
-        </div>
-
-        <!-- Tools & Deployment -->
-        <div class="bento-item">
-          <i class="fas fa-code bento-icon"></i>
-          <h3 class="mono-label">VS Code</h3>
-        </div>
-        <div class="bento-item bento-tall">
-          <i class="fas fa-rocket bento-icon"></i>
-          <h3 class="mono-label">Streamlit</h3>
-          <p class="bento-desc">Full-stack AI Prototyping</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- AI & Deep-Tech Lab -->
-  <section class="section lab-section" id="lab">
-    <div class="container">
-      <h2 class="section-title">Advanced <span class="accent-text">Skills</span></h2>
-      <p class="section-mono">// Research & Explorations</p>
-
-      <div class="glass-grid">
-        <div class="glass-card">
-          <div class="card-header">
-            <i class="fas fa-brain"></i>
-            <span class="mono-tag">Learning</span>
-          </div>
-          <h3>Intelligence Basics</h3>
-          <p>Core mechanics of LLMs, Neural Networks, and AI Security.</p>
-        </div>
-
-        <div class="glass-card">
-          <div class="card-header">
-            <i class="fas fa-network-wired"></i>
-            <span class="mono-tag">Architecture</span>
-          </div>
-          <h3>Intelligence Systems</h3>
-          <p>Local LLM Optimization, Agentic Workflows, and GraphRAG architectures.</p>
-        </div>
-
-        <div class="glass-card">
-          <div class="card-header">
-            <i class="fas fa-robot"></i>
-            <span class="mono-tag">Implementation</span>
-          </div>
-          <h3>Model Experience</h3>
-          <p>Deploying and experimenting with Kimi-k2.5, Qwen2.5-coder, and Gemma.</p>
-        </div>
-
-        <div class="glass-card highlight-card">
-          <div class="card-header">
-            <i class="fas fa-microchip"></i>
-            <span class="mono-tag research-tag">Current Research</span>
-          </div>
-          <h3>Emerging Tech</h3>
-          <p>Neuromorphic Computing, Floquet Engineering, and Muon Tomography.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Flagship Projects -->
-  <section class="section" id="projects">
-    <div class="container">
-      <h2 class="section-title">Flagship <span class="accent-text">Projects</span></h2>
-      <p class="section-mono">// Engineering & Architecture</p>
-
-      <div class="projects-grid">
-
-        <!-- Project 1: Swast-.link- -->
-        <div class="project-card">
-          <div class="project-header">
-            <h3>Swast-.link- <span class="accent-text">| Virtual Queue</span></h3>
-            <span class="mono-tag role-tag">Lead Developer & Architect</span>
-          </div>
-
-          <img src="assets/images/swasthlink.png" alt="SwasthLink Interface" class="project-screenshot"
-            onerror="this.style.display='none'">
-
-          <div class="architecture-diagram">
-            <div class="arch-box">User Digital ID</div>
-            <i class="fas fa-arrow-right arch-arrow"></i>
-            <div class="arch-box highlight-box">ABDM Protocol</div>
-            <i class="fas fa-arrow-right arch-arrow"></i>
-            <div class="arch-box">Service Provider</div>
-          </div>
-
-          <div class="project-content">
-            <p class="pitch"><strong>The Pitch:</strong> A "Scan & Share" prototype designed to eliminate physical wait
-              times in healthcare and retail environments through integrated digital profiles.</p>
-            <p>Developed a full-stack Virtual Queue Management system to streamline patient and customer check-ins. The
-              system utilizes a 'Scan and Share' architecture, enabling users to instantly transmit profiles for faster
-              processing. I integrated simulated ABDM (Ayushman Bharat Digital Mission) profile fetching and UPI payment
-              simulations to demonstrate a secure, end-to-end user journey from registration to transaction.</p>
-
-            <ul class="project-highlights">
-              <li><i class="fas fa-exclamation-circle"></i> <strong>The Problem:</strong> Traditional queueing leads to
-                congestion and data entry errors.</li>
-              <li><i class="fas fa-check-circle"></i> <strong>The Solution:</strong> A mobile-first web interface
-                connecting digital IDs to providers.</li>
-              <li><i class="fas fa-star"></i> <strong>Key Feature:</strong> Integration of government-standard profile
-                protocols (ABDM) to ensure real-world viability.</li>
-            </ul>
-
-            <div class="tech-tags">
-              <span class="mono-tag">Python</span>
-              <span class="mono-tag">Streamlit</span>
-              <span class="mono-tag">API Integration</span>
-              <span class="mono-tag">Digital Identity</span>
-              <span class="mono-tag">UX/UI Design</span>
+        <!-- Interactive CLI HUD Terminal -->
+        <div class="terminal-hud-wrap animate-on-scroll">
+          <div class="terminal-header">
+            <div class="terminal-dots">
+              <span class="dot dot-red"></span>
+              <span class="dot dot-yellow"></span>
+              <span class="dot dot-green"></span>
+            </div>
+            <div class="terminal-title">harsh@systems-arch: ~/portfolio-v2</div>
+            <div class="terminal-chips">
+              <button class="terminal-chip" data-cmd="help">help</button>
+              <button class="terminal-chip" data-cmd="projects">projects</button>
+              <button class="terminal-chip" data-cmd="repos">repos (10)</button>
+              <button class="terminal-chip" data-cmd="skills">skills</button>
+              <button class="terminal-chip" data-cmd="contact">contact</button>
+              <button class="terminal-chip" data-cmd="clear">clear</button>
             </div>
           </div>
-
-          <div class="project-links">
-            <a href="https://harshverse-svg.github.io/Swast-.link-/" target="_blank" class="btn-outline">[ View Live
-              Demo ]</a>
-            <a href="queuekhatam-research.html" target="_blank" class="btn-outline">[ Read Case Study ]</a>
-            <a href="https://github.com/harshverse-svg/Swast-.link-" target="_blank" class="btn-primary">[ Source Code
-              ]</a>
+          <div class="terminal-body" id="terminalOutput" role="log" aria-live="polite">
+            <div class="term-line term-system">&gt; ARCHITECT CLI v2.4 ONLINE. Consumer-hardware AI, Windows daemons &amp; offline web systems.</div>
+            <div class="term-line term-accent">&gt; TELEMETRY: 10 Public Repositories | 7 Active Systems | 100% Offline Capable.</div>
+            <div class="term-line term-muted">&gt; Type a command or click a chip above (try 'projects' or 'repos').</div>
           </div>
-        </div>
-
-        <!-- Project 2: GraphRAG -->
-        <div class="project-card">
-          <div class="project-header">
-            <h3>GraphRAG <span class="accent-text">| Local Intelligence</span></h3>
-            <span class="mono-tag role-tag">Lead Developer & Architect</span>
-          </div>
-
-          <div class="architecture-diagram">
-            <div class="arch-box">Documents</div>
-            <i class="fas fa-arrow-right arch-arrow"></i>
-            <div class="arch-box highlight-box">Local LLM (Ollama)</div>
-            <i class="fas fa-arrow-right arch-arrow"></i>
-            <div class="arch-box">Knowledge Graph</div>
-          </div>
-
-          <div class="project-content">
-            <p class="pitch"><strong>The Pitch:</strong> An advanced Knowledge Retrieval application leveraging
-              Graph-based Retrieval-Augmented Generation and local Large Language Models.</p>
-            <p>Built and optimized a GraphRAG application to solve the context-window limitations of standard LLMs. By
-              utilizing Ollama to host local models (like Qwen2.5 and Gemma) and Streamlit for the interface, I created
-              a system that maps complex relationships between data points before generating responses. This project
-              involved deep performance analysis of local inference speeds versus retrieval accuracy.</p>
-
-            <ul class="project-highlights">
-              <li><i class="fas fa-lightbulb"></i> <strong>The Innovation:</strong> Moving beyond standard RAG by
-                implementing a knowledge graph to preserve data relationships.</li>
-              <li><i class="fas fa-shield-alt"></i> <strong>Privacy-First:</strong> Designed to run entirely locally,
-                ensuring data security for sensitive research or private documentation.</li>
-              <li><i class="fas fa-chart-line"></i> <strong>The Result:</strong> Significant reduction in
-                "hallucinations" and higher accuracy in multi-document synthesis.</li>
-            </ul>
-
-            <div class="tech-tags">
-              <span class="mono-tag">Ollama</span>
-              <span class="mono-tag">GraphRAG</span>
-              <span class="mono-tag">Local LLMs</span>
-              <span class="mono-tag">RAG Architecture</span>
-              <span class="mono-tag">Knowledge Graphs</span>
-            </div>
-          </div>
-
-          <div class="project-links">
-            <button class="btn-outline btn-disabled" disabled>[ View Live Demo ] <br><small>Not Available (Local
-                Hardware)</small></button>
-            <a href="graphrag-readme.html" target="_blank" class="btn-outline">[ Read Case Study ]</a>
-            <a href="https://github.com/harshverse-svg/graphrag-ollama" target="_blank" class="btn-primary">[ Source
-              Code ]</a>
-          </div>
-        </div>
-
-        <!-- Project 3: Stone Paper Scissor -->
-        <div class="project-card">
-          <div class="project-header">
-            <h3>Stone Paper Scissor <span class="accent-text">| Web Game</span></h3>
-            <span class="mono-tag role-tag">Solo Developer</span>
-          </div>
-
-          <img src="assets/images/sps.png" alt="Stone Paper Scissor Game" class="project-screenshot"
-            onerror="this.style.display='none'">
-
-          <div class="architecture-diagram">
-            <div class="arch-box">User Input</div>
-            <i class="fas fa-arrow-right arch-arrow"></i>
-            <div class="arch-box highlight-box">Game Engine / AI Logic</div>
-            <i class="fas fa-arrow-right arch-arrow"></i>
-            <div class="arch-box">Audio & UI Update</div>
-          </div>
-
-          <div class="project-content">
-            <p class="pitch"><strong>The Pitch:</strong> A fully playable, polished browser game demonstrating advanced
-              DOM manipulation, state management, and asset handling.</p>
-            <p>Developed "Snake Water Gun 3.0" (a variant of Stone Paper Scissor) as a highly interactive web
-              application. The game features an integrated audio engine, an AI difficulty system, and a robust
-              achievements tracker, providing a high-quality native-app feel directly within the browser.</p>
-
-            <ul class="project-highlights">
-              <li><i class="fas fa-gamepad"></i> <strong>The Innovation:</strong> Implementing an AI difficulty curve
-                and achievement system entirely via client-side JavaScript.</li>
-              <li><i class="fas fa-mobile-alt"></i> <strong>Mobile-First Design:</strong> Utilized dynamic viewport
-                units (100dvh) and a slide-out sidebar for optimal mobile playability.</li>
-              <li><i class="fas fa-volume-up"></i> <strong>Immersive Experience:</strong> Integrated an audio engine to
-                provide instant visceral feedback for gameplay actions.</li>
-            </ul>
-
-            <div class="tech-tags">
-              <span class="mono-tag">JavaScript</span>
-              <span class="mono-tag">HTML/CSS</span>
-              <span class="mono-tag">State Management</span>
-              <span class="mono-tag">Game Logic</span>
-              <span class="mono-tag">GitHub Pages</span>
-            </div>
-          </div>
-
-          <div class="project-links">
-            <a href="https://harshverse-svg.github.io/stone-paper-scissor/" target="_blank" class="btn-outline">[ View
-              Live Demo ]</a>
-            <a href="https://github.com/harshverse-svg/stone-paper-scissor" target="_blank" class="btn-primary">[ Source
-              Code ]</a>
-          </div>
-        </div>
-
-      </div>
-    </div>
-    </div>
-  </section>
-
-  <!-- Certificates Section -->
-  <section class="section" id="certs">
-    <div class="container">
-      <h2 class="section-title">Professional <span class="accent-text">Certifications</span></h2>
-      <p class="section-mono">// Verified Skills & Training</p>
-
-      <div class="cert-grid">
-        <div class="cert-card">
-          <img src="assets/images/cert1.png" alt="Google Cloud - Intro to LLMs" class="cert-img"
-            onerror="this.style.display='none'">
-          <div class="cert-info">
-            <h4 class="mono-label">Intro to Large Language Models</h4>
-            <p>Google Cloud</p>
-          </div>
-        </div>
-        <div class="cert-card">
-          <img src="assets/images/cert2.png" alt="Google Cloud - Intro to Gen AI" class="cert-img"
-            onerror="this.style.display='none'">
-          <div class="cert-info">
-            <h4 class="mono-label">Intro to Generative AI</h4>
-            <p>Google Cloud</p>
-          </div>
-        </div>
-        <div class="cert-card">
-          <img src="assets/images/cert3.png" alt="IBM - Intro to AI" class="cert-img"
-            onerror="this.style.display='none'">
-          <div class="cert-info">
-            <h4 class="mono-label">Intro to Artificial Intelligence (AI)</h4>
-            <p>IBM</p>
-          </div>
-        </div>
-        <div class="cert-card">
-          <img src="assets/images/cert4.png" alt="Google - Crash Course on Python" class="cert-img"
-            onerror="this.style.display='none'">
-          <div class="cert-info">
-            <h4 class="mono-label">Crash Course on Python</h4>
-            <p>Google</p>
-          </div>
-        </div>
-        <div class="cert-card">
-          <img src="assets/images/cert5.png" alt="Google Cloud - Intro to Responsible AI" class="cert-img"
-            onerror="this.style.display='none'">
-          <div class="cert-info">
-            <h4 class="mono-label">Introduction to Responsible AI</h4>
-            <p>Google Cloud</p>
-          </div>
-        </div>
-        <div class="cert-card">
-          <img src="assets/images/cert6.png" alt="Google - Foundations of Cybersecurity" class="cert-img"
-            onerror="this.style.display='none'">
-          <div class="cert-info">
-            <h4 class="mono-label">Foundations of Cybersecurity</h4>
-            <p>Google</p>
-          </div>
-        </div>
-        <div class="cert-card">
-          <img src="assets/images/cert7.png" alt="Google - Foundations: Data, Data, Everywhere" class="cert-img"
-            onerror="this.style.display='none'">
-          <div class="cert-info">
-            <h4 class="mono-label">Foundations: Data, Data, Everywhere</h4>
-            <p>Google</p>
+          <div class="terminal-input-bar">
+            <span class="terminal-prompt">$</span>
+            <input type="text" id="terminalInput" class="terminal-input" placeholder="Type 'help' or command..." autocomplete="off" spellcheck="false" aria-label="Terminal command input" />
           </div>
         </div>
       </div>
-    </div>
-  </section>
-  <!-- Creative Ecosystem -->
-  <section class="section" id="creative">
-    <div class="container">
-      <h2 class="section-title">Creative <span class="accent-text">Ecosystem</span></h2>
-      <p class="section-mono">// Media & Branding</p>
+    </section>
 
-      <div class="media-gallery">
-        <div class="media-card">
-          <div class="media-video" style="height: 300px;">
-            <iframe width="100%" height="100%" src="https://www.youtube.com/embed/o81KExZbok0"
-              title="YouTube video player" frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen style="border-bottom: 1px solid var(--glass-border);"></iframe>
-          </div>
-          <div class="media-info">
-            <h4>Technical Video Editing</h4>
-            <p>Educational Content Strategy & Channel Management</p>
-          </div>
+    <!-- About Me Section -->
+    <section class="section" id="about">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title">Architect Profile</h2>
+          <span class="section-meta">Identity &amp; Systems Philosophy</span>
         </div>
 
-        <div class="media-sidebar">
-          <div class="media-item">
-            <i class="fas fa-palette"></i>
-            <div>
-              <h4 class="mono-label">Digital Identity Design</h4>
-              <p>Intros, Outros & Thumbnails</p>
-            </div>
-          </div>
-          <div class="media-item">
-            <i class="fas fa-film"></i>
-            <div>
-              <h4 class="mono-label">Motion Graphics</h4>
-              <p>Visual storytelling for technical concepts</p>
-            </div>
-          </div>
-          <a href="https://www.youtube.com/@Thinktogether-z8g" target="_blank" class="btn-outline"><i
-              class="fab fa-youtube"></i> Visit Channel</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Strategic Architecture -->
-  <section class="section approach-section" id="approach">
-    <div class="container">
-      <h2 class="section-title">How I <span class="accent-text">Work</span></h2>
-      <p class="section-mono">// Strategic Architecture</p>
-
-      <div class="approach-grid">
-        <div class="approach-item">
-          <div class="approach-number">01</div>
-          <div class="approach-content">
-            <h3 class="mono-label">Cognitive Tools</h3>
-            <p>I combine Advanced Prompt Engineering with rigorous problem solving to unlock optimal solutions.</p>
-          </div>
-        </div>
-
-        <div class="approach-item">
-          <div class="approach-number">02</div>
-          <div class="approach-content">
-            <h3 class="mono-label">Execution</h3>
-            <p>End-to-End Project Management — transforming abstract architecture into deployed reality.</p>
-          </div>
-        </div>
-
-        <div class="approach-item">
-          <div class="approach-number">03</div>
-          <div class="approach-content">
-            <h3 class="mono-label">Communication</h3>
-            <p>Technical Content Writing and structured debating for logical defense of technical choices.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Resume Section -->
-  <section class="section" id="resume">
-    <div class="container">
-      <div class="resume-banner">
-        <div class="resume-content">
-          <h2 class="section-title">Get the <span class="accent-text">Full Picture</span></h2>
-          <p class="section-mono">// Download Official Resume [PDF]</p>
-          <p style="color: var(--text-muted); margin-bottom: 2rem;">
-            Ready to collaborate? Download my comprehensive resume to review my full academic background, technical
-            skills, and detailed project experience.
+        <div class="about-card animate-on-scroll">
+          <p class="about-bio">
+            1st-year Computer Science Engineering undergraduate specializing in local Large Language Model (LLM) deployment, offline-first systems, and privacy-preserving application architecture. Experienced in engineering local RAG pipelines on consumer-tier GPUs (6GB VRAM), architecting zero-telemetry Windows utilities, and building mobile-first healthcare prototypes. Strong foundation in Python, C/C++, modern JavaScript, and distributed system design.
           </p>
-          <a href="assets/Harsh_Maurya_Resume.pdf" download="Harsh_Maurya_Resume.pdf" class="btn-primary"
-            style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 1rem 2rem; font-size: 1rem;">
-            <i class="fas fa-file-pdf"></i> Download Resume.pdf
-          </a>
+
+          <!-- Quantitative Telemetry Strip -->
+          <div class="about-stats-grid">
+            <div class="about-stat-box">
+              <span class="stat-number">10</span>
+              <span class="stat-label">Public Repositories (GitHub)</span>
+            </div>
+            <div class="about-stat-box">
+              <span class="stat-number">07</span>
+              <span class="stat-label">Production Systems Engineered</span>
+            </div>
+            <div class="about-stat-box">
+              <span class="stat-number">6GB</span>
+              <span class="stat-label">VRAM Hardware Cap (Local LLMs)</span>
+            </div>
+            <div class="about-stat-box">
+              <span class="stat-number">100%</span>
+              <span class="stat-label">Offline &amp; Zero Cloud Telemetry</span>
+            </div>
+          </div>
+
+          <!-- Verified Contact Endpoints (No Plaintext Phone) -->
+          <div class="contact-grid">
+            <a href="https://maps.google.com/?q=Meerut,Uttar+Pradesh,India" target="_blank" rel="noopener noreferrer" class="contact-item">
+              <i class="fas fa-map-marker-alt"></i>
+              <span>Meerut, Uttar Pradesh, India</span>
+            </a>
+            <a href="mailto:harshmauryamau@gmail.com" class="contact-item email-contact" title="Direct Email Inquiry">
+              <i class="fas fa-envelope"></i>
+              <span>harshmauryamau@gmail.com</span>
+            </a>
+            <a href="https://github.com/harshverse-svg" target="_blank" rel="noopener noreferrer" class="contact-item">
+              <i class="fab fa-github"></i>
+              <span>github.com/harshverse-svg</span>
+            </a>
+            <a href="https://www.linkedin.com/in/harsh-maurya-baa534400" target="_blank" rel="noopener noreferrer" class="contact-item">
+              <i class="fab fa-linkedin"></i>
+              <span>LinkedIn Profile</span>
+            </a>
+            <a href="https://www.youtube.com/@Thinktogether-z8g" target="_blank" rel="noopener noreferrer" class="contact-item">
+              <i class="fab fa-youtube"></i>
+              <span>@Thinktogether-z8g</span>
+            </a>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Footer -->
-  <footer>
-    <div class="container footer-content">
-      <div class="footer-logo">HM<span class="accent-text">.</span></div>
-      <div class="social-links">
-        <a href="#"><i class="fab fa-github"></i></a>
-        <a href="https://www.youtube.com/@Thinktogether-z8g" target="_blank"><i class="fab fa-youtube"></i></a>
-        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+    <!-- Core Technical Stack (Contextualized Bento Grid) -->
+    <section class="section" id="stack">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title">Core Technical Stack</h2>
+          <span class="section-meta">Contextualized Infrastructure &amp; Capabilities</span>
+        </div>
+
+        <div class="bento-grid">
+          <!-- Languages -->
+          <div class="bento-item animate-on-scroll">
+            <i class="fab fa-python bento-icon"></i>
+            <h3 class="mono-label">Python 3.10+</h3>
+            <p class="bento-desc">FastAPI, Ollama LLM integration, pynput OS daemons, and NetworkX graph computation.</p>
+          </div>
+
+          <div class="bento-item animate-on-scroll delay-100">
+            <i class="fas fa-code bento-icon"></i>
+            <h3 class="mono-label">C / C++</h3>
+            <p class="bento-desc">Low-level systems programming, memory-bounded algorithms, and computer science foundations.</p>
+          </div>
+
+          <div class="bento-item animate-on-scroll delay-200">
+            <i class="fab fa-js-square bento-icon"></i>
+            <h3 class="mono-label">Modern JavaScript</h3>
+            <p class="bento-desc">ES6+, Web Workers, WebAssembly (WASM) OCR, Web Crypto API (AES-GCM), and Progressive Web Apps.</p>
+          </div>
+
+          <div class="bento-item animate-on-scroll">
+            <i class="fab fa-html5 bento-icon"></i>
+            <h3 class="mono-label">HTML5 / PWA</h3>
+            <p class="bento-desc">Offline-first Service Workers, Web App Manifests, dynamic 100dvh viewport scaling.</p>
+          </div>
+
+          <!-- Infrastructure -->
+          <div class="bento-item bento-wide animate-on-scroll delay-100">
+            <div class="bento-icons-row">
+              <i class="fab fa-github bento-icon"></i>
+              <i class="fas fa-terminal bento-icon"></i>
+              <i class="fas fa-microchip bento-icon"></i>
+            </div>
+            <h3 class="mono-label">Git / GitHub CLI / PowerShell &amp; Bash</h3>
+            <p class="bento-desc">Production CI/CD pipelines, one-click Windows automation launchers, strict semantic versioning, and environment sandboxing.</p>
+          </div>
+
+          <!-- Tools & Deployment -->
+          <div class="bento-item animate-on-scroll">
+            <i class="fas fa-laptop-code bento-icon"></i>
+            <h3 class="mono-label">VS Code</h3>
+            <p class="bento-desc">Primary IDE, remote WSL development, static linting, and memory profiling.</p>
+          </div>
+
+          <div class="bento-item animate-on-scroll delay-100">
+            <i class="fas fa-cubes bento-icon"></i>
+            <h3 class="mono-label">Three.js / WebGL</h3>
+            <p class="bento-desc">Procedural 3D neural core visualization, custom GLSL fragment shaders reflecting cognitive load.</p>
+          </div>
+
+          <div class="bento-item animate-on-scroll delay-200">
+            <i class="fas fa-rocket bento-icon"></i>
+            <h3 class="mono-label">FastAPI &amp; Streamlit</h3>
+            <p class="bento-desc">High-throughput asynchronous REST services and rapid data architecture prototypes.</p>
+          </div>
+        </div>
       </div>
-      <p class="footer-mono">© 2026 Harsh Maurya. Engineered with precision.</p>
+    </section>
+
+    <!-- Deep-Tech Lab & Literature Tracker -->
+    <section class="section lab-section" id="lab">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title">Technical Skills &amp; Research Lab</h2>
+          <span class="section-meta">Architectures, Inference &amp; Ground-Truth Literature</span>
+        </div>
+
+        <div class="glass-grid">
+          <div class="glass-card animate-on-scroll">
+            <div class="card-header">
+              <i class="fas fa-brain"></i>
+              <span class="mono-tag">Architecture</span>
+            </div>
+            <h3>Local RAG &amp; Vector Search</h3>
+            <p>100% on-device embedding generation, chunking strategies, cosine similarity retrieval, and zero-leakage context injection without external cloud latency.</p>
+          </div>
+
+          <div class="glass-card animate-on-scroll delay-100">
+            <div class="card-header">
+              <i class="fas fa-network-wired"></i>
+              <span class="mono-tag">Graph Intelligence</span>
+            </div>
+            <h3>GraphRAG &amp; Louvain Clustering</h3>
+            <p>Constructing multi-document knowledge graphs using NetworkX Louvain community detection to preserve multi-hop entity relationships and eliminate hallucinations.</p>
+          </div>
+
+          <div class="glass-card animate-on-scroll delay-200">
+            <div class="card-header">
+              <i class="fas fa-microchip"></i>
+              <span class="mono-tag">Quantized Inference</span>
+            </div>
+            <h3>Local Model Engineering</h3>
+            <p>Deploying and tuning models (Gemma 4-bit, Qwen2.5-Coder, Kimi-k2.5) strictly within a consumer 6GB VRAM GPU hardware bound using Ollama and GGML.</p>
+          </div>
+
+          <div class="glass-card highlight-card animate-on-scroll delay-300">
+            <div class="card-header">
+              <i class="fas fa-atom"></i>
+              <span class="mono-tag research-tag">Ground-Truth Literature</span>
+            </div>
+            <h3>Active Physics &amp; Hardware Reading</h3>
+            <p>Exploring cross-disciplinary computational frontiers with verified preprint literature:</p>
+            <ul class="literature-list">
+              <li>
+                <strong>Neuromorphic Computing:</strong> Schuman et al.,
+                <a href="https://arxiv.org/abs/1705.06963" target="_blank" rel="noopener noreferrer" class="arxiv-link">arXiv:1705.06963</a> (ORNL)
+              </li>
+              <li>
+                <strong>Floquet Engineering:</strong> Oka &amp; Kitamura,
+                <a href="https://arxiv.org/abs/1804.03212" target="_blank" rel="noopener noreferrer" class="arxiv-link">arXiv:1804.03212</a> (Ann. Rev.)
+              </li>
+              <li>
+                <strong>Muon Tomography:</strong> Bonechi et al.,
+                <a href="https://arxiv.org/abs/1906.03934" target="_blank" rel="noopener noreferrer" class="arxiv-link">arXiv:1906.03934</a> (Rev. Phys.)
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Flagship Projects Section -->
+    <section class="section" id="projects">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title">Flagship Projects &amp; GitHub Repositories</h2>
+          <span class="section-meta">7 Active Systems Engineered | 10 Public Repositories</span>
+        </div>
+
+        <!-- Project Filtering Matrix -->
+        <div class="project-filter-bar">
+          <button class="filter-btn active" data-filter="all">All Systems (7)</button>
+          <button class="filter-btn" data-filter="ai">AI &amp; Local LLMs (3)</button>
+          <button class="filter-btn" data-filter="systems">Systems &amp; Offline Tools (3)</button>
+          <button class="filter-btn" data-filter="web">Web &amp; Games (4)</button>
+        </div>
+
+        <div class="projects-grid">
+
+          <!-- Project 1: BUDDY AI Study Platform -->
+          <article class="project-card animate-on-scroll" data-category="ai systems">
+            <div class="project-header">
+              <div class="project-title-group">
+                <h3>BUDDY <span class="accent-text">| Autonomous Local AI Study Platform</span></h3>
+              </div>
+              <div class="project-badges">
+                <span class="status-badge"><span class="status-dot"></span> 100% LOCAL GPU</span>
+                <span class="role-tag">Architect &amp; Lead Engineer</span>
+              </div>
+            </div>
+
+            <div class="project-screenshot-wrap">
+              <img src="assets/images/buddy-hero.jpg" alt="BUDDY Platform 3D Neural Interface" class="project-screenshot" width="700" height="380" loading="lazy" onerror="this.parentElement.style.display='none'" />
+            </div>
+
+            <div class="architecture-diagram">
+              <div class="arch-box">User Notes &amp; PDFs</div>
+              <i class="fas fa-arrow-right arch-arrow"></i>
+              <div class="arch-box highlight-box">Ollama (gemma4:e4b)</div>
+              <i class="fas fa-arrow-right arch-arrow"></i>
+              <div class="arch-box">3D GLSL Core &amp; Vector RAG</div>
+              <i class="fas fa-arrow-right arch-arrow"></i>
+              <div class="arch-box">Knowledge Graph Arena</div>
+            </div>
+
+            <div class="project-content">
+              <ul class="project-pdr">
+                <li><strong>Problem:</strong> Cloud AI study companions require expensive monthly subscriptions and stream confidential student notes to remote third-party servers.</li>
+                <li><strong>Decision:</strong> Architected a single-origin platform pairing a high-throughput FastAPI backend with an interactive Three.js GLSL neural core, using local Ollama models bound within 6GB VRAM.</li>
+                <li><strong>Result:</strong> Delivered an offline study workspace featuring automated chapter synthesis, concept graphs, and an adaptive quiz arena with zero data leakage and zero cloud latency.</li>
+              </ul>
+
+              <div class="tech-tags">
+                <span class="mono-tag">Python 3.10+</span>
+                <span class="mono-tag">FastAPI</span>
+                <span class="mono-tag">Three.js / WebGL</span>
+                <span class="mono-tag">Ollama</span>
+                <span class="mono-tag">Local RAG</span>
+                <span class="mono-tag">Knowledge Graph</span>
+                <span class="mono-tag">GLSL Shaders</span>
+              </div>
+            </div>
+
+            <div class="project-links">
+              <a href="https://github.com/harshverse-svg/buddy-ai-study-platform" target="_blank" rel="noopener noreferrer" class="btn-primary">
+                <i class="fab fa-github"></i> Source Code
+              </a>
+              <button class="btn-outline copy-clone-btn" data-repo="https://github.com/harshverse-svg/buddy-ai-study-platform.git">
+                <i class="fas fa-terminal"></i> Clone Repo
+              </button>
+            </div>
+          </article>
+
+          <!-- Project 2: FormattingBuddy -->
+          <article class="project-card animate-on-scroll" data-category="systems web">
+            <div class="project-header">
+              <div class="project-title-group">
+                <h3>FormattingBuddy <span class="accent-text">| Zero-Backend PWA Document Engine</span></h3>
+              </div>
+              <div class="project-badges">
+                <span class="status-badge status-prod"><span class="status-dot"></span> PRODUCTION PWA</span>
+                <span class="role-tag">Solo Architect &amp; Developer</span>
+              </div>
+            </div>
+
+            <div class="project-screenshot-wrap">
+              <img src="assets/images/formattingbuddy.svg" alt="FormattingBuddy Architecture" class="project-screenshot" width="700" height="240" loading="lazy" onerror="this.parentElement.style.display='none'" />
+            </div>
+
+            <div class="architecture-diagram">
+              <div class="arch-box">Multi-Format Files</div>
+              <i class="fas fa-arrow-right arch-arrow"></i>
+              <div class="arch-box highlight-box">WASM OCR in Browser</div>
+              <i class="fas fa-arrow-right arch-arrow"></i>
+              <div class="arch-box">Web Crypto (AES-GCM)</div>
+              <i class="fas fa-arrow-right arch-arrow"></i>
+              <div class="arch-box">Universal Export Engine</div>
+            </div>
+
+            <div class="project-content">
+              <ul class="project-pdr">
+                <li><strong>Problem:</strong> Online formatting and PDF conversion services impose subscription paywalls, restrict file sizes, and store confidential documents on unverified clouds.</li>
+                <li><strong>Decision:</strong> Built a serverless Progressive Web App using client-side WebAssembly OCR and the native Web Crypto API (PBKDF2/AES-GCM) to parse multi-format files in browser memory.</li>
+                <li><strong>Result:</strong> Created an installable, zero-backend utility that converts raw text into formatted manuals, charts, and exports (PDF, HTML, DOCX, Markdown, ZIP) with complete zero-server privacy.</li>
+              </ul>
+
+              <div class="tech-tags">
+                <span class="mono-tag">JavaScript (ES6+)</span>
+                <span class="mono-tag">Progressive Web App</span>
+                <span class="mono-tag">WASM OCR</span>
+                <span class="mono-tag">Web Crypto API</span>
+                <span class="mono-tag">PDF / DOCX Generator</span>
+                <span class="mono-tag">Zero-Backend</span>
+              </div>
+            </div>
+
+            <div class="project-links">
+              <a href="https://harshverse-svg.github.io/formattingbuddy/" target="_blank" rel="noopener noreferrer" class="btn-outline">
+                <i class="fas fa-external-link-alt"></i> View Live Demo
+              </a>
+              <a href="https://github.com/harshverse-svg/formattingbuddy" target="_blank" rel="noopener noreferrer" class="btn-primary">
+                <i class="fab fa-github"></i> Source Code
+              </a>
+              <button class="btn-outline copy-clone-btn" data-repo="https://github.com/harshverse-svg/formattingbuddy.git">
+                <i class="fas fa-terminal"></i> Clone Repo
+              </button>
+            </div>
+          </article>
+
+          <!-- Project 3: Typing Buddy -->
+          <article class="project-card animate-on-scroll" data-category="ai systems">
+            <div class="project-header">
+              <div class="project-title-group">
+                <h3>Typing Buddy <span class="accent-text">| Offline Windows Typing Assistant</span></h3>
+              </div>
+              <div class="project-badges">
+                <span class="status-badge status-prod"><span class="status-dot"></span> ACTIVE RELEASE (v1.x)</span>
+                <span class="role-tag">Solo Developer &amp; Maintainer</span>
+              </div>
+            </div>
+
+            <div class="project-screenshot-wrap">
+              <img src="assets/images/typingbuddy-banner.webp" alt="Typing Buddy Windows Assistant" class="project-screenshot" width="700" height="300" loading="lazy" onerror="this.src='assets/images/typingbuddy-banner.png'" />
+            </div>
+
+            <div class="architecture-diagram">
+              <div class="arch-box">OS Keystroke Stream</div>
+              <i class="fas fa-arrow-right arch-arrow"></i>
+              <div class="arch-box highlight-box">pynput Listener Daemon</div>
+              <i class="fas fa-arrow-right arch-arrow"></i>
+              <div class="arch-box">Local Harper Engine</div>
+              <i class="fas fa-arrow-right arch-arrow"></i>
+              <div class="arch-box">Sub-ms Inline Suggestion</div>
+            </div>
+
+            <div class="project-content">
+              <ul class="project-pdr">
+                <li><strong>Problem:</strong> Mainstream writing assistants stream every background keystroke to remote servers, exposing private credentials and sensitive typing to third-party logging.</li>
+                <li><strong>Decision:</strong> Engineered a 100% offline background assistant for Windows using pynput for non-blocking OS hooks, the Harper engine for typo correction, and an English + Hinglish dictionary.</li>
+                <li><strong>Result:</strong> Released a low-latency, system-wide productivity daemon providing instant autocomplete across IDEs and word processors with zero telemetry and sub-millisecond response.</li>
+              </ul>
+
+              <div class="tech-tags">
+                <span class="mono-tag">Python</span>
+                <span class="mono-tag">Windows API</span>
+                <span class="mono-tag">pynput</span>
+                <span class="mono-tag">Harper Grammar Engine</span>
+                <span class="mono-tag">Hinglish Vocabulary</span>
+                <span class="mono-tag">Local SQLite</span>
+              </div>
+            </div>
+
+            <div class="project-links">
+              <a href="https://harshverse-svg.github.io/typing-buddy/" target="_blank" rel="noopener noreferrer" class="btn-outline">
+                <i class="fas fa-external-link-alt"></i> Product Site
+              </a>
+              <a href="https://github.com/harshverse-svg/typing-buddy/releases/latest" target="_blank" rel="noopener noreferrer" class="btn-outline">
+                <i class="fas fa-download"></i> Releases
+              </a>
+              <a href="https://github.com/harshverse-svg/typing-buddy" target="_blank" rel="noopener noreferrer" class="btn-primary">
+                <i class="fab fa-github"></i> Source Code
+              </a>
+              <button class="btn-outline copy-clone-btn" data-repo="https://github.com/harshverse-svg/typing-buddy.git">
+                <i class="fas fa-terminal"></i> Clone Repo
+              </button>
+            </div>
+          </article>
+
+          <!-- Project 4: SwasthLink (Typo Fixed from Swast-.link-) -->
+          <article class="project-card animate-on-scroll" data-category="web">
+            <div class="project-header">
+              <div class="project-title-group">
+                <h3>SwasthLink <span class="accent-text">| Hyperlocal Healthcare Virtual Queue</span></h3>
+              </div>
+              <div class="project-badges">
+                <span class="status-badge"><span class="status-dot"></span> ARCHITECTURE PROTOTYPE</span>
+                <span class="role-tag">Lead Developer &amp; Architect</span>
+              </div>
+            </div>
+
+            <div class="project-screenshot-wrap">
+              <img src="assets/images/swasthlink.webp" alt="SwasthLink Healthcare Interface" class="project-screenshot" width="700" height="350" loading="lazy" onerror="this.src='assets/images/swasthlink.png'" />
+            </div>
+
+            <div class="architecture-diagram">
+              <div class="arch-box">Patient QR Intake</div>
+              <i class="fas fa-arrow-right arch-arrow"></i>
+              <div class="arch-box highlight-box">Simulated ABDM Profile</div>
+              <i class="fas fa-arrow-right arch-arrow"></i>
+              <div class="arch-box">Queue Logic &amp; Routing</div>
+              <i class="fas fa-arrow-right arch-arrow"></i>
+              <div class="arch-box">Simulated UPI Settlement</div>
+            </div>
+
+            <div class="project-content">
+              <ul class="project-pdr">
+                <li><strong>Problem:</strong> Patients at independent clinics and district hospitals in Tier 2/3 Indian cities face 3 to 4-hour physical waiting lines due to the total absence of digital scheduling.</li>
+                <li><strong>Decision:</strong> Developed a mobile-first "Scan &amp; Share" virtual queue prototype simulating ABDM (Ayushman Bharat Digital Mission) profile fetching and QR token distribution without app downloads.</li>
+                <li><strong>Result:</strong> Built a complete patient intake flow that collapses clinic check-in friction from hours to minutes, accompanied by a 4-phase business rollout strategy (Rs. 499–999/mo clinic SaaS).</li>
+              </ul>
+
+              <div class="tech-tags">
+                <span class="mono-tag">Python</span>
+                <span class="mono-tag">Streamlit</span>
+                <span class="mono-tag">Simulated ABDM Protocol</span>
+                <span class="mono-tag">Simulated UPI Integration</span>
+                <span class="mono-tag">Queue Routing</span>
+                <span class="mono-tag">Healthcare Strategy</span>
+              </div>
+            </div>
+
+            <div class="project-links">
+              <a href="https://harshverse-svg.github.io/Swast-.link-/" target="_blank" rel="noopener noreferrer" class="btn-outline">
+                <i class="fas fa-external-link-alt"></i> View Live Demo
+              </a>
+              <a href="queuekhatam-research.html" target="_blank" rel="noopener noreferrer" class="btn-outline">
+                <i class="fas fa-book-open"></i> Read Case Study
+              </a>
+              <a href="https://github.com/harshverse-svg/Swast-.link-" target="_blank" rel="noopener noreferrer" class="btn-primary">
+                <i class="fab fa-github"></i> Source Code
+              </a>
+              <button class="btn-outline copy-clone-btn" data-repo="https://github.com/harshverse-svg/Swast-.link-.git">
+                <i class="fas fa-terminal"></i> Clone Repo
+              </button>
+            </div>
+          </article>
+
+          <!-- Project 5: GraphRAG Engine -->
+          <article class="project-card animate-on-scroll" data-category="ai systems">
+            <div class="project-header">
+              <div class="project-title-group">
+                <h3>GraphRAG Engine <span class="accent-text">| Local Graph Intelligence Pipeline</span></h3>
+              </div>
+              <div class="project-badges">
+                <span class="status-badge"><span class="status-dot"></span> TURNKEY LOCAL PIPELINE</span>
+                <span class="role-tag">Lead Developer &amp; Pipeline Architect</span>
+              </div>
+            </div>
+
+            <div class="architecture-diagram">
+              <div class="arch-box">Raw Text Corpi</div>
+              <i class="fas fa-arrow-right arch-arrow"></i>
+              <div class="arch-box highlight-box">Ollama (Qwen2.5/Gemma)</div>
+              <i class="fas fa-arrow-right arch-arrow"></i>
+              <div class="arch-box">NetworkX Louvain Detection</div>
+              <i class="fas fa-arrow-right arch-arrow"></i>
+              <div class="arch-box">Entity Knowledge Graph</div>
+            </div>
+
+            <div class="project-content">
+              <ul class="project-pdr">
+                <li><strong>Problem:</strong> Standard vector RAG matches chunks by isolated semantic similarity, losing multi-hop relationships and causing hallucinations during cross-document synthesis.</li>
+                <li><strong>Decision:</strong> Implemented a local Graph-based RAG pipeline swapping proprietary cloud APIs for Ollama-hosted models and applying NetworkX Louvain community detection to cluster concept hierarchies.</li>
+                <li><strong>Result:</strong> Built a reproducible local intelligence pipeline and Streamlit dashboard that traverses entity connections before answering, packaged with a one-click Windows setup launcher.</li>
+              </ul>
+
+              <div class="tech-tags">
+                <span class="mono-tag">Python</span>
+                <span class="mono-tag">Ollama</span>
+                <span class="mono-tag">GraphRAG</span>
+                <span class="mono-tag">NetworkX</span>
+                <span class="mono-tag">Louvain Community Detection</span>
+                <span class="mono-tag">Streamlit</span>
+              </div>
+            </div>
+
+            <div class="project-links">
+              <a href="graphrag-readme.html" target="_blank" rel="noopener noreferrer" class="btn-outline">
+                <i class="fas fa-book-open"></i> Read Case Study &amp; Docs
+              </a>
+              <a href="https://github.com/harshverse-svg/graphrag-ollama" target="_blank" rel="noopener noreferrer" class="btn-primary">
+                <i class="fab fa-github"></i> Source Code
+              </a>
+              <button class="btn-outline open-modal-btn" data-target="graphrag-modal">
+                <i class="fas fa-project-diagram"></i> Interactive Arch
+              </button>
+              <button class="btn-outline copy-clone-btn" data-repo="https://github.com/harshverse-svg/graphrag-ollama.git">
+                <i class="fas fa-terminal"></i> Clone Repo
+              </button>
+            </div>
+          </article>
+
+          <!-- Project 6: Stone Paper Scissor 3.0 -->
+          <article class="project-card animate-on-scroll" data-category="web">
+            <div class="project-header">
+              <div class="project-title-group">
+                <h3>Stone Paper Scissor 3.0 <span class="accent-text">| Interactive Web Game Engine</span></h3>
+              </div>
+              <div class="project-badges">
+                <span class="status-badge status-prod"><span class="status-dot"></span> LIVE WEB GAME</span>
+                <span class="role-tag">Solo Developer</span>
+              </div>
+            </div>
+
+            <div class="project-screenshot-wrap">
+              <img src="assets/images/sps.webp" alt="Stone Paper Scissor Game" class="project-screenshot" width="700" height="300" loading="lazy" onerror="this.src='assets/images/sps.png'" />
+            </div>
+
+            <div class="architecture-diagram">
+              <div class="arch-box">User Move Event</div>
+              <i class="fas fa-arrow-right arch-arrow"></i>
+              <div class="arch-box highlight-box">Client Adaptive AI Curve</div>
+              <i class="fas fa-arrow-right arch-arrow"></i>
+              <div class="arch-box">Web Audio Synthesizer</div>
+              <i class="fas fa-arrow-right arch-arrow"></i>
+              <div class="arch-box">Dynamic 100dvh Canvas</div>
+            </div>
+
+            <div class="project-content">
+              <ul class="project-pdr">
+                <li><strong>Problem:</strong> Casual browser games frequently depend on heavy third-party gaming frameworks, intrusive ad trackers, and broken mobile viewport scaling.</li>
+                <li><strong>Decision:</strong> Built a clean browser game using native DOM manipulation, dynamic 100dvh viewport units, a custom Web Audio API synthesizer, and client-side adaptive AI curves.</li>
+                <li><strong>Result:</strong> Delivered an immersive, zero-dependency browser game featuring an achievement vault, real-time ELO rating system, and fluid tactile audio feedback that feels native on mobile screens.</li>
+              </ul>
+
+              <div class="tech-tags">
+                <span class="mono-tag">JavaScript (ES6+)</span>
+                <span class="mono-tag">100dvh Viewport</span>
+                <span class="mono-tag">Web Audio API</span>
+                <span class="mono-tag">State Management</span>
+                <span class="mono-tag">Game Logic</span>
+              </div>
+            </div>
+
+            <div class="project-links">
+              <a href="https://harshverse-svg.github.io/stone-paper-scissor/" target="_blank" rel="noopener noreferrer" class="btn-outline">
+                <i class="fas fa-gamepad"></i> View Live Demo
+              </a>
+              <a href="https://github.com/harshverse-svg/stone-paper-scissor" target="_blank" rel="noopener noreferrer" class="btn-primary">
+                <i class="fab fa-github"></i> Source Code
+              </a>
+              <button class="btn-outline copy-clone-btn" data-repo="https://github.com/harshverse-svg/stone-paper-scissor.git">
+                <i class="fas fa-terminal"></i> Clone Repo
+              </button>
+            </div>
+          </article>
+
+          <!-- Project 7: Snake Water Gun (Classic Strategy Game Engine) -->
+          <article class="project-card animate-on-scroll" data-category="web">
+            <div class="project-header">
+              <div class="project-title-group">
+                <h3>Snake Water Gun <span class="accent-text">| Classic Strategy Game Engine</span></h3>
+              </div>
+              <div class="project-badges">
+                <span class="status-badge status-prod"><span class="status-dot"></span> OPEN SOURCE GAME</span>
+                <span class="role-tag">Solo Developer</span>
+              </div>
+            </div>
+
+            <div class="architecture-diagram">
+              <div class="arch-box">Player Gesture</div>
+              <i class="fas fa-arrow-right arch-arrow"></i>
+              <div class="arch-box highlight-box">Round Arbiter Logic</div>
+              <i class="fas fa-arrow-right arch-arrow"></i>
+              <div class="arch-box">Local Audio FX</div>
+              <i class="fas fa-arrow-right arch-arrow"></i>
+              <div class="arch-box">Win Streak Counter</div>
+            </div>
+
+            <div class="project-content">
+              <ul class="project-pdr">
+                <li><strong>Problem:</strong> Browser micro-games often rely on heavy external dependencies and fail to provide responsive layouts or audio feedback across low-end mobile devices.</li>
+                <li><strong>Decision:</strong> Built a standalone, zero-framework implementation of the traditional Indian game variant with modular round management, dynamic score tracking, and local sound FX.</li>
+                <li><strong>Result:</strong> Delivered a fast-loading, responsive casual game engine running entirely client-side with zero network latency.</li>
+              </ul>
+
+              <div class="tech-tags">
+                <span class="mono-tag">HTML5 / CSS3</span>
+                <span class="mono-tag">Vanilla JavaScript</span>
+                <span class="mono-tag">Audio Synthesis</span>
+                <span class="mono-tag">Responsive UI</span>
+                <span class="mono-tag">GitHub Pages</span>
+              </div>
+            </div>
+
+            <div class="project-links">
+              <a href="https://harshverse-svg.github.io/snake-water-gun/" target="_blank" rel="noopener noreferrer" class="btn-outline">
+                <i class="fas fa-gamepad"></i> View Live Demo
+              </a>
+              <a href="https://github.com/harshverse-svg/snake-water-gun" target="_blank" rel="noopener noreferrer" class="btn-primary">
+                <i class="fab fa-github"></i> Source Code
+              </a>
+              <button class="btn-outline copy-clone-btn" data-repo="https://github.com/harshverse-svg/snake-water-gun.git">
+                <i class="fas fa-terminal"></i> Clone Repo
+              </button>
+            </div>
+          </article>
+
+        </div>
+
+        <!-- GitHub Repository Ecosystem & Telemetry Banner -->
+        <div class="github-ecosystem-card animate-on-scroll">
+          <div class="github-ecosystem-info">
+            <h3><i class="fab fa-github accent-text"></i> GitHub Codebase Directory</h3>
+            <p>
+              Explore all 10 public codebases, repositories, and release distributions maintained by Harsh Maurya on GitHub.
+            </p>
+            <div class="github-telemetry-stats">
+              <span class="telemetry-chip"><strong>10</strong> Public Repositories</span>
+              <span class="telemetry-chip"><strong>7</strong> Production Systems</span>
+              <span class="telemetry-chip"><strong>Python / JS / C++</strong> Core Stacks</span>
+              <span class="telemetry-chip"><strong>100%</strong> Open Source</span>
+            </div>
+          </div>
+          <div class="github-ecosystem-actions">
+            <a href="https://github.com/harshverse-svg?tab=repositories" target="_blank" rel="noopener noreferrer" class="btn-primary">
+              <i class="fab fa-github"></i> Browse All 10 Repositories
+            </a>
+            <button class="btn-outline copy-clone-btn" data-repo="git clone https://github.com/harshverse-svg/buddy-ai-study-platform.git">
+              <i class="fas fa-terminal"></i> Copy Sample Clone Command
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Professional Certifications (Compact Verified Credentials Ribbon) -->
+    <section class="section" id="certs">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title">Verified Certifications</h2>
+          <span class="section-meta">Google Cloud, Google &amp; IBM Verified Credentials</span>
+        </div>
+
+        <div class="certs-ribbon">
+          <!-- Cert 1 -->
+          <div class="cert-strip-item animate-on-scroll open-modal-btn" data-img="assets/images/cert1.webp" data-title="Intro to Large Language Models (Google Cloud)">
+            <div class="cert-strip-meta">
+              <img src="assets/images/cert1.webp" alt="Intro to LLMs" class="cert-thumb-preview" width="48" height="36" loading="lazy" />
+              <div class="cert-strip-content">
+                <h4>Intro to Large Language Models</h4>
+                <p>Google Cloud</p>
+              </div>
+            </div>
+            <span class="cert-verified-pill"><i class="fas fa-check-circle"></i> Verified</span>
+          </div>
+
+          <!-- Cert 2 -->
+          <div class="cert-strip-item animate-on-scroll delay-100 open-modal-btn" data-img="assets/images/cert2.webp" data-title="Intro to Generative AI (Google Cloud)">
+            <div class="cert-strip-meta">
+              <img src="assets/images/cert2.webp" alt="Intro to Gen AI" class="cert-thumb-preview" width="48" height="36" loading="lazy" />
+              <div class="cert-strip-content">
+                <h4>Intro to Generative AI</h4>
+                <p>Google Cloud</p>
+              </div>
+            </div>
+            <span class="cert-verified-pill"><i class="fas fa-check-circle"></i> Verified</span>
+          </div>
+
+          <!-- Cert 3 -->
+          <div class="cert-strip-item animate-on-scroll delay-200 open-modal-btn" data-img="assets/images/cert3.webp" data-title="Intro to Artificial Intelligence (IBM)">
+            <div class="cert-strip-meta">
+              <img src="assets/images/cert3.webp" alt="Intro to AI" class="cert-thumb-preview" width="48" height="36" loading="lazy" />
+              <div class="cert-strip-content">
+                <h4>Intro to Artificial Intelligence</h4>
+                <p>IBM</p>
+              </div>
+            </div>
+            <span class="cert-verified-pill"><i class="fas fa-check-circle"></i> Verified</span>
+          </div>
+
+          <!-- Cert 4 -->
+          <div class="cert-strip-item animate-on-scroll open-modal-btn" data-img="assets/images/cert4.webp" data-title="Crash Course on Python (Google)">
+            <div class="cert-strip-meta">
+              <img src="assets/images/cert4.webp" alt="Crash Course on Python" class="cert-thumb-preview" width="48" height="36" loading="lazy" />
+              <div class="cert-strip-content">
+                <h4>Crash Course on Python</h4>
+                <p>Google</p>
+              </div>
+            </div>
+            <span class="cert-verified-pill"><i class="fas fa-check-circle"></i> Verified</span>
+          </div>
+
+          <!-- Cert 5 -->
+          <div class="cert-strip-item animate-on-scroll delay-100 open-modal-btn" data-img="assets/images/cert5.webp" data-title="Introduction to Responsible AI (Google Cloud)">
+            <div class="cert-strip-meta">
+              <img src="assets/images/cert5.webp" alt="Responsible AI" class="cert-thumb-preview" width="48" height="36" loading="lazy" />
+              <div class="cert-strip-content">
+                <h4>Introduction to Responsible AI</h4>
+                <p>Google Cloud</p>
+              </div>
+            </div>
+            <span class="cert-verified-pill"><i class="fas fa-check-circle"></i> Verified</span>
+          </div>
+
+          <!-- Cert 6 -->
+          <div class="cert-strip-item animate-on-scroll delay-200 open-modal-btn" data-img="assets/images/cert6.webp" data-title="Foundations of Cybersecurity (Google)">
+            <div class="cert-strip-meta">
+              <img src="assets/images/cert6.webp" alt="Foundations of Cybersecurity" class="cert-thumb-preview" width="48" height="36" loading="lazy" />
+              <div class="cert-strip-content">
+                <h4>Foundations of Cybersecurity</h4>
+                <p>Google</p>
+              </div>
+            </div>
+            <span class="cert-verified-pill"><i class="fas fa-check-circle"></i> Verified</span>
+          </div>
+
+          <!-- Cert 7 -->
+          <div class="cert-strip-item animate-on-scroll open-modal-btn" data-img="assets/images/cert7.webp" data-title="Foundations: Data, Data Everywhere (Google)">
+            <div class="cert-strip-meta">
+              <img src="assets/images/cert7.webp" alt="Foundations: Data Everywhere" class="cert-thumb-preview" width="48" height="36" loading="lazy" />
+              <div class="cert-strip-content">
+                <h4>Foundations: Data, Data Everywhere</h4>
+                <p>Google</p>
+              </div>
+            </div>
+            <span class="cert-verified-pill"><i class="fas fa-check-circle"></i> Verified</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Creative Ecosystem (YouTube Facade - Zero Network Blocking) -->
+    <section class="section" id="creative">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title">Creative Ecosystem</h2>
+          <span class="section-meta">Technical Media &amp; Visual Communication</span>
+        </div>
+
+        <div class="media-gallery">
+          <div class="media-card animate-on-scroll">
+            <div class="media-video">
+              <!-- High-Performance YouTube Facade: Loads player only on user click -->
+              <div class="youtube-facade" id="youtubeFacade" data-video="o81KExZbok0" role="button" aria-label="Play Technical Video Breakdown">
+                <img src="https://img.youtube.com/vi/o81KExZbok0/hqdefault.jpg" alt="Going deep into LLMs - Video Poster" class="youtube-facade-poster" width="640" height="360" loading="lazy" />
+                <div class="youtube-play-btn" aria-hidden="true">
+                  <i class="fas fa-play"></i>
+                </div>
+              </div>
+            </div>
+            <div class="media-info">
+              <h4>Technical Video Strategy &amp; Research Dissemination</h4>
+              <p>In-depth technical breakdown dissecting Large Language Model mechanics, tokenization, and attention dynamics on YouTube channel <strong>@Thinktogether-z8g</strong>.</p>
+            </div>
+          </div>
+
+          <div class="media-sidebar">
+            <div class="media-item animate-on-scroll delay-100">
+              <i class="fas fa-palette"></i>
+              <div>
+                <h4>Digital Identity Design</h4>
+                <p>Technical branding, clean thumbnails, and mathematical motion assets.</p>
+              </div>
+            </div>
+
+            <div class="media-item animate-on-scroll delay-200">
+              <i class="fas fa-film"></i>
+              <div>
+                <h4>Motion Graphics &amp; Visual Logic</h4>
+                <p>Translating complex distributed software architectures into intuitive visual flows.</p>
+              </div>
+            </div>
+
+            <a href="https://www.youtube.com/@Thinktogether-z8g" target="_blank" rel="noopener noreferrer" class="btn-outline animate-on-scroll delay-300">
+              <i class="fab fa-youtube"></i> Visit Channel @Thinktogether-z8g
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Strategic Architecture / How I Work -->
+    <section class="section approach-section" id="approach">
+      <div class="container">
+        <div class="section-head">
+          <h2 class="section-title">Architectural Methodology</h2>
+          <span class="section-meta">Engineering Principles &amp; Operational Rigor</span>
+        </div>
+
+        <div class="approach-grid">
+          <div class="approach-item animate-on-scroll">
+            <div class="approach-number">01</div>
+            <div class="approach-content">
+              <h3>First-Principles Decomposition</h3>
+              <p>Break complex system objectives into minimal viable primitives. Prioritize deterministic local execution over fragile cloud abstraction layers.</p>
+            </div>
+          </div>
+
+          <div class="approach-item animate-on-scroll delay-150">
+            <div class="approach-number">02</div>
+            <div class="approach-content">
+              <h3>Offline-First &amp; Hardware Bounds</h3>
+              <p>Bound architectures strictly to consumer-grade hardware limits (e.g. 6GB VRAM) to ensure maximum privacy, low operational cost, and zero data leakage.</p>
+            </div>
+          </div>
+
+          <div class="approach-item animate-on-scroll delay-300">
+            <div class="approach-number">03</div>
+            <div class="approach-content">
+              <h3>Continuous Benchmarking &amp; Proofs</h3>
+              <p>Every engineering claim is backed by empirical measurements, ground-truth literature citations, and reproducible GitHub codebases.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Official Resume & Documentation Section -->
+    <section class="section" id="resume">
+      <div class="container">
+        <div class="resume-banner animate-on-scroll">
+          <div class="resume-content">
+            <h2 class="section-title">Official Documentation</h2>
+            <span class="section-meta">Academic Standing &amp; Systems Dossier</span>
+            <p class="resume-desc">
+              Looking for full academic credentials, coursework breakdown, and architectural case studies? Download the official, ATS-verified resume dossier.
+            </p>
+            <div class="resume-actions">
+              <a href="assets/Harsh_Maurya_Resume.pdf" download="Harsh_Maurya_Resume.pdf" class="btn-primary">
+                <i class="fas fa-file-pdf"></i> Download Official Resume [PDF]
+              </a>
+              <a href="https://github.com/harshverse-svg" target="_blank" rel="noopener noreferrer" class="btn-outline">
+                <i class="fab fa-github"></i> Inspect GitHub Profile
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer with Real Verified Links (No '#' Dummy Links) -->
+  <footer class="footer">
+    <div class="container footer-content">
+      <div class="footer-left">
+        <div class="footer-logo">HM<span class="accent-text">.</span></div>
+        <p class="footer-mono">&copy; 2026 Harsh Maurya. Engineered with precision &amp; anti-slop rigor.</p>
+      </div>
+
+      <div class="footer-social-links">
+        <a href="https://github.com/harshverse-svg" target="_blank" rel="noopener noreferrer" aria-label="Harsh Maurya on GitHub">
+          <i class="fab fa-github"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/harsh-maurya-baa534400" target="_blank" rel="noopener noreferrer" aria-label="Harsh Maurya on LinkedIn">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+        <a href="https://www.youtube.com/@Thinktogether-z8g" target="_blank" rel="noopener noreferrer" aria-label="Harsh Maurya on YouTube">
+          <i class="fab fa-youtube"></i>
+        </a>
+      </div>
     </div>
   </footer>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
-  <script src="js/main.js"></script>
-  <script src="js/animations.js"></script>
+  <!-- Universal Modal Dialog (Certificates & Architecture Previews) -->
+  <div class="modal-overlay" id="universalModal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-content">
+      <button class="modal-close-btn" id="modalCloseBtn" aria-label="Close dialog">&times;</button>
+      <h3 id="modalTitle" style="font-family: var(--font-display); color: var(--ink);">Credential Preview</h3>
+      <div id="modalBody">
+        <img src="" alt="Preview" id="modalImg" class="modal-img-preview" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/main.js" defer></script>
+  <script src="js/animations.js" defer></script>
 </body>
 
 </html>

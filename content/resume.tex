@@ -1,0 +1,101 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.65in]{geometry}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{titlesec}
+
+% Hypersetup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    urlcolor=blue,
+    pdftitle={Harsh Maurya - Resume},
+    pdfauthor={Harsh Maurya}
+}
+
+% Formatting
+\setlist[itemize]{leftmargin=1.5em, itemsep=0.2em, topsep=0.2em}
+\titleformat{\section}{\large\bfseries\uppercase}{}{0em}{}[\titlerule]
+\titlespacing*{\section}{0pt}{1.2ex}{0.8ex}
+\pagestyle{empty}
+
+\begin{document}
+
+\begin{center}
+    {\Huge \textbf{Harsh Maurya}}\\[0.3em]
+    \small Meerut, Uttar Pradesh, India \ $|$ \ 
+    Email: \href{mailto:harshmauryamau@gmail.com}{harshmauryamau@gmail.com} \ $|$ \ 
+    Phone: +91 95697 59599\\[0.2em]
+    \href{https://github.com/harshverse-svg}{github.com/harshverse-svg} \ $|$ \ 
+    \href{https://www.linkedin.com/in/harsh-maurya-baa534400}{linkedin.com/in/harsh-maurya} \ $|$ \ 
+    \href{https://harshverse-svg.github.io/harsh-maurya-portfolio/}{harshverse-svg.github.io}
+\end{center}
+
+\vspace{-0.5em}
+\section{Professional Summary}
+1st-year Computer Science Engineering undergraduate specializing in local Large Language Model (LLM) deployment, offline-first systems, and privacy-preserving application architecture. Experienced in engineering local RAG pipelines on consumer-tier GPUs (6GB VRAM), architecting zero-telemetry Windows daemons, and building mobile-first healthcare prototypes with Python, C/C++, and modern JavaScript.
+
+\section{Education}
+\textbf{IIMT University}, Meerut, Uttar Pradesh, India \hfill \textbf{2025 -- 2029 (Expected)}\\
+\textit{Bachelor of Technology in Computer Science Engineering} \hfill \textit{SGPA: 8.2 / 10.0 (Semester 1)}\\
+Affiliation: Active Member, IIMT E-Cell \& Business Incubator Foundation
+
+\vspace{0.4em}
+\textbf{SRD Senior Secondary School}, Mau, Uttar Pradesh, India \hfill \textbf{2024 -- 2025}\\
+\textit{Class 12th (Physics, Chemistry, Mathematics) -- CBSE Board} \hfill \textit{Score: 84\%}
+
+\section{Technical Skills}
+\begin{itemize}
+    \item \textbf{Languages:} Python 3.10+, C, C++, JavaScript (ES6+), HTML5, CSS3, SQL
+    \item \textbf{Local AI \& Systems:} Local LLMs (Ollama, Gemma, Qwen2.5), Vector RAG, GraphRAG, Knowledge Graphs, Quantization (GGUF), Prompt Engineering
+    \item \textbf{Frameworks \& Graphics:} FastAPI, Streamlit, Three.js, WebGL/GLSL Shaders, Web Audio API, Progressive Web Apps (PWA)
+    \item \textbf{Developer Tools:} Git, GitHub Actions (CI/CD), PowerShell, Bash, Linux, VS Code, \texttt{pynput}, NetworkX
+\end{itemize}
+
+\section{Key Projects \& Deployments}
+
+\textbf{BUDDY --- Autonomous Local AI Study Platform} \hfill \textit{Python, FastAPI, Three.js, Ollama, GLSL}\\
+\begin{itemize}
+    \item Architected a 100\% local, single-origin AI study platform combining multi-stage vector RAG with an interactive Three.js 3D neural core, eliminating cloud API dependencies and recurring subscription costs.
+    \item Optimized local inference memory allocation for 4-bit quantized models (\texttt{gemma4:e4b}) under Ollama, enabling stable chapter generation and token streaming strictly within a 6GB VRAM GPU hardware bound.
+    \item Implemented physics-driven concept graphs and an adaptive quiz arena ensuring zero data leakage of private study notes.
+\end{itemize}
+
+\vspace{0.3em}
+\textbf{FormattingBuddy --- Zero-Backend PWA Document Engine} \hfill \textit{JavaScript (ES6+), PWA, WASM OCR, AES-GCM}\\
+\begin{itemize}
+    \item Built an installable, serverless Progressive Web App that converts unstructured multi-format documents (PDF, DOCX, PPTX, Excel, Images up to 20 MB) into publication-ready manuals with zero server storage.
+    \item Integrated client-side WebAssembly Optical Character Recognition (OCR) and native Web Crypto API (PBKDF2/AES-GCM), guaranteeing complete in-memory data processing without external network exposure.
+    \item Engineered universal client-side export pipelines generating high-res PDF, standalone HTML, DOCX, Markdown, and ZIP archives.
+\end{itemize}
+
+\vspace{0.3em}
+\textbf{Typing Buddy --- Privacy-First Windows Typing Assistant} \hfill \textit{Python, Windows API, pynput, Harper Engine}\\
+\begin{itemize}
+    \item Developed a 100\% offline Windows background daemon providing real-time typo correction, grammar checking, and system-wide autocomplete with zero cloud telemetry.
+    \item Utilized \texttt{pynput} for non-blocking OS keystroke capture and integrated the local Harper engine, maintaining an ultra-low memory footprint and sub-millisecond input response latency.
+    \item Curated a specialized dual-layer vocabulary dictionary supporting bilingual English and Hinglish terms across IDEs and browsers.
+\end{itemize}
+
+\vspace{0.3em}
+\textbf{SwasthLink (QueueKhatam) --- Virtual Healthcare Queue} \hfill \textit{Python, Streamlit, REST APIs}\\
+\begin{itemize}
+    \item Designed a mobile-first ``Scan \& Share'' virtual queue system addressing physical 3 to 4-hour wait times in Tier 2/3 Indian clinics.
+    \item Integrated simulated Ayushman Bharat Digital Mission (ABDM) digital health ID profile exchange and QR token routing for frictionless check-in without requiring a native app download.
+\end{itemize}
+
+\section{Certifications}
+\begin{itemize}
+    \item \textbf{Google Cloud:} Intro to Large Language Models, Intro to Generative AI, Introduction to Responsible AI (2026)
+    \item \textbf{IBM:} Introduction to Artificial Intelligence (AI) (2025)
+    \item \textbf{Google:} Crash Course on Python, Foundations of Cybersecurity, Foundations: Data Everywhere (2026)
+\end{itemize}
+
+\section{Extracurricular Research \& Involvements}
+\begin{itemize}
+    \item \textbf{IIMT E-Cell Member:} Collaborating on startup ideation and economic viability modeling for regional software solutions.
+    \item \textbf{Independent Deep-Tech Literature Tracking:} Actively synthesizing preprints in Neuromorphic Spiking Architectures (\textit{arXiv:1705.06963}), Floquet Materials (\textit{arXiv:1804.03212}), and Muon Tomography (\textit{arXiv:1906.03934}).
+\end{itemize}
+
+\end{document}

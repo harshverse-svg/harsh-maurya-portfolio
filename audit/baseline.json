@@ -1,0 +1,50 @@
+{
+  "auditDate": "2026-11-01T05:57:00Z",
+  "targetUrl": "https://harshverse-svg.github.io/harsh-maurya-portfolio/",
+  "commit": "cdf6af4",
+  "branch": "redesign",
+  "desktop": {
+    "scores": {
+      "performance": 86,
+      "accessibility": 88,
+      "bestPractices": 92,
+      "seo": 91
+    },
+    "metrics": {
+      "firstContentfulPaint": "2.8s",
+      "largestContentfulPaint": "2.8s",
+      "cumulativeLayoutShift": 0.043,
+      "totalBlockingTime": "90ms",
+      "speedIndex": "6.0s"
+    }
+  },
+  "mobile": {
+    "scores": {
+      "performance": 49,
+      "accessibility": 88,
+      "bestPractices": 92,
+      "seo": 91
+    },
+    "metrics": {
+      "firstContentfulPaint": "5.9s",
+      "largestContentfulPaint": "34.0s",
+      "cumulativeLayoutShift": 0.043,
+      "totalBlockingTime": "330ms",
+      "speedIndex": "10.0s"
+    }
+  },
+  "budgetComparison": {
+    "lcpTarget": "< 2.5s",
+    "lcpDesktopActual": "2.8s (FAILED)",
+    "lcpMobileActual": "34.0s (CRITICAL FAIL)",
+    "clsTarget": "< 0.1",
+    "clsActual": "0.043 (PASSED)"
+  },
+  "rootCauses": [
+    "Uncompressed raw images (bg-photo.png is 1.83 MB, profile.png is 749 KB, 7 cert PNGs total >3.1 MB)",
+    "Render-blocking Google Fonts without preconnect/preload",
+    "Heavy third-party YouTube embed loading synchronous player bundles and trackers",
+    "Missing responsive picture tags and WebP/AVIF transcoding",
+    "Absence of loading=lazy on below-the-fold project and certificate assets"
+  ]
+}
