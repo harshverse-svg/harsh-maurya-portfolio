@@ -5,6 +5,56 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Harsh Maurya | Digital Architect &amp; Systems Engineer</title>
+  <meta name="description" content="Harsh Maurya — Computer Science Engineering student bridging robust software development, consumer-GPU local LLMs (6GB VRAM), and offline-first privacy architectures." />
+  <meta name="author" content="Harsh Maurya" />
+  <link rel="canonical" href="https://harshverse-svg.github.io/harsh-maurya-portfolio/" />
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://harshverse-svg.github.io/harsh-maurya-portfolio/" />
+  <meta property="og:title" content="Harsh Maurya | Digital Architect &amp; Systems Engineer" />
+  <meta property="og:description" content="1st-year CSE student engineering local LLMs (6GB VRAM bound), offline Windows daemons, GraphRAG, and privacy-preserving architectures." />
+  <meta property="og:image" content="https://harshverse-svg.github.io/harsh-maurya-portfolio/assets/images/og-image.png" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://harshverse-svg.github.io/harsh-maurya-portfolio/" />
+  <meta name="twitter:title" content="Harsh Maurya | Digital Architect &amp; Systems Engineer" />
+  <meta name="twitter:description" content="1st-year CSE student engineering local LLMs (6GB VRAM bound), offline Windows daemons, GraphRAG, and privacy-preserving architectures." />
+  <meta name="twitter:image" content="https://harshverse-svg.github.io/harsh-maurya-portfolio/assets/images/og-image.png" />
+
+  <!-- Schema.org JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Harsh Maurya",
+    "alternateName": "harshverse-svg",
+    "url": "https://harshverse-svg.github.io/harsh-maurya-portfolio/",
+    "image": "https://harshverse-svg.github.io/harsh-maurya-portfolio/assets/images/profile.webp",
+    "jobTitle": "Computer Science Engineer & Systems Architect",
+    "worksFor": {
+      "@type": "Organization",
+      "name": "IIMT University"
+    },
+    "sameAs": [
+      "https://github.com/harshverse-svg",
+      "https://www.linkedin.com/in/harsh-maurya-baa534400"
+    ],
+    "knowsAbout": [
+      "Local LLMs",
+      "Ollama",
+      "GraphRAG",
+      "NetworkX Louvain Detection",
+      "Python",
+      "C++",
+      "FastAPI",
+      "Offline-First Systems",
+      "WebAssembly",
+      "Web Crypto API"
+    ]
+  }
+  </script>
 
   <!-- Security Hardening Headers -->
   <meta http-equiv="Content-Security-Policy"
@@ -105,6 +155,7 @@
       <div class="container hero-container">
         <div class="hero-header-row">
           <div class="hero-avatar-wrap">
+            <canvas id="neuralCoreCanvas" class="neural-core-canvas" width="190" height="190" aria-hidden="true"></canvas>
             <img src="assets/images/profile.webp" alt="Harsh Maurya" class="hero-profile-img" width="160" height="160"
               onerror="this.src='assets/images/profile.png'" />
             <div class="avatar-ring"></div>
@@ -589,6 +640,12 @@
               <a href="queuekhatam-research.html" target="_blank" rel="noopener noreferrer" class="btn-outline">
                 <i class="fas fa-book-open"></i> Read Case Study
               </a>
+              <a href="docs/swasthlink-openapi.yaml" target="_blank" rel="noopener noreferrer" class="btn-outline">
+                <i class="fas fa-file-code"></i> OpenAPI 3.1 Spec
+              </a>
+              <button class="btn-outline open-modal-btn" data-target="swasthlink-modal">
+                <i class="fas fa-network-wired"></i> Architecture &amp; Sandbox
+              </button>
               <a href="https://github.com/harshverse-svg/Swast-.link-" target="_blank" rel="noopener noreferrer" class="btn-primary">
                 <i class="fab fa-github"></i> Source Code
               </a>
@@ -641,12 +698,18 @@
               <a href="graphrag-readme.html" target="_blank" rel="noopener noreferrer" class="btn-outline">
                 <i class="fas fa-book-open"></i> Read Case Study &amp; Docs
               </a>
+              <a href="notebooks/graphrag_evaluation.ipynb" target="_blank" rel="noopener noreferrer" class="btn-outline">
+                <i class="fas fa-book"></i> Evaluation Notebook
+              </a>
+              <button class="btn-outline open-modal-btn" data-target="graphrag-benchmark-modal">
+                <i class="fas fa-chart-line"></i> Benchmark &amp; Live Diffs
+              </button>
+              <button class="btn-outline open-modal-btn" data-target="graphrag-modal">
+                <i class="fas fa-project-diagram"></i> Architecture Flow
+              </button>
               <a href="https://github.com/harshverse-svg/graphrag-ollama" target="_blank" rel="noopener noreferrer" class="btn-primary">
                 <i class="fab fa-github"></i> Source Code
               </a>
-              <button class="btn-outline open-modal-btn" data-target="graphrag-modal">
-                <i class="fas fa-project-diagram"></i> Interactive Arch
-              </button>
               <button class="btn-outline copy-clone-btn" data-repo="https://github.com/harshverse-svg/graphrag-ollama.git">
                 <i class="fas fa-terminal"></i> Clone Repo
               </button>
@@ -1031,6 +1094,7 @@
   <script src="js/vendor/gsap.min.js" defer></script>
   <script src="js/vendor/ScrollTrigger.min.js" defer></script>
   <script src="js/vendor/lenis.min.js" defer></script>
+  <script src="js/neural-core.js" defer></script>
 
   <!-- Application Logic & Motion Choreography -->
   <script src="js/main.js" defer></script>

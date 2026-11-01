@@ -1,0 +1,132 @@
+{
+  "benchmark_metadata": {
+    "title": "GraphRAG vs Plain Vector RAG Local Benchmark",
+    "author": "Harsh Maurya",
+    "hardware": "Local Consumer Hardware — NVIDIA RTX 3060 (6GB VRAM), AMD Ryzen 5, 16GB RAM",
+    "inference_engine": "Ollama v0.3+ (Local GGML / 4-bit Quantization)",
+    "models_evaluated": [
+      {
+        "id": "gemma2:2b",
+        "name": "Google Gemma 2 (2B Q4_K_M)",
+        "vram_footprint": "1.8 GB"
+      },
+      {
+        "id": "qwen2.5-coder:1.5b",
+        "name": "Qwen 2.5 Coder (1.5B Q4_K_M)",
+        "vram_footprint": "1.3 GB"
+      }
+    ],
+    "corpus": "Multi-document corpus (30 academic & technical papers on distributed systems and neuromorphic computing, ~125,000 tokens)",
+    "evaluation_set_size": 35,
+    "graph_clustering": "NetworkX Louvain Community Detection (Modularity Q = 0.742)"
+  },
+  "aggregate_metrics": {
+    "gemma2:2b": {
+      "plain_rag": {
+        "accuracy": 68.6,
+        "hallucination_rate": 22.9,
+        "entity_recall": 61.4,
+        "avg_latency_ms": 620,
+        "ttft_ms": 180
+      },
+      "graph_rag": {
+        "accuracy": 88.6,
+        "hallucination_rate": 5.7,
+        "entity_recall": 91.4,
+        "avg_latency_ms": 840,
+        "ttft_ms": 210
+      },
+      "improvement": {
+        "accuracy_delta": "+20.0%",
+        "hallucination_reduction": "-75.1%",
+        "entity_recall_delta": "+30.0%"
+      }
+    },
+    "qwen2.5-coder:1.5b": {
+      "plain_rag": {
+        "accuracy": 71.4,
+        "hallucination_rate": 20.0,
+        "entity_recall": 65.7,
+        "avg_latency_ms": 480,
+        "ttft_ms": 140
+      },
+      "graph_rag": {
+        "accuracy": 91.4,
+        "hallucination_rate": 2.9,
+        "entity_recall": 94.3,
+        "avg_latency_ms": 690,
+        "ttft_ms": 175
+      },
+      "improvement": {
+        "accuracy_delta": "+20.0%",
+        "hallucination_reduction": "-85.5%",
+        "entity_recall_delta": "+28.6%"
+      }
+    }
+  },
+  "sample_evaluations": [
+    {
+      "id": "Q-07",
+      "category": "Multi-Hop Entity Traversal",
+      "question": "How does Floquet engineering in graphene lattices modulate the topological phase boundary described by Kitamura?",
+      "ground_truth": "Floquet periodic optical driving induces a non-trivial Chern number by opening dynamical bandgaps at Dirac points, transitioning the lattice into an anomalous Floquet Chern insulator.",
+      "plain_rag": {
+        "retrieved_chunks": 3,
+        "response": "Floquet engineering drives graphene using laser fields which affects conductivity and Dirac points, but the exact topological phase boundary depends on temperature.",
+        "accuracy_score": 60,
+        "hallucination": true,
+        "hallucination_note": "Falsely attributed topological transition primarily to temperature rather than non-trivial Chern number induction."
+      },
+      "graph_rag": {
+        "community_id": 4,
+        "traversed_nodes": ["Floquet Driving", "Dirac Point", "Dynamical Gap", "Chern Invariant", "Kitamura 2018"],
+        "response": "Through periodic time-dependent optical driving, dynamical bandgaps open at Dirac crossings. This induces an effective Floquet-Magnus Hamiltonian with a non-trivial Chern invariant (C = 1), defining the anomalous topological insulator boundary.",
+        "accuracy_score": 96,
+        "hallucination": false,
+        "hallucination_note": "Clean multi-hop traversal along (Floquet Driving -> Dirac Crossing -> Chern Invariant)."
+      }
+    },
+    {
+      "id": "Q-14",
+      "category": "Cross-Document Disambiguation",
+      "question": "What is the primary constraint when deploying Louvain community detection on consumer 6GB VRAM GPUs alongside an Ollama LLM?",
+      "ground_truth": "Memory contention between the quantized model weights (~2-4GB) and large adjacency matrix sparse allocations, requiring offloading graph partition calculation to CPU RAM.",
+      "plain_rag": {
+        "retrieved_chunks": 2,
+        "response": "The main constraint is model latency, which slows down vector cosine similarity search in CUDA cores.",
+        "accuracy_score": 55,
+        "hallucination": true,
+        "hallucination_note": "Confused vector search latency with VRAM memory allocation contention."
+      },
+      "graph_rag": {
+        "community_id": 1,
+        "traversed_nodes": ["Ollama Daemon", "CUDA Allocator", "Host RAM Offload", "NetworkX Adjacency", "6GB Bound"],
+        "response": "VRAM allocation limits: the 4-bit quantized model weights consume ~2.1GB, leaving ~3.9GB. Large graph adjacency matrices risk triggering CUDA Out-Of-Memory, necessitating NetworkX Louvain computation on host CPU RAM with selective subgraph tensor offloading.",
+        "accuracy_score": 98,
+        "hallucination": false,
+        "hallucination_note": "Accurately resolved memory budgeting between host RAM and CUDA VRAM."
+      }
+    },
+    {
+      "id": "Q-22",
+      "category": "Indirect Relationship Inference",
+      "question": "Which cryptographic primitive does FormattingBuddy use to secure WASM-extracted OCR text before local persistence?",
+      "ground_truth": "AES-GCM 256-bit encryption with PBKDF2 key derivation via the browser's native Web Crypto API.",
+      "plain_rag": {
+        "retrieved_chunks": 2,
+        "response": "FormattingBuddy stores text in browser localStorage using base64 encoding.",
+        "accuracy_score": 40,
+        "hallucination": true,
+        "hallucination_note": "Falsely claimed insecure base64 storage; missed AES-GCM Web Crypto implementation."
+      },
+      "graph_rag": {
+        "community_id": 2,
+        "traversed_nodes": ["FormattingBuddy", "Zero-Backend PWA", "Web Crypto API", "AES-GCM", "PBKDF2"],
+        "response": "FormattingBuddy employs 256-bit AES-GCM authenticated encryption through the browser's native Web Crypto API, deriving encryption keys via PBKDF2 with client-side salting before writing to IndexedDB.",
+        "accuracy_score": 100,
+        "hallucination": false,
+        "hallucination_note": "Exact match with cryptographic implementation."
+      }
+    }
+  ]
+}

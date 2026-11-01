@@ -1,0 +1,81 @@
+name: Weekly Security, Link & Lighthouse Audit
+
+on:
+  schedule:
+    # Runs at 00:00 UTC every Monday
+    - cron: '0 0 * * 1'
+  workflow_dispatch:
+
+# Enforce least-privilege token permissions
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: Run Automated Health, Link & Lighthouse Audits
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        # actions/checkout@v4.1.7 pinned to commit SHA
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
+
+      - name: Setup Node.js Environment
+        # actions/setup-node@v4.0.3 pinned to commit SHA
+        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832e0b1
+        with:
+          node-version: '20'
+
+      - name: Verify Link Integrity & No Dead Anchors
+        run: |
+          mkdir -p audit/weekly
+          npx --yes linkinator index.html --recurse false --skip "https://linkedin.com.*" > audit/weekly/link-report.txt || true
+          echo "Link scan complete."
+
+      - name: Start Local Web Server
+        run: |
+          python3 -m http.server 8080 &
+          sleep 3
+
+      - name: Run Lighthouse Desktop Audit
+        run: |
+          npx --yes lighthouse http://localhost:8080/ \
+            --preset=desktop \
+            --output=json \
+            --output=html \
+            --output-path=audit/weekly/lighthouse-desktop \
+            --chrome-flags="--headless" \
+            --quiet
+
+      - name: Run Lighthouse Mobile Audit
+        run: |
+          npx --yes lighthouse http://localhost:8080/ \
+            --output=json \
+            --output=html \
+            --output-path=audit/weekly/lighthouse-mobile \
+            --chrome-flags="--headless" \
+            --quiet
+
+      - name: Assert Performance Budget
+        run: |
+          node -e "
+            const fs = require('fs');
+            const d = JSON.parse(fs.readFileSync('audit/weekly/lighthouse-desktop.report.json'));
+            const m = JSON.parse(fs.readFileSync('audit/weekly/lighthouse-mobile.report.json'));
+            const dScore = Math.round(d.categories.performance.score * 100);
+            const mScore = Math.round(m.categories.performance.score * 100);
+            console.log('Desktop Performance:', dScore);
+            console.log('Mobile Performance:', mScore);
+            if (dScore < 90 || mScore < 80) {
+              console.error('Performance fell below budget gate!');
+              process.exit(1);
+            }
+          "
+
+      - name: Upload Weekly Audit Artifacts
+        # actions/upload-artifact@v4.3.4 pinned to commit SHA
+        uses: actions/upload-artifact@0b2256b7a942f347385e41b37f461e630d987326
+        with:
+          name: weekly-audit-report
+          path: audit/weekly/
+          retention-days: 30

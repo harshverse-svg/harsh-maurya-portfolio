@@ -100,17 +100,27 @@ class WebAudioFx {
 
 const sfx = new WebAudioFx();
 
-// ===== 2. High-Performance Procedural Canvas (Neural Mesh) =====
+// ===== 2. High-Performance Procedural Canvas (Louvain Neural Graph Engine) =====
 class NeuralMeshCanvas {
   constructor(canvasId) {
     this.canvas = document.getElementById(canvasId);
     if (!this.canvas) return;
     this.ctx = this.canvas.getContext('2d');
     this.nodes = [];
-    this.nodeCount = window.innerWidth < 768 ? 35 : 70;
-    this.maxDistance = 140;
+    this.pulses = [];
+    this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+    this.nodeCount = window.innerWidth < 768 ? 32 : 64;
+    this.maxDistance = 145;
     this.mouse = { x: -1000, y: -1000 };
     this.rafId = null;
+    this.isVisible = true;
+
+    // Palette reflecting Harsh's 3 Technical Modalities
+    this.clusterPalettes = [
+      { fill: 'rgba(0, 240, 255, 0.65)', line: 'rgba(0, 240, 255,' },   // Quantum Cyan: Local AI & Inference
+      { fill: 'rgba(16, 185, 129, 0.65)', line: 'rgba(16, 185, 129,' }, // Emerald: Offline Systems & Daemons
+      { fill: 'rgba(245, 158, 11, 0.65)', line: 'rgba(245, 158, 11,' }  // Amber: GraphRAG & Louvain Networks
+    ];
 
     this.resize();
     this.initNodes();
@@ -119,19 +129,26 @@ class NeuralMeshCanvas {
   }
 
   resize() {
-    this.width = this.canvas.width = window.innerWidth;
-    this.height = this.canvas.height = window.innerHeight;
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
+    this.canvas.width = this.width * this.dpr;
+    this.canvas.height = this.height * this.dpr;
+    this.ctx.scale(this.dpr, this.dpr);
   }
 
   initNodes() {
     this.nodes = [];
+    this.pulses = [];
     for (let i = 0; i < this.nodeCount; i++) {
+      const cluster = i % 3;
       this.nodes.push({
         x: Math.random() * this.width,
         y: Math.random() * this.height,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        radius: Math.random() * 1.6 + 1.2,
+        vx: (Math.random() - 0.5) * 0.45,
+        vy: (Math.random() - 0.5) * 0.45,
+        radius: Math.random() * 1.5 + 1.2,
+        cluster: cluster,
+        pulseOffset: Math.random() * Math.PI * 2
       });
     }
   }
@@ -151,57 +168,118 @@ class NeuralMeshCanvas {
       this.mouse.x = -1000;
       this.mouse.y = -1000;
     });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        this.isVisible = false;
+      } else {
+        this.isVisible = true;
+        if (!this.rafId) this.animate();
+      }
+    });
   }
 
   animate() {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!this.isVisible) {
+      this.rafId = null;
+      return;
+    }
 
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      this.renderFrame(true);
+      return;
+    }
+
+    this.renderFrame(false);
+    this.rafId = requestAnimationFrame(() => this.animate());
+  }
+
+  renderFrame(isStatic) {
     this.ctx.clearRect(0, 0, this.width, this.height);
+    const time = Date.now() * 0.002;
 
     for (let i = 0; i < this.nodes.length; i++) {
       const node = this.nodes[i];
-      node.x += node.vx;
-      node.y += node.vy;
 
-      if (node.x < 0 || node.x > this.width) node.vx *= -1;
-      if (node.y < 0 || node.y > this.height) node.vy *= -1;
+      if (!isStatic) {
+        node.x += node.vx;
+        node.y += node.vy;
 
-      // Mouse interactive deflection
-      const dx = this.mouse.x - node.x;
-      const dy = this.mouse.y - node.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      if (dist < 120 && dist > 0) {
-        const force = (120 - dist) / 120;
-        node.x -= (dx / dist) * force * 1.5;
-        node.y -= (dy / dist) * force * 1.5;
+        if (node.x < 0 || node.x > this.width) node.vx *= -1;
+        if (node.y < 0 || node.y > this.height) node.vy *= -1;
+
+        // Subtle Gravitational Deflection
+        const dx = this.mouse.x - node.x;
+        const dy = this.mouse.y - node.y;
+        const dist = Math.hypot(dx, dy);
+        if (dist < 130 && dist > 0) {
+          const force = (130 - dist) / 130;
+          node.x -= (dx / dist) * force * 1.8;
+          node.y -= (dy / dist) * force * 1.8;
+        }
       }
 
-      // Draw node
+      // Draw Node
+      const palette = this.clusterPalettes[node.cluster];
+      const pulseRadius = node.radius + (isStatic ? 0 : Math.sin(time + node.pulseOffset) * 0.35);
+
       this.ctx.beginPath();
-      this.ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
-      this.ctx.fillStyle = 'rgba(0, 240, 255, 0.45)';
+      this.ctx.arc(node.x, node.y, Math.max(0.8, pulseRadius), 0, Math.PI * 2);
+      this.ctx.fillStyle = palette.fill;
       this.ctx.fill();
 
-      // Connect near nodes
+      // Connect near nodes (Modularity clustering bias)
       for (let j = i + 1; j < this.nodes.length; j++) {
         const other = this.nodes[j];
         const dxx = node.x - other.x;
         const dyy = node.y - other.y;
-        const d = Math.sqrt(dxx * dxx + dyy * dyy);
+        const d = Math.hypot(dxx, dyy);
 
         if (d < this.maxDistance) {
-          const alpha = (1 - d / this.maxDistance) * 0.16;
-          this.ctx.beginPath();
-          this.ctx.moveTo(node.x, node.y);
-          this.ctx.lineTo(other.x, other.y);
-          this.ctx.strokeStyle = `rgba(0, 240, 255, ${alpha})`;
-          this.ctx.lineWidth = 0.8;
-          this.ctx.stroke();
+          const sameCluster = node.cluster === other.cluster;
+          const maxDist = sameCluster ? this.maxDistance : this.maxDistance * 0.75;
+
+          if (d < maxDist) {
+            const alpha = (1 - d / maxDist) * (sameCluster ? 0.18 : 0.08);
+            this.ctx.beginPath();
+            this.ctx.moveTo(node.x, node.y);
+            this.ctx.lineTo(other.x, other.y);
+            this.ctx.strokeStyle = palette.line + ' ' + alpha + ')';
+            this.ctx.lineWidth = sameCluster ? 0.9 : 0.6;
+            this.ctx.stroke();
+
+            // Synaptic Light Pulse traversing edge
+            if (!isStatic && Math.random() < 0.0004 && this.pulses.length < 8) {
+              this.pulses.push({
+                x1: node.x, y1: node.y,
+                x2: other.x, y2: other.y,
+                progress: 0,
+                speed: 0.02 + Math.random() * 0.02,
+                color: palette.fill
+              });
+            }
+          }
         }
       }
     }
 
-    this.rafId = requestAnimationFrame(() => this.animate());
+    // Render active synaptic pulses
+    if (!isStatic) {
+      for (let p = this.pulses.length - 1; p >= 0; p--) {
+        const pulse = this.pulses[p];
+        pulse.progress += pulse.speed;
+        if (pulse.progress >= 1) {
+          this.pulses.splice(p, 1);
+          continue;
+        }
+        const px = pulse.x1 + (pulse.x2 - pulse.x1) * pulse.progress;
+        const py = pulse.y1 + (pulse.y2 - pulse.y1) * pulse.progress;
+        this.ctx.beginPath();
+        this.ctx.arc(px, py, 1.8, 0, Math.PI * 2);
+        this.ctx.fillStyle = pulse.color;
+        this.ctx.fill();
+      }
+    }
   }
 }
 
@@ -311,7 +389,6 @@ Profile: https://github.com/harshverse-svg?tab=repositories`;
       case 'contact':
         reply = `[COMMUNICATION ENDPOINTS]:
   • Email: harshmauryamau@gmail.com
-  • Phone: +91 95697 59599
   • GitHub: https://github.com/harshverse-svg
   • LinkedIn: https://www.linkedin.com/in/harsh-maurya-baa534400
   • Location: Meerut, Uttar Pradesh, India`;
@@ -562,22 +639,18 @@ const setupYouTubeFacade = () => {
   });
 };
 
-// ===== 11. Universal Modal Dialog (Certificates & Architecture) =====
+// ===== 11. Universal Modal Dialog (Certificates & Interactive Previews) =====
 const setupModal = () => {
   const modal = document.getElementById('universalModal');
   const modalTitle = document.getElementById('modalTitle');
-  const modalImg = document.getElementById('modalImg');
   const modalBody = document.getElementById('modalBody');
   const closeBtn = document.getElementById('modalCloseBtn');
-  if (!modal) return;
+  if (!modal || !modalTitle || !modalBody) return;
 
   const closeModal = () => {
     modal.classList.remove('active');
     modal.setAttribute('aria-hidden', 'true');
-    // Restore default modal body if needed
-    if (!modalImg.parentElement) {
-      modalBody.innerHTML = '<img src="" alt="Preview" id="modalImg" class="modal-img-preview" />';
-    }
+    modalBody.innerHTML = '<img src="" alt="Preview" id="modalImg" class="modal-img-preview" />';
   };
 
   closeBtn?.addEventListener('click', closeModal);
@@ -588,8 +661,9 @@ const setupModal = () => {
     if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
   });
 
-  document.querySelectorAll('.open-modal-btn').forEach(btn => {
+  document.querySelectorAll('.open-modal-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
+      sfx.playClick();
       const img = btn.getAttribute('data-img');
       const title = btn.getAttribute('data-title');
       const target = btn.getAttribute('data-target');
@@ -603,10 +677,138 @@ const setupModal = () => {
         }
         modal.classList.add('active');
         modal.setAttribute('aria-hidden', 'false');
-      } else if (target === 'graphrag-modal') {
-        modalTitle.textContent = 'GraphRAG Engine Architecture';
+      } else if (target === 'graphrag-benchmark-modal') {
+        modalTitle.textContent = 'GraphRAG vs Vector RAG: Empirical Evaluation';
         modalBody.innerHTML = `
-          <div style="font-family: var(--font-mono); color: var(--ink-muted); line-height: 1.8; margin-top: 1rem;">
+          <div style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">
+            <p style="margin-bottom: 0.8rem;">
+              Empirical benchmark evaluating <strong>35 multi-hop technical questions</strong> over a 125K-token corpus on consumer hardware (<strong>NVIDIA RTX 3060 6GB VRAM</strong>, Ollama 4-bit quantization).
+            </p>
+
+            <div class="benchmark-grid">
+              <div class="benchmark-card">
+                <div class="benchmark-label">Answer Accuracy</div>
+                <div class="benchmark-val">88.6%</div>
+                <div class="benchmark-delta">+20.0% vs Vector RAG (68.6%)</div>
+              </div>
+              <div class="benchmark-card">
+                <div class="benchmark-label">Hallucination Rate</div>
+                <div class="benchmark-val">5.7%</div>
+                <div class="benchmark-delta">-75.1% reduction (from 22.9%)</div>
+              </div>
+              <div class="benchmark-card">
+                <div class="benchmark-label">Entity Recall</div>
+                <div class="benchmark-val">91.4%</div>
+                <div class="benchmark-delta">+30.0% gain (from 61.4%)</div>
+              </div>
+              <div class="benchmark-card">
+                <div class="benchmark-label">Avg Local Latency</div>
+                <div class="benchmark-val">840ms</div>
+                <div class="benchmark-delta">+220ms Louvain overhead</div>
+              </div>
+            </div>
+
+            <div class="qa-diff-box">
+              <div style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); margin-bottom: 0.5rem;">
+                // EVALUATION SAMPLE: [Q-07] Multi-Hop Topological Traversal
+              </div>
+              <p><strong>Query:</strong> <em>"How does Floquet engineering in graphene lattices modulate the topological phase boundary described by Kitamura?"</em></p>
+              
+              <div style="margin-top: 0.75rem; padding: 0.75rem; background: rgba(239, 68, 68, 0.06); border-left: 3px solid #ef4444; border-radius: 4px;">
+                <div class="qa-tag-plain">✕ Plain Dense Vector RAG:</div>
+                <p style="font-size: 0.84rem; color: #fca5a5;">"Floquet engineering drives graphene using laser fields which affects conductivity and Dirac points, but the topological boundary depends primarily on temperature."</p>
+                <div style="font-family: var(--font-mono); font-size: 0.74rem; color: #f87171; margin-top: 0.25rem;">[HALLUCINATION FLAGGED: Falsely substituted temperature for non-trivial Chern number induction]</div>
+              </div>
+
+              <div style="margin-top: 0.75rem; padding: 0.75rem; background: rgba(0, 240, 255, 0.06); border-left: 3px solid var(--accent); border-radius: 4px;">
+                <div class="qa-tag-graph">✓ Local GraphRAG (Louvain Community #4):</div>
+                <div style="margin-bottom: 0.35rem;">
+                  <span class="qa-path-pill">Floquet Driving</span>
+                  <span class="qa-path-pill">Dirac Point</span>
+                  <span class="qa-path-pill">Dynamical Gap</span>
+                  <span class="qa-path-pill">Chern Invariant (C=1)</span>
+                </div>
+                <p style="font-size: 0.84rem; color: #bae6fd;">"Periodic optical driving opens dynamical bandgaps at Dirac points. This induces an effective Floquet-Magnus Hamiltonian with a non-trivial Chern invariant (C = 1), establishing the anomalous Floquet Chern insulator boundary."</p>
+              </div>
+            </div>
+
+            <div style="margin-top: 1.25rem; display: flex; gap: 0.75rem; flex-wrap: wrap;">
+              <a href="notebooks/graphrag_evaluation.ipynb" target="_blank" rel="noopener noreferrer" class="btn-primary" style="font-size: 0.82rem; padding: 0.5rem 1rem;">
+                <i class="fas fa-book"></i> Open Evaluation Notebook (.ipynb)
+              </a>
+              <a href="graphrag-readme.html" target="_blank" rel="noopener noreferrer" class="btn-outline" style="font-size: 0.82rem; padding: 0.5rem 1rem;">
+                <i class="fas fa-book-open"></i> Full Case Study & Methodology
+              </a>
+            </div>
+          </div>
+        `;
+        modal.classList.add('active');
+        modal.setAttribute('aria-hidden', 'false');
+      } else if (target === 'swasthlink-modal') {
+        modalTitle.textContent = 'SwasthLink Architecture & Simulated OpenAPI Sandbox';
+        modalBody.innerHTML = `
+          <div style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6;">
+            <div style="background: rgba(0, 240, 255, 0.05); border: 1px solid rgba(0, 240, 255, 0.2); padding: 0.75rem 1rem; border-radius: var(--radius-sm); margin-bottom: 1rem; font-size: 0.82rem;">
+              <strong style="color: var(--accent);">SANDBOX COMPLIANCE NOTICE:</strong> All Ayushman Bharat Digital Mission (ABDM) ABHA address resolution and UPI payment intent generation operate in simulated sandbox mock mode for HIPAA/DISHA-compliant architecture validation.
+            </div>
+
+            <div style="font-family: var(--font-mono); color: var(--accent); font-size: 0.8rem; margin-bottom: 0.5rem;">
+              // Core Distributed Pipeline
+            </div>
+            <div class="architecture-diagram" style="margin-bottom: 1.25rem;">
+              <div class="arch-box">Patient QR Intake</div>
+              <i class="fas fa-arrow-right arch-arrow"></i>
+              <div class="arch-box highlight-box">Simulated ABDM Profile</div>
+              <i class="fas fa-arrow-right arch-arrow"></i>
+              <div class="arch-box">Virtual Queue Dispatch</div>
+              <i class="fas fa-arrow-right arch-arrow"></i>
+              <div class="arch-box">Mock UPI Settlement</div>
+            </div>
+
+            <div style="font-family: var(--font-mono); color: var(--accent); font-size: 0.8rem; margin-bottom: 0.5rem;">
+              // Validated OpenAPI 3.1 Endpoints
+            </div>
+
+            <div class="qa-diff-box" style="margin-top: 0.5rem;">
+              <div class="api-endpoint-badge">
+                <span class="api-method-post">POST</span>
+                <span>/api/v1/queue/ticket</span>
+              </div>
+              <pre style="background: rgba(0,0,0,0.4); padding: 0.6rem; border-radius: 4px; font-size: 0.76rem; color: #a7f3d0; overflow-x: auto;">// Request Payload
+{ "patient_id": "a502-347c-4d15", "department_id": "dept_opd_cardio", "priority_flag": false }
+
+// Response (201 Created)
+{ "ticket_id": "tkt_8821", "token_number": 43, "estimated_wait_minutes": 22, "booth": "3B" }</pre>
+            </div>
+
+            <div class="qa-diff-box" style="margin-top: 0.75rem;">
+              <div class="api-endpoint-badge">
+                <span class="api-method-post">POST</span>
+                <span>/api/v1/payment/simulate-upi</span>
+              </div>
+              <pre style="background: rgba(0,0,0,0.4); padding: 0.6rem; border-radius: 4px; font-size: 0.76rem; color: #a7f3d0; overflow-x: auto;">// Response (200 OK - Simulated Gateway)
+{ "transaction_ref": "MOCK_UPI_TXN_9872134", "settlement_status": "SIMULATED_SUCCESS", "latency_ms": 180 }</pre>
+            </div>
+
+            <div style="margin-top: 1.25rem; display: flex; gap: 0.75rem; flex-wrap: wrap;">
+              <a href="docs/swasthlink-openapi.yaml" target="_blank" rel="noopener noreferrer" class="btn-primary" style="font-size: 0.82rem; padding: 0.5rem 1rem;">
+                <i class="fas fa-file-code"></i> View Full OpenAPI 3.1 YAML
+              </a>
+              <a href="docs/swasthlink-openapi.json" target="_blank" rel="noopener noreferrer" class="btn-outline" style="font-size: 0.82rem; padding: 0.5rem 1rem;">
+                <i class="fas fa-code"></i> OpenAPI JSON
+              </a>
+              <a href="queuekhatam-research.html" target="_blank" rel="noopener noreferrer" class="btn-outline" style="font-size: 0.82rem; padding: 0.5rem 1rem;">
+                <i class="fas fa-book-open"></i> Case Study
+              </a>
+            </div>
+          </div>
+        `;
+        modal.classList.add('active');
+        modal.setAttribute('aria-hidden', 'false');
+      } else if (target === 'graphrag-modal') {
+        modalTitle.textContent = 'GraphRAG Engine Architecture Flow';
+        modalBody.innerHTML = `
+          <div style="font-family: var(--font-mono); color: var(--text-secondary); line-height: 1.8; margin-top: 1rem;">
             <p style="color: var(--accent); margin-bottom: 0.75rem;">// Local Graph Traversal Flow</p>
             <ol style="padding-left: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.9rem;">
               <li><strong>Raw Text Ingestion:</strong> Chunk documents with 500-token overlap bounds.</li>
@@ -631,6 +833,9 @@ const setupModal = () => {
 // ===== Initializer =====
 document.addEventListener('DOMContentLoaded', () => {
   new NeuralMeshCanvas('bg-canvas');
+  if (typeof ProceduralNeuralCore !== 'undefined') {
+    new ProceduralNeuralCore('neuralCoreCanvas');
+  }
   setupCursor();
   setupTerminal();
   setupProjectFilters();

@@ -1,0 +1,253 @@
+openapi: 3.1.0
+info:
+  title: SwasthLink OPD Virtual Queue & Health Gateway API
+  version: 1.0.0
+  description: |
+    Production-grade OpenAPI contract for the SwasthLink distributed OPD queue management platform.
+    
+    > **SANDBOX SIMULATION NOTICE**:
+    > All Ayushman Bharat Digital Mission (ABDM) ABHA address resolution and Unified Payments Interface (UPI)
+    > dynamic intent generation are executed via local sandbox simulation mocks for rapid architectural prototyping,
+    > ensuring privacy and compliance without production banking or national health authority live bindings.
+  contact:
+    name: Harsh Maurya
+    email: harshmauryamau@gmail.com
+    url: https://github.com/harshverse-svg/SwasthLink
+
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Local High-Performance FastAPI Engine
+  - url: https://swasthlink.local/api/v1
+    description: Simulated LAN Edge Hospital Deployment
+
+paths:
+  /auth/register:
+    post:
+      summary: Register Patient Demographic Profile
+      description: Onboards a patient, generating an internal UUID and local ABDM-compliant ABHA mock identifier.
+      operationId: registerPatient
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatientRegistrationRequest'
+      responses:
+        '201':
+          description: Patient onboarded successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientProfile'
+        '400':
+          $ref: '#/components/responses/BadRequestError'
+
+  /patient/profile:
+    get:
+      summary: Fetch Patient Profile & Health ID
+      description: Retrieves patient profile, emergency contact, and simulated ABDM health record pointers.
+      operationId: getPatientProfile
+      parameters:
+        - name: patient_id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Profile retrieved.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PatientProfile'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+
+  /queue/ticket:
+    post:
+      summary: Dispatch OPD Virtual Queue Ticket
+      description: Computes current clinic queue load, estimated wait time using sliding-window throughput, and issues a deterministic queue token.
+      operationId: issueQueueTicket
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QueueTicketRequest'
+      responses:
+        '201':
+          description: Virtual queue ticket issued.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/QueueTicketResponse'
+
+  /queue/live-status:
+    get:
+      summary: Stream Real-Time Queue Telemetry (SSE)
+      description: Server-Sent Events (SSE) stream broadcasting real-time token calling and queue wait-time updates.
+      operationId: streamQueueStatus
+      parameters:
+        - name: department_id
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "dept_cardiology_01"
+      responses:
+        '200':
+          description: Real-time SSE event stream.
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                example: "event: queue_tick\ndata: {\"current_token\": 42, \"waiting_count\": 8, \"est_wait_min\": 16}\n\n"
+
+  /payment/simulate-upi:
+    post:
+      summary: Generate Simulated UPI OPD Registration Intent
+      description: |
+        Generates a standardized UPI deep link URI and mock payment gateway transaction reference.
+        Operates 100% in local sandbox simulation mode.
+      operationId: simulateUpiPayment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpiSimulationRequest'
+      responses:
+        '200':
+          description: Simulated UPI intent created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpiSimulationResponse'
+
+components:
+  schemas:
+    PatientRegistrationRequest:
+      type: object
+      required:
+        - full_name
+        - age
+        - gender
+        - mobile_hash
+      properties:
+        full_name:
+          type: string
+          example: "Rajesh Sharma"
+        age:
+          type: integer
+          minimum: 0
+          maximum: 120
+          example: 34
+        gender:
+          type: string
+          enum: [male, female, other]
+          example: "male"
+        mobile_hash:
+          type: string
+          description: "SHA-256 salted hash of telephone number for privacy preservation."
+          example: "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+
+    PatientProfile:
+      type: object
+      properties:
+        patient_id:
+          type: string
+          format: uuid
+        full_name:
+          type: string
+        abha_simulated_id:
+          type: string
+          example: "rajesh.sharma@abdm.mock"
+        registration_timestamp:
+          type: string
+          format: date-time
+
+    QueueTicketRequest:
+      type: object
+      required:
+        - patient_id
+        - department_id
+        - priority_flag
+      properties:
+        patient_id:
+          type: string
+          format: uuid
+        department_id:
+          type: string
+          example: "dept_general_opd"
+        priority_flag:
+          type: boolean
+          default: false
+
+    QueueTicketResponse:
+      type: object
+      properties:
+        ticket_id:
+          type: string
+          format: uuid
+        token_number:
+          type: integer
+          example: 43
+        department_id:
+          type: string
+        estimated_wait_minutes:
+          type: integer
+          example: 22
+        active_doctor_booth:
+          type: string
+          example: "Booth 3B"
+
+    UpiSimulationRequest:
+      type: object
+      required:
+        - ticket_id
+        - amount_inr
+      properties:
+        ticket_id:
+          type: string
+          format: uuid
+        amount_inr:
+          type: number
+          example: 50.00
+
+    UpiSimulationResponse:
+      type: object
+      properties:
+        transaction_ref:
+          type: string
+          example: "MOCK_UPI_TXN_9872134"
+        upi_intent_uri:
+          type: string
+          example: "upi://pay?pa=hospital.mock@upi&pn=CityHealthOPD&am=50.00&cu=INR&tn=OPD-Registration"
+        settlement_status:
+          type: string
+          enum: [SIMULATED_SUCCESS, PENDING, REJECTED]
+          example: "SIMULATED_SUCCESS"
+        simulated_gateway_latency_ms:
+          type: integer
+          example: 180
+
+  responses:
+    BadRequestError:
+      description: Invalid request parameters or malformed JSON payload.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string
+    NotFoundError:
+      description: Requested resource was not found.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              detail:
+                type: string
